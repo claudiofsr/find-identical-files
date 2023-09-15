@@ -1,0 +1,48 @@
+
+use builtin;
+use str;
+
+set edit:completion:arg-completer[find_duplicate_files] = {|@words|
+    fn spaces {|n|
+        builtin:repeat $n ' ' | str:join ''
+    }
+    fn cand {|text desc|
+        edit:complex-candidate $text &display=$text' '(spaces (- 14 (wcswidth $text)))$desc
+    }
+    var command = 'find_duplicate_files'
+    for word $words[1..-1] {
+        if (str:has-prefix $word '-') {
+            break
+        }
+        set command = $command';'$word
+    }
+    var completions = [
+        &'find_duplicate_files'= {
+            cand -a 'Choose the hash algorithm'
+            cand --algorithm 'Choose the hash algorithm'
+            cand -g 'If provided, outputs the completion file for given shell'
+            cand --generate 'If provided, outputs the completion file for given shell'
+            cand -m 'Set the maximum depth to search for duplicate files'
+            cand --max_depth 'Set the maximum depth to search for duplicate files'
+            cand -p 'Set the path where to look for duplicate files, otherwise use the current directory'
+            cand --path 'Set the path where to look for duplicate files, otherwise use the current directory'
+            cand -r 'Print the result in the chosen format'
+            cand --result_format 'Print the result in the chosen format'
+            cand -c 'Clear the terminal screen before listing the duplicate files'
+            cand --clear_terminal 'Clear the terminal screen before listing the duplicate files'
+            cand -f 'Prints full path of duplicate files, otherwise relative path'
+            cand --full_path 'Prints full path of duplicate files, otherwise relative path'
+            cand -o 'Omit hidden files (starts with ''.''), otherwise search all files'
+            cand --omit_hidden 'Omit hidden files (starts with ''.''), otherwise search all files'
+            cand -s 'Sort result by file size, otherwise sort by number of duplicate files'
+            cand --sort 'Sort result by file size, otherwise sort by number of duplicate files'
+            cand -t 'Show total execution time'
+            cand --time 'Show total execution time'
+            cand -h 'Print help (see more with ''--help'')'
+            cand --help 'Print help (see more with ''--help'')'
+            cand -V 'Print version'
+            cand --version 'Print version'
+        }
+    ]
+    $completions[$command]
+}
