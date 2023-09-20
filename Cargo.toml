@@ -26,7 +26,7 @@ anstyle = "1.0"
 blake3 = { version = "1.4", features = ["rayon"] }
 clap = { version = "4.4", features = ["derive", "color", "unstable-styles"] }
 clap_complete = "4.4"
-hashbrown = { version = "0.14", features = ["rayon"] }
+hashbrown = { version = "0.14", features = ["rayon", "ahash"] }
 jwalk = { version = "0.8" }
 rayon = "1.7"
 ring = "0.16"
