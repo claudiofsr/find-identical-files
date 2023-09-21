@@ -23,12 +23,12 @@ keywords = [
 [dependencies]
 ahash = "0.8"
 anstyle = "1.0"
-blake3 = { version = "1.4", features = ["rayon"] }
+blake3 = { version = "1.5", features = ["rayon"] }
 clap = { version = "4.4", features = ["derive", "color", "unstable-styles"] }
 clap_complete = "4.4"
 hashbrown = { version = "0.14", features = ["rayon", "ahash"] }
 jwalk = { version = "0.8" }
-rayon = "1.7"
+rayon = "1.8"
 ring = "0.16"
 rustc-hash = "1.1"
 serde = { version = "1.0", features = ["derive"] }
