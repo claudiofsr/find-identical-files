@@ -188,6 +188,10 @@ pub struct Arguments {
     /// Show total execution time.
     #[arg(short('t'), long("time"), default_value_t = false)]
     pub time: bool,
+
+    /// Show intermediate runtime messages.
+    #[arg(short('v'), long("verbose"), default_value_t = false)]
+    pub verbose: bool,
 }
 
 impl Arguments {

@@ -14,21 +14,36 @@ fn main() -> Result<(), Box<dyn Error>> {
 
     // Get useful (duplicate) and useless (non-duplicate) files.
     let all_files: Vec<FileInfo> = get_all_files(&arguments)?;
-    //eprintln!("0. all_file size: {}, time_elapsed: {:?}", all_files.len(), time.elapsed());
+
+    if arguments.verbose {
+        eprintln!("0. all_file size: {}, time_elapsed: {:?}", all_files.len(), time.elapsed());
+    }
 
     // To skip useless files, 3 procedures will be performed:
 
     // 1. Group files by size such that the key: (size, None);
+    // Ignore filegroups containing only one file.
     let duplicate_size: Vec<GroupInfo> = get_grouped_files(&all_files);
-    //eprintln!("1. duplicate_size: {}, time_elapsed: {:?}", duplicate_size.len(), time.elapsed());
+
+    if arguments.verbose {
+        eprintln!("1. duplicate_size: {}, time_elapsed: {:?}", duplicate_size.len(), time.elapsed());
+    }
 
     // 2. Group files by first bytes such that the key: (size, Some(bytes));
+    // Ignore filegroups containing only one file.
     let duplicate_bytes: Vec<GroupInfo> = get_duplicate_files(&duplicate_size, None);
-    //eprintln!("2. duplicate_bytes: {}, time_elapsed: {:?}", duplicate_bytes.len(), time.elapsed());
+
+    if arguments.verbose {
+        eprintln!("2. duplicate_bytes: {}, time_elapsed: {:?}", duplicate_bytes.len(), time.elapsed());
+    }
 
     // 3. Group files by hash such that the key: (size, Some(hash)).
+    // Ignore filegroups containing only one file.
     let mut duplicate_hash: Vec<GroupInfo> = get_duplicate_files(&duplicate_bytes, Some(&arguments));
-    //eprintln!("3. duplicate_hash: {}, time_elapsed: {:?}", duplicate_hash.len(), time.elapsed());
+
+    if arguments.verbose {
+        eprintln!("3. duplicate_hash: {}, time_elapsed: {:?}", duplicate_hash.len(), time.elapsed());
+    }
 
     // Sort the list of duplicate files.
     duplicate_hash.sort_duplicate_files(&arguments);
