@@ -20,7 +20,7 @@ use ring::digest::{
 use rustc_hash::FxHasher;
 
 const FIRST_BYTES: usize = 64;
-const BUFFER_SIZE: usize = 64 * 1024;
+const BUFFER_SIZE: usize = 32 * 1024;
 const STACK_SIZE:  usize = 32 * 1024 * 1024;
 
 const HEX: [char; 16] = [
