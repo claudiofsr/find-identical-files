@@ -16,7 +16,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let all_files: Vec<FileInfo> = get_all_files(&arguments)?;
 
     if arguments.verbose {
-        eprintln!("0. all_file size: {}, time_elapsed: {:?}", all_files.len(), time.elapsed());
+        eprintln!("0. all_files.len(): {}, time_elapsed: {:?}", all_files.len(), time.elapsed());
     }
 
     // To skip useless files, 3 procedures will be performed:
@@ -26,7 +26,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let duplicate_size: Vec<GroupInfo> = get_grouped_files(&all_files);
 
     if arguments.verbose {
-        eprintln!("1. duplicate_size: {}, time_elapsed: {:?}", duplicate_size.len(), time.elapsed());
+        eprintln!("1. duplicate_size.len(): {}, time_elapsed: {:?}", duplicate_size.len(), time.elapsed());
     }
 
     // 2. Group files by first bytes such that the key: (size, Some(bytes));
@@ -34,7 +34,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let duplicate_bytes: Vec<GroupInfo> = get_duplicate_files(&duplicate_size, None);
 
     if arguments.verbose {
-        eprintln!("2. duplicate_bytes: {}, time_elapsed: {:?}", duplicate_bytes.len(), time.elapsed());
+        eprintln!("2. duplicate_bytes.len(): {}, time_elapsed: {:?}", duplicate_bytes.len(), time.elapsed());
     }
 
     // 3. Group files by hash such that the key: (size, Some(hash)).
@@ -42,7 +42,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut duplicate_hash: Vec<GroupInfo> = get_duplicate_files(&duplicate_bytes, Some(&arguments));
 
     if arguments.verbose {
-        eprintln!("3. duplicate_hash: {}, time_elapsed: {:?}", duplicate_hash.len(), time.elapsed());
+        eprintln!("3. duplicate_hash.len(): {}, time_elapsed: {:?}", duplicate_hash.len(), time.elapsed());
     }
 
     // Sort the list of duplicate files.
