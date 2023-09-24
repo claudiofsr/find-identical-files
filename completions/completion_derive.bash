@@ -19,7 +19,7 @@ _find_duplicate_files() {
 
     case "${cmd}" in
         find_duplicate_files)
-            opts="-a -c -f -g -m -o -p -r -s -t -h -V --algorithm --clear_terminal --full_path --generate --max_depth --omit_hidden --path --result_format --sort --time --help --version"
+            opts="-a -c -f -g -m -o -p -r -s -t -v -h -V --algorithm --clear_terminal --full_path --generate --max_depth --omit_hidden --path --result_format --sort --time --verbose --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0

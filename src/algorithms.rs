@@ -20,8 +20,8 @@ use ring::digest::{
 use rustc_hash::FxHasher;
 
 const FIRST_BYTES: usize = 64;
-const BUFFER_SIZE: usize = 32 * 1024;
-const STACK_SIZE:  usize = 32 * 1024 * 1024;
+const BUFFER_SIZE: usize = 64 * 1024;
+const STACK_SIZE:  usize = 64 * 1024 * 1024;
 
 const HEX: [char; 16] = [
 '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
@@ -38,6 +38,8 @@ Stack size can be changed during compile time.
 <https://github.com/rust-lang/rust/blob/master/compiler/rustc_interface/src/util.rs#L132>
 
 <https://github.com/rust-lang/rust/issues/111897>
+
+<https://doc.rust-lang.org/stable/std/thread/index.html#stack-size>
 */
 pub fn set_stack_size() {
     std::env::set_var("RUST_MIN_STACK", STACK_SIZE.to_string());
@@ -78,6 +80,7 @@ impl PathBufExtension for PathBuf {
                 match arguments.algorithm {
                     Ahash  => get_ahash(reader)?,
                     Blake3 => get_blake3(reader)?,
+                    //Blake3 => get_blake3_v2(reader)?,
                     Fxhash => get_fxhash(reader)?,
                     SHA256 => get_sha(reader, &DIGEST_SHA256)?,
                     SHA512 => get_sha(reader, &DIGEST_SHA512)?,
@@ -145,6 +148,7 @@ fn get_ahash<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
 /// Calculates the Blake3 hash from Path.
 ///
 /// <https://docs.rs/blake3/latest/blake3>
+#[allow(dead_code)]
 fn get_blake3<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
     let mut buffer = [0_u8; BUFFER_SIZE];
     let mut hasher = Blake3Hasher::new();

@@ -65,6 +65,8 @@ Options:
           Sort result by file size, otherwise sort by number of duplicate files
   -t, --time
           Show total execution time
+  -v, --verbose
+          Show intermediate runtime messages
   -h, --help
           Print help (see more with '--help')
   -V, --version

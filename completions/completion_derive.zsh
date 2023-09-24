@@ -35,6 +35,8 @@ _find_duplicate_files() {
 '--sort[Sort result by file size, otherwise sort by number of duplicate files]' \
 '-t[Show total execution time]' \
 '--time[Show total execution time]' \
+'-v[Show intermediate runtime messages]' \
+'--verbose[Show intermediate runtime messages]' \
 '-h[Print help (see more with '\''--help'\'')]' \
 '--help[Print help (see more with '\''--help'\'')]' \
 '-V[Print version]' \

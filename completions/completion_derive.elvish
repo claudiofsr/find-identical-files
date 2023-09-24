@@ -38,6 +38,8 @@ set edit:completion:arg-completer[find_duplicate_files] = {|@words|
             cand --sort 'Sort result by file size, otherwise sort by number of duplicate files'
             cand -t 'Show total execution time'
             cand --time 'Show total execution time'
+            cand -v 'Show intermediate runtime messages'
+            cand --verbose 'Show intermediate runtime messages'
             cand -h 'Print help (see more with ''--help'')'
             cand --help 'Print help (see more with ''--help'')'
             cand -V 'Print version'

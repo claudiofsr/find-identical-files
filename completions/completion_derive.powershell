@@ -41,6 +41,8 @@ Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBl
             [CompletionResult]::new('--sort', 'sort', [CompletionResultType]::ParameterName, 'Sort result by file size, otherwise sort by number of duplicate files')
             [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Show total execution time')
             [CompletionResult]::new('--time', 'time', [CompletionResultType]::ParameterName, 'Show total execution time')
+            [CompletionResult]::new('-v', 'v', [CompletionResultType]::ParameterName, 'Show intermediate runtime messages')
+            [CompletionResult]::new('--verbose', 'verbose', [CompletionResultType]::ParameterName, 'Show intermediate runtime messages')
             [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
             [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
             [CompletionResult]::new('-V', 'V ', [CompletionResultType]::ParameterName, 'Print version')
