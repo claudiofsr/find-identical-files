@@ -1,10 +1,12 @@
-pub mod algorithms;
-pub mod args;
-pub mod structures;
+mod algorithms;
+mod args;
+mod structures;
 
-pub use algorithms::*;
-pub use args::{Arguments, ResultFormat::*};
-pub use structures::*;
+pub use self::{
+    algorithms::*,
+    args::{Arguments, ResultFormat::*},
+    structures::*,
+};
 
 use std::{
     fs,
