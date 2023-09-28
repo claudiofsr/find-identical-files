@@ -9,7 +9,7 @@ use std::{
     fs::{self, File},
     hash::Hasher,
     path::{Path, PathBuf},
-    io::{Read, BufReader},
+    io::{Read, BufRead, BufReader},
 };
 use ring::digest::{
     self,
@@ -76,7 +76,7 @@ impl PathBufExtension for PathBuf {
         let hash: String = match arguments {
             Some(arguments) => {
                 // Hash the entire file with your chosen hashing algorithm.
-                let reader: BufReader<File> = BufReader::new(file);
+                let reader: BufReader<File> = BufReader::with_capacity(BUFFER_SIZE, file);
                 match arguments.algorithm {
                     Ahash  => get_ahash(reader)?,
                     Blake3 => get_blake3(reader)?,
@@ -150,7 +150,10 @@ fn get_ahash<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
 ///
 /// <https://docs.rs/blake3/latest/blake3>
 #[allow(dead_code)]
-fn get_blake3<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
+fn get_blake3<R>(mut reader: R) -> Result<String, Box<dyn Error>>
+where
+    R: Read
+{
     let mut buffer = [0_u8; BUFFER_SIZE];
     let mut hasher = Blake3Hasher::new();
 
@@ -160,6 +163,28 @@ fn get_blake3<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
             break;
         }
         hasher.update(&buffer[..count]);
+    }
+
+    let hash: String = hasher.finalize().to_string();
+
+    Ok(hash)
+}
+
+#[allow(dead_code)]
+fn get_blake3_v2<R>(mut reader: R) -> Result<String, Box<dyn Error>>
+where
+    R: Read + BufRead
+{
+    let mut hasher = Blake3Hasher::new();
+
+    loop {
+        let buffer: Vec<u8> = reader.fill_buf()?.to_vec();
+        reader.consume(buffer.len());
+
+        if buffer.is_empty() {
+            break;
+        }
+        hasher.update(&buffer);
     }
 
     let hash: String = hasher.finalize().to_string();
