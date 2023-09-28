@@ -118,6 +118,7 @@ where
             Err(error) => {
                 eprintln!("Failed to open file {path:?}");
                 eprintln!("Perhaps some temporary files no longer exist!");
+                eprintln!("Or lack of permission to read this file!");
                 panic!("{error}");
             }
         };
