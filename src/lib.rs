@@ -42,7 +42,7 @@ pub fn get_all_files(arguments: &Arguments) -> Result<Vec<FileInfo>, Box<dyn Err
 
     let all_files: Result<Vec<FileInfo>, Box<dyn Error>> = jwalk
         .into_iter()
-        .filter_map(Result::ok)
+        .map_while(Result::ok)
         .filter_map(|dir_entry| dir_entry.client_state.map(Ok))
         .collect();
 
@@ -65,7 +65,7 @@ pub fn get_all_files(arguments: &Arguments) -> Result<Vec<FileInfo>, Box<dyn Err
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
         // Silently skip directories that the owner of the
         // running process does not have permission to access.
-        .filter_map(Result::ok)
+        .map_while(Result::ok)
         .filter(|entry| entry.file_type().is_file())
         .map(|entry| {
             let path: PathBuf = entry.into_path();
@@ -94,7 +94,7 @@ fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults) {
     dir_entry_results
         .iter_mut()
         //.par_iter_mut() // rayon parallel iterator
-        .filter_map(|result| result.as_mut().ok())
+        .map_while(|result| result.as_mut().ok())
         .filter(|dir_entry| dir_entry.file_type().is_file())
         .for_each(|dir_entry| {
             if let Ok(size_u64) = dir_entry.metadata().map(|m| m.len()) {
