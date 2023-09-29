@@ -8,7 +8,7 @@ use std::{
 };
 
 fn main() -> Result<(), Box<dyn Error>> {
-    set_stack_size();
+    set_env_variables();
     let time = Instant::now();
     let arguments = Arguments::build();
 

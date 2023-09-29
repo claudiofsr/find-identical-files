@@ -41,7 +41,7 @@ Stack size can be changed during compile time.
 
 <https://doc.rust-lang.org/stable/std/thread/index.html#stack-size>
 */
-pub fn set_stack_size() {
+pub fn set_env_variables() {
     std::env::set_var("RUST_MIN_STACK", STACK_SIZE.to_string());
 }
 
