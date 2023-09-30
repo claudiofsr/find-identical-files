@@ -1,15 +1,15 @@
 use crate::{
     Arguments,
+    MyResult,
     args::HashAlgorithm::*,
 };
 use ahash::AHasher;
 use blake3::Hasher as Blake3Hasher;
 use std::{
-    error::Error,
     fs::{self, File},
     hash::Hasher,
     path::{Path, PathBuf},
-    io::{Read, BufRead, BufReader},
+    io::{Read, BufReader},
 };
 use ring::digest::{
     self,
@@ -62,14 +62,14 @@ impl SliceExtension for &[u8] {
 }
 
 pub trait PathBufExtension {
-    fn get_hash(&self, arguments: Option<&Arguments>) -> Result<Option<String>, Box<dyn Error>>;
+    fn get_hash(&self, arguments: Option<&Arguments>) -> MyResult<Option<String>>;
 }
 
 impl PathBufExtension for PathBuf {
     /// Hash the first few bytes or the entire file.
     ///
     /// <https://rust-lang-nursery.github.io/rust-cookbook/cryptography/hashing.html>
-    fn get_hash(&self, arguments:Option<&Arguments>) -> Result<Option<String>, Box<dyn Error>>
+    fn get_hash(&self, arguments:Option<&Arguments>) -> MyResult<Option<String>>
     {
         let mut file: File = open_file(self)?;
 
@@ -80,7 +80,6 @@ impl PathBufExtension for PathBuf {
                 match arguments.algorithm {
                     Ahash  => get_ahash(reader)?,
                     Blake3 => get_blake3(reader)?,
-                    //Blake3 => get_blake3_v2(reader)?,
                     Fxhash => get_fxhash(reader)?,
                     SHA256 => get_sha(reader, &DIGEST_SHA256)?,
                     SHA512 => get_sha(reader, &DIGEST_SHA512)?,
@@ -104,7 +103,7 @@ impl PathBufExtension for PathBuf {
 }
 
 /// File is an object providing access to an open file on the filesystem.
-pub fn open_file<P>(path: P) -> Result<File, Box<dyn Error>>
+pub fn open_file<P>(path: P) -> MyResult<File>
 where
     P: AsRef<Path> + std::marker::Copy + std::fmt::Debug,
 {
@@ -129,7 +128,7 @@ where
 /// Calculates the aHash from Path.
 ///
 /// <https://crates.io/crates/ahash>
-fn get_ahash<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
+fn get_ahash<R: Read>(mut reader: R) -> MyResult<String> {
     let mut buffer = [0_u8; BUFFER_SIZE];
     let mut hasher = AHasher::default();
 
@@ -149,8 +148,7 @@ fn get_ahash<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
 /// Calculates the Blake3 hash from Path.
 ///
 /// <https://docs.rs/blake3/latest/blake3>
-#[allow(dead_code)]
-fn get_blake3<R>(mut reader: R) -> Result<String, Box<dyn Error>>
+fn get_blake3<R>(mut reader: R) -> MyResult<String>
 where
     R: Read
 {
@@ -170,28 +168,6 @@ where
     Ok(hash)
 }
 
-#[allow(dead_code)]
-fn get_blake3_v2<R>(mut reader: R) -> Result<String, Box<dyn Error>>
-where
-    R: Read + BufRead
-{
-    let mut hasher = Blake3Hasher::new();
-
-    loop {
-        let buffer: Vec<u8> = reader.fill_buf()?.to_vec();
-        reader.consume(buffer.len());
-
-        if buffer.is_empty() {
-            break;
-        }
-        hasher.update(&buffer);
-    }
-
-    let hash: String = hasher.finalize().to_string();
-
-    Ok(hash)
-}
-
 /// Calculates the FxHash from Path.
 ///
 /// Fast, non-cryptographic hash function used by rustc and Firefox.
@@ -201,7 +177,7 @@ where
 /// <https://crates.io/crates/rustc-hash>
 ///
 /// <https://nnethercote.github.io/2021/12/08/a-brutally-effective-hash-function-in-rust.html>
-fn get_fxhash<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
+fn get_fxhash<R: Read>(mut reader: R) -> MyResult<String> {
     let mut buffer = [0_u8; BUFFER_SIZE];
     let mut hasher = FxHasher::default();
 
@@ -223,7 +199,7 @@ fn get_fxhash<R: Read>(mut reader: R) -> Result<String, Box<dyn Error>> {
 /// <https://docs.rs/ring/latest/ring/digest/fn.digest.html>
 ///
 /// <https://rust-lang-nursery.github.io/rust-cookbook/cryptography/hashing.html>
-fn get_sha<R: Read>(mut reader: R, algorithm: &'static digest::Algorithm) -> Result<String, Box<dyn Error>> {
+fn get_sha<R: Read>(mut reader: R, algorithm: &'static digest::Algorithm) -> MyResult<String> {
     let mut buffer = [0_u8; BUFFER_SIZE];
     let mut hasher = Context::new(algorithm);
 

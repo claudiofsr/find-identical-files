@@ -1,6 +1,7 @@
 use crate::{
     my_print,
     split_and_insert,
+    MyResult,
     args::{
         Arguments,
         ResultFormat::*,
@@ -15,7 +16,6 @@ use std::{
     ops::Add,
     io::Write,
     iter::Sum,
-    error::Error,
     path::PathBuf,
 };
 use rayon::prelude::*;
@@ -122,8 +122,8 @@ impl GroupInfo {
 
 pub trait Extensions {
     fn sort_duplicate_files(&mut self, arguments: &Arguments);
-    fn print_duplicated_files(&self, arguments: &Arguments) -> Result<(), Box<dyn Error>>;
-    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> Result<TotalInfo, Box<dyn Error>>;
+    fn print_duplicated_files(&self, arguments: &Arguments) -> MyResult<()>;
+    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> MyResult<TotalInfo>;
 }
 
 impl Extensions for [GroupInfo] {
@@ -155,7 +155,7 @@ impl Extensions for [GroupInfo] {
     }
 
     /// Print duplicate files
-    fn print_duplicated_files(&self, arguments: &Arguments) -> Result<(), Box<dyn Error>> {
+    fn print_duplicated_files(&self, arguments: &Arguments) -> MyResult<()> {
         let all_buffer: Vec<u8> = self
             .par_chunks(rayon::current_num_threads())
             .flat_map(|groups_info| {
@@ -173,7 +173,7 @@ impl Extensions for [GroupInfo] {
     }
 
     /// Get Total Info
-    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> Result<TotalInfo, Box<dyn Error>> {
+    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> MyResult<TotalInfo> {
         let mut total_info: TotalInfo = self
             .into_par_iter() // rayon parallel iterator
             .map(TotalInfo::new)
@@ -240,7 +240,7 @@ impl TotalInfo {
         total_info
     }
 
-    pub fn print_sumary(&self, arguments: &Arguments) -> Result<(), Box<dyn Error>> {
+    pub fn print_sumary(&self, arguments: &Arguments) -> MyResult<()> {
         match &arguments.result_format {
             Json => {
                 // Serialize TotalInfo to a JSON string.

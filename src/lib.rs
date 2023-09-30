@@ -11,10 +11,16 @@ pub use self::{
 use std::{
     fs,
     str,
-    error::Error,
     path::PathBuf,
     process::{self, Command},
 };
+
+/**
+Change the alias to `Box<dyn std::error::Error>`.
+
+<https://doc.rust-lang.org/rust-by-example/error/multiple_error_types/reenter_question_mark.html>
+*/
+pub type MyResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
 
 #[cfg(feature = "walkdir")]
 use walkdir::{DirEntry, WalkDir};
@@ -24,7 +30,7 @@ use jwalk::{DirEntry, Parallelism, WalkDirGeneric};
 
 /// Get all files into one vector. Use jwalk.
 #[cfg(not(feature = "walkdir"))]
-pub fn get_all_files(arguments: &Arguments) -> Result<Vec<FileInfo>, Box<dyn Error>> {
+pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 
     let path: PathBuf = get_path(arguments)?;
 
@@ -41,7 +47,7 @@ pub fn get_all_files(arguments: &Arguments) -> Result<Vec<FileInfo>, Box<dyn Err
             analyze_dir_entry_results(dir_entry_results)
         });
 
-    let all_files: Result<Vec<FileInfo>, Box<dyn Error>> = jwalk
+    let all_files: MyResult<Vec<FileInfo>> = jwalk
         .into_iter()
         .map_while(|result| {
             match result {
@@ -60,7 +66,7 @@ pub fn get_all_files(arguments: &Arguments) -> Result<Vec<FileInfo>, Box<dyn Err
 
 /// Get all files into one vector. Use walkdir.
 #[cfg(feature = "walkdir")]
-pub fn get_all_files(arguments: &Arguments) -> Result<Vec<FileInfo>, Box<dyn Error>> {
+pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
     let path: PathBuf = get_path(arguments)?;
 
     let max_depth: usize = match arguments.max_depth {
@@ -68,7 +74,7 @@ pub fn get_all_files(arguments: &Arguments) -> Result<Vec<FileInfo>, Box<dyn Err
         None => std::usize::MAX,
     };
 
-    let all_files: Result<Vec<FileInfo>, Box<dyn Error>> = WalkDir::new(path)
+    let all_files: MyResult<Vec<FileInfo>> = WalkDir::new(path)
         .max_depth(max_depth)
         .into_iter()
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
@@ -147,7 +153,7 @@ pub fn is_hidden(entry: &DirEntry) -> bool {
 }
 
 /// Get path from arguments or from default (current directory).
-pub fn get_path(arguments: &Arguments) -> Result<PathBuf, Box<dyn Error>> {
+pub fn get_path(arguments: &Arguments) -> MyResult<PathBuf> {
     let path: PathBuf = match &arguments.path {
         Some(path) => {
             if std::path::Path::new(path).try_exists()? {
@@ -168,7 +174,7 @@ pub fn get_path(arguments: &Arguments) -> Result<PathBuf, Box<dyn Error>> {
 }
 
 /// Print buffer to stdout
-pub fn my_print(buffer: &[u8]) -> Result<(), Box<dyn Error>> {
+pub fn my_print(buffer: &[u8]) -> MyResult<()> {
     // Converts a slice of bytes to a string slice
     let print_msg = match str::from_utf8(buffer) {
         Ok(valid_uft8) => valid_uft8,

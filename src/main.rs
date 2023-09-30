@@ -2,12 +2,11 @@ use find_duplicate_files::*;
 use hashbrown::HashMap;
 use rayon::prelude::*;
 use std::{
-    error::Error,
     path::PathBuf,
     time::Instant,
 };
 
-fn main() -> Result<(), Box<dyn Error>> {
+fn main() -> MyResult<()> {
     set_env_variables();
     let time = Instant::now();
     let arguments = Arguments::build();
