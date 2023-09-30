@@ -51,12 +51,14 @@ walkdir = ["dep:walkdir"]
 
 [profile.release]
 # https://doc.rust-lang.org/cargo/reference/profiles.html
-strip = true       # Automatically strip symbols from the binary
-opt-level = 3      # all optimizations
-lto = true         # Enable link time optimization
-codegen-units = 1  # Use a single codegen for size optimization
-panic = "abort"    # Remove traceback information
-incremental = true # Save information to disk, improving re-compile times.
+debug = false           # No debug info at all.
+strip = "symbols"       # Strip symbols from a binary.
+opt-level = 3           # All optimizations.
+overflow-checks = true  # Panic will occur on overflow.
+lto = true              # Enable link time optimization.
+codegen-units = 1       # Use a single codegen for size optimization.
+panic = "abort"         # Remove traceback information.
+incremental = true      # Save information to disk, improving re-compile times.
 
 [profile.dev]
-opt-level = 1      # Use slightly better optimizations.
+opt-level = 1           # Use slightly better optimizations.
