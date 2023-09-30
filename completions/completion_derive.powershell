@@ -1,0 +1,56 @@
+
+using namespace System.Management.Automation
+using namespace System.Management.Automation.Language
+
+Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBlock {
+    param($wordToComplete, $commandAst, $cursorPosition)
+
+    $commandElements = $commandAst.CommandElements
+    $command = @(
+        'find_duplicate_files'
+        for ($i = 1; $i -lt $commandElements.Count; $i++) {
+            $element = $commandElements[$i]
+            if ($element -isnot [StringConstantExpressionAst] -or
+                $element.StringConstantType -ne [StringConstantType]::BareWord -or
+                $element.Value.StartsWith('-') -or
+                $element.Value -eq $wordToComplete) {
+                break
+        }
+        $element.Value
+    }) -join ';'
+
+    $completions = @(switch ($command) {
+        'find_duplicate_files' {
+            [CompletionResult]::new('-a', 'a', [CompletionResultType]::ParameterName, 'Choose the hash algorithm')
+            [CompletionResult]::new('--algorithm', 'algorithm', [CompletionResultType]::ParameterName, 'Choose the hash algorithm')
+            [CompletionResult]::new('-g', 'g', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
+            [CompletionResult]::new('--generate', 'generate', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
+            [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Set the maximum depth to search for duplicate files')
+            [CompletionResult]::new('--max_depth', 'max_depth', [CompletionResultType]::ParameterName, 'Set the maximum depth to search for duplicate files')
+            [CompletionResult]::new('-p', 'p', [CompletionResultType]::ParameterName, 'Set the path where to look for duplicate files, otherwise use the current directory')
+            [CompletionResult]::new('--path', 'path', [CompletionResultType]::ParameterName, 'Set the path where to look for duplicate files, otherwise use the current directory')
+            [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Print the result in the chosen format')
+            [CompletionResult]::new('--result_format', 'result_format', [CompletionResultType]::ParameterName, 'Print the result in the chosen format')
+            [CompletionResult]::new('-c', 'c', [CompletionResultType]::ParameterName, 'Clear the terminal screen before listing the duplicate files')
+            [CompletionResult]::new('--clear_terminal', 'clear_terminal', [CompletionResultType]::ParameterName, 'Clear the terminal screen before listing the duplicate files')
+            [CompletionResult]::new('-f', 'f', [CompletionResultType]::ParameterName, 'Prints full path of duplicate files, otherwise relative path')
+            [CompletionResult]::new('--full_path', 'full_path', [CompletionResultType]::ParameterName, 'Prints full path of duplicate files, otherwise relative path')
+            [CompletionResult]::new('-o', 'o', [CompletionResultType]::ParameterName, 'Omit hidden files (starts with ''.''), otherwise search all files')
+            [CompletionResult]::new('--omit_hidden', 'omit_hidden', [CompletionResultType]::ParameterName, 'Omit hidden files (starts with ''.''), otherwise search all files')
+            [CompletionResult]::new('-s', 's', [CompletionResultType]::ParameterName, 'Sort result by file size, otherwise sort by number of duplicate files')
+            [CompletionResult]::new('--sort', 'sort', [CompletionResultType]::ParameterName, 'Sort result by file size, otherwise sort by number of duplicate files')
+            [CompletionResult]::new('-t', 't', [CompletionResultType]::ParameterName, 'Show total execution time')
+            [CompletionResult]::new('--time', 'time', [CompletionResultType]::ParameterName, 'Show total execution time')
+            [CompletionResult]::new('-v', 'v', [CompletionResultType]::ParameterName, 'Show intermediate runtime messages')
+            [CompletionResult]::new('--verbose', 'verbose', [CompletionResultType]::ParameterName, 'Show intermediate runtime messages')
+            [CompletionResult]::new('-h', 'h', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('--help', 'help', [CompletionResultType]::ParameterName, 'Print help (see more with ''--help'')')
+            [CompletionResult]::new('-V', 'V ', [CompletionResultType]::ParameterName, 'Print version')
+            [CompletionResult]::new('--version', 'version', [CompletionResultType]::ParameterName, 'Print version')
+            break
+        }
+    })
+
+    $completions.Where{ $_.CompletionText -like "$wordToComplete*" } |
+        Sort-Object -Property ListItemText
+}
