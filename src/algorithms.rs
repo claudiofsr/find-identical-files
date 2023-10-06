@@ -1,7 +1,7 @@
 use crate::{
     Arguments,
     MyResult,
-    args::HashAlgorithm::*,
+    args::Algorithm::*,
 };
 use ahash::AHasher;
 use blake3::Hasher as Blake3Hasher;

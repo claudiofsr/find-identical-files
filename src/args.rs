@@ -1,11 +1,12 @@
 use clap::{CommandFactory, Parser, ValueEnum};
 use clap_complete::{generate, Generator, Shell};
+use serde::Serialize;
 use std::{io, fmt, path::PathBuf, process};
 
 use crate::clear_terminal_screen;
 
-#[derive(Debug, Clone, ValueEnum)]
-pub enum HashAlgorithm {
+#[derive(Debug, Clone, Copy, ValueEnum, Serialize)]
+pub enum Algorithm {
     Ahash,
     Blake3,
     Fxhash,
@@ -14,11 +15,15 @@ pub enum HashAlgorithm {
 }
 
 /// Display an enum in lowercase
-impl fmt::Display for HashAlgorithm {
+impl fmt::Display for Algorithm {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
         let field: String = format!("{self:?}");
         write!(formatter, "{}", field.to_lowercase())
     }
+}
+
+impl Default for Algorithm {
+    fn default() -> Self { Self::Blake3 }
 }
 
 #[derive(Debug, Clone, ValueEnum)]
@@ -77,8 +82,8 @@ const APPLET_TEMPLATE: &str = "\
 )]
 pub struct Arguments {
     /// Choose the hash algorithm.
-    #[arg(short('a'), long("algorithm"), value_enum, default_value_t = HashAlgorithm::Blake3)]
-    pub algorithm: HashAlgorithm,
+    #[arg(short('a'), long("algorithm"), value_enum, default_value_t = Algorithm::default())]
+    pub algorithm: Algorithm,
 
     /// Clear the terminal screen before listing the duplicate files.
     #[arg(short('c'), long("clear_terminal"), default_value_t = false)] // action = ArgAction::SetTrue

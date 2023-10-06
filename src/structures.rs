@@ -3,8 +3,9 @@ use crate::{
     split_and_insert,
     MyResult,
     args::{
+        Algorithm,
         Arguments,
-        ResultFormat::*,
+        ResultFormat::*, 
     },
 };
 use serde::{
@@ -13,9 +14,7 @@ use serde::{
 };
 use std::{
     thread,
-    ops::Add,
     io::Write,
-    iter::Sum,
     path::PathBuf,
 };
 use rayon::prelude::*;
@@ -73,7 +72,7 @@ pub struct GroupInfo {
 pub struct TotalInfo {
     /// Hashing algorithm
     #[serde(rename = "Hashing algorithm")]
-    pub algorithm: String,
+    pub algorithm: Algorithm,
     /// Total number of files found in the directory
     #[serde(rename = "Total number of files")]
     pub total_num_files: usize,
@@ -174,52 +173,19 @@ impl Extensions for [GroupInfo] {
 
     /// Get Total Info
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> MyResult<TotalInfo> {
-        let mut total_info: TotalInfo = self
-            .into_par_iter() // rayon parallel iterator
-            .map(TotalInfo::new)
-            .sum();
-
-        total_info.algorithm = arguments.algorithm.to_string();
-        total_info.total_num_files = total_num_files;
+        let total_info: TotalInfo = TotalInfo {
+            algorithm: arguments.algorithm,
+            total_num_files,
+            total_num_duplicate: self.into_par_iter().map(|group_info| group_info.num_file).sum(),
+            total_num_hashes: self.len(),
+            total_size: self.into_par_iter().map(|group_info| group_info.sum_size).sum(),
+        };
 
         Ok(total_info)
     }
 }
 
-/// Implement sum of TotalInfo elements for rayon usage
-impl Sum for TotalInfo {
-    fn sum<I>(iter: I) -> Self
-    where
-        I: Iterator<Item = Self>,
-    {
-        iter.fold(Self::default(), |acc, x| acc + x)
-    }
-}
-
-impl Add for TotalInfo {
-    type Output = Self;
-    fn add(self, other: Self) -> Self {
-        Self {
-            algorithm:           self.algorithm,
-            total_num_files:     self.total_num_files     + other.total_num_files,
-            total_num_duplicate: self.total_num_duplicate + other.total_num_duplicate,
-            total_num_hashes:    self.total_num_hashes    + other.total_num_hashes,
-            total_size:          self.total_size          + other.total_size,
-        }
-    }
-}
-
 impl TotalInfo {
-    pub fn new(group_info: &GroupInfo) -> Self {
-        TotalInfo {
-            algorithm: "".to_string(),
-            total_num_files: 1,
-            total_num_duplicate: group_info.num_file,
-            total_num_hashes: 1,
-            total_size: group_info.sum_size,
-        }
-    }
-
     /// Print the duplicated files and get the summary information.
     pub fn get_summary(duplicate_hash: &[GroupInfo], arguments: &Arguments, total_num_files: usize) -> Self {
         let (result_display, result_total_info) = thread::scope(|s| {
