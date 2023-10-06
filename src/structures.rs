@@ -122,7 +122,7 @@ impl GroupInfo {
 pub trait Extensions {
     fn sort_duplicate_files(&mut self, arguments: &Arguments);
     fn print_duplicated_files(&self, arguments: &Arguments) -> MyResult<()>;
-    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> MyResult<TotalInfo>;
+    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo;
 }
 
 impl Extensions for [GroupInfo] {
@@ -172,16 +172,14 @@ impl Extensions for [GroupInfo] {
     }
 
     /// Get Total Info
-    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> MyResult<TotalInfo> {
-        let total_info: TotalInfo = TotalInfo {
+    fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo {
+        TotalInfo {
             algorithm: arguments.algorithm,
             total_num_files,
             total_num_duplicate: self.into_par_iter().map(|group_info| group_info.num_file).sum(),
             total_num_hashes: self.len(),
             total_size: self.into_par_iter().map(|group_info| group_info.sum_size).sum(),
-        };
-
-        Ok(total_info)
+        }
     }
 }
 
@@ -190,7 +188,7 @@ impl TotalInfo {
     pub fn get_summary(duplicate_hash: &[GroupInfo], arguments: &Arguments, total_num_files: usize) -> Self {
         let (result_display, result_total_info) = thread::scope(|s| {
             let thread_a = s.spawn(|| duplicate_hash.print_duplicated_files(arguments).unwrap());
-            let thread_b = s.spawn(|| duplicate_hash.get_total_info(arguments, total_num_files).unwrap());
+            let thread_b = s.spawn(|| duplicate_hash.get_total_info(arguments, total_num_files));
 
             // Wait for background thread to complete.
             // Call join() on each handle to make sure all the threads finish.
