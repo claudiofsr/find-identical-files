@@ -176,8 +176,8 @@ impl Extensions for [GroupInfo] {
         
         // Takes two closures and potentially runs them in parallel.
         let (total_num_duplicate, total_size) = rayon::join(
-            || self.into_par_iter().map(|group_info| group_info.num_file).sum(), 
-            || self.into_par_iter().map(|group_info| group_info.sum_size).sum(),
+            || self.par_iter().map(|group_info| group_info.num_file).sum(),
+            || self.par_iter().map(|group_info| group_info.sum_size).sum(),
         );
 
         TotalInfo {
