@@ -173,12 +173,19 @@ impl Extensions for [GroupInfo] {
 
     /// Get Total Info
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo {
+        
+        // Takes two closures and potentially runs them in parallel.
+        let (total_num_duplicate, total_size) = rayon::join(
+            || self.into_par_iter().map(|group_info| group_info.num_file).sum(), 
+            || self.into_par_iter().map(|group_info| group_info.sum_size).sum(),
+        );
+
         TotalInfo {
             algorithm: arguments.algorithm,
             total_num_files,
-            total_num_duplicate: self.into_par_iter().map(|group_info| group_info.num_file).sum(),
+            total_num_duplicate,
             total_num_hashes: self.len(),
-            total_size: self.into_par_iter().map(|group_info| group_info.sum_size).sum(),
+            total_size,
         }
     }
 }
