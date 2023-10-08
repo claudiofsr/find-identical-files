@@ -34,7 +34,7 @@ pub enum ResultFormat {
 }
 
 // https://stackoverflow.com/questions/74068168/clap-rs-not-printing-colors-during-help
-pub fn get_styles() -> clap::builder::Styles {
+fn get_styles() -> clap::builder::Styles {
 
     let cyan   = anstyle::Color::Ansi(anstyle::AnsiColor::Cyan);
     let green  = anstyle::Color::Ansi(anstyle::AnsiColor::Green);

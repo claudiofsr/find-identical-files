@@ -4,7 +4,7 @@ mod structures;
 
 pub use self::{
     algorithms::*,
-    args::{Arguments, ResultFormat::*},
+    args::*,
     structures::*,
 };
 
@@ -13,6 +13,8 @@ use std::{
     str,
     path::PathBuf,
     process::{self, Command},
+    //cmp::Ordering,
+    //os::unix::prelude::MetadataExt,
 };
 
 /**
@@ -44,7 +46,7 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
         .parallelism(Parallelism::RayonNewPool(rayon::current_num_threads()))
         .skip_hidden(arguments.omit_hidden)
         .process_read_dir(|_depth, _path, _read_dir_state, dir_entry_results| {
-            analyze_dir_entry_results(dir_entry_results)
+            analyze_dir_entry_results(dir_entry_results);
         });
 
     let all_files: MyResult<Vec<FileInfo>> = jwalk
@@ -109,10 +111,25 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 #[cfg(not(feature = "walkdir"))]
 type JwalkResults = Vec<Result<DirEntry<((), Option<FileInfo>)>, jwalk::Error>>;
 
-// https://docs.rs/jwalk/latest/jwalk/
+// https://docs.rs/jwalk
 // https://github.com/Byron/jwalk/blob/main/examples/du.rs
 #[cfg(not(feature = "walkdir"))]
 fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults) {
+
+    // inode: “index nodes”
+    // https://doc.rust-lang.org/std/os/unix/fs/trait.MetadataExt.html#tymethod.ino
+
+    /*
+    // 1. Custom sort
+    dir_entry_results
+    .sort_by(|a, b| match (a, b) {
+        (Ok(a), Ok(b)) => a.metadata().map(|m| m.ino()).unwrap_or(0).cmp(&b.metadata().map(|m| m.ino()).unwrap_or(0)),
+        (Ok(_), Err(_)) => Ordering::Less,
+        (Err(_), Ok(_)) => Ordering::Greater,
+        (Err(_), Err(_)) => Ordering::Equal,
+    });
+    */
+
     // 3. Custom skip
     dir_entry_results
         .iter_mut()

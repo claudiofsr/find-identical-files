@@ -62,18 +62,18 @@ impl SliceExtension for &[u8] {
 }
 
 pub trait PathBufExtension {
-    fn get_hash(&self, arguments: Option<&Arguments>) -> MyResult<Option<String>>;
+    fn get_hash(&self, opt_arguments: Option<&Arguments>) -> MyResult<Option<String>>;
 }
 
 impl PathBufExtension for PathBuf {
     /// Hash the first few bytes or the entire file.
     ///
     /// <https://rust-lang-nursery.github.io/rust-cookbook/cryptography/hashing.html>
-    fn get_hash(&self, arguments:Option<&Arguments>) -> MyResult<Option<String>>
+    fn get_hash(&self, opt_arguments:Option<&Arguments>) -> MyResult<Option<String>>
     {
         let mut file: File = open_file(self)?;
 
-        let hash: String = match arguments {
+        let hash: String = match opt_arguments {
             Some(arguments) => {
                 // Hash the entire file with your chosen hashing algorithm.
                 let reader: BufReader<File> = BufReader::with_capacity(BUFFER_SIZE, file);

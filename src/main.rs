@@ -93,10 +93,10 @@ fn get_grouped_files(files_info: &[FileInfo]) -> Vec<GroupInfo> {
 
 /// Get duplicate files from hashing first few bytes or whole file.
 ///
-/// If arguments is None, get the hash of the first few bytes.
+/// If opt_arguments is None, get the hash of the first few bytes.
 ///
-/// If arguments are Some, get whole file hash.
-fn get_duplicate_files(duplicate_size: &[GroupInfo], arguments: Option<&Arguments>) -> Vec<GroupInfo> {
+/// If opt_arguments are Some, get whole file hash.
+fn get_duplicate_files(duplicate_size: &[GroupInfo], opt_arguments: Option<&Arguments>) -> Vec<GroupInfo> {
     let duplicate_hash: Vec<GroupInfo> = duplicate_size
         .par_iter() // rayon parallel iterator
         .filter_map(|group_info| {
@@ -108,7 +108,7 @@ fn get_duplicate_files(duplicate_size: &[GroupInfo], arguments: Option<&Argument
                     FileInfo {
                         key: Key {
                             size: group_info.key.size,
-                            hash: path.get_hash(arguments).expect("get_hash() failed!"),
+                            hash: path.get_hash(opt_arguments).expect("get_hash() failed!"),
                         },
                         path,
                     }
