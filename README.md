@@ -20,7 +20,7 @@ Hash algorithm options are:
 5. [sha512](https://crates.io/crates/ring)
 
 find_duplicate_files just reads the files and never changes their contents.
-See the function [fn open_file()](https://docs.rs/find_duplicate_files/0.17.1/src/find_duplicate_files/algorithms.rs.html#106-126) to verify.
+See the function [fn open_file()](https://docs.rs/find_duplicate_files/latest/src/find_duplicate_files/algorithms.rs.html#106-126) to verify.
 
 ## Usage examples
 
