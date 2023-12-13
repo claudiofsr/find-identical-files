@@ -5,9 +5,13 @@ use std::{io, fmt, path::PathBuf, process};
 
 use crate::clear_terminal_screen;
 
-#[derive(Debug, Clone, Copy, ValueEnum, Serialize)]
+// An attribute #[default], usable on enum unit variants, is introduced
+// thereby allowing some enums to work with #[derive(Default)].
+// <https://rust-lang.github.io/rfcs/3107-derive-default-enum.html>
+#[derive(Debug, Default, Clone, Copy, ValueEnum, Serialize)]
 pub enum Algorithm {
     Ahash,
+    #[default]
     Blake3,
     Fxhash,
     SHA256,
@@ -20,10 +24,6 @@ impl fmt::Display for Algorithm {
         let field: String = format!("{self:?}");
         write!(formatter, "{}", field.to_lowercase())
     }
-}
-
-impl Default for Algorithm {
-    fn default() -> Self { Self::Blake3 }
 }
 
 #[derive(Debug, Clone, ValueEnum)]

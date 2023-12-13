@@ -91,7 +91,7 @@ fn add_thousands_separator<S>(size: &usize, serializer: S) -> Result<S::Ok, S::E
 where
     S: Serializer,
 {
-    serializer.collect_str(&format_args!("{} bytes", &split_and_insert(*size, '.')))
+    serializer.collect_str(&format!("{} bytes", &split_and_insert(*size, '.')))
 }
 
 impl GroupInfo {

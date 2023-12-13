@@ -1,7 +1,7 @@
 [package]
 name = "find_duplicate_files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
-version = "0.16.5"
+version = "0.16.6"
 repository = "https://github.com/claudiofsr/find_duplicate_files"
 homepage = "https://github.com/claudiofsr/find_duplicate_files"
 documentation = "https://docs.rs/find_duplicate_files/latest/find_duplicate_files/"
