@@ -8,7 +8,9 @@ use crate::clear_terminal_screen;
 // An attribute #[default], usable on enum unit variants, is introduced
 // thereby allowing some enums to work with #[derive(Default)].
 // <https://rust-lang.github.io/rfcs/3107-derive-default-enum.html>
+// <https://serde.rs/attr-rename.html>
 #[derive(Debug, Default, Clone, Copy, ValueEnum, Serialize)]
+#[serde(rename_all = "PascalCase")]
 pub enum Algorithm {
     Ahash,
     #[default]
@@ -18,18 +20,29 @@ pub enum Algorithm {
     SHA512,
 }
 
-/// Display an enum in lowercase
+/// Display an enum Algorithm in serde PascalCase.
+/// 
+/// Rename all the fields according to the given case convention.
+/// 
+/// <https://docs.rs/serde/latest/serde/ser/trait.Serializer.html#method.collect_str>
+/// 
+/// <https://serde.rs/container-attrs.html>
 impl fmt::Display for Algorithm {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-        let field: String = format!("{self:?}");
-        write!(formatter, "{}", field.to_lowercase())
+
+        // Display an enum in lowercase
+        // let field: String = format!("{self:?}");
+        // write!(formatter, "{}", field.to_lowercase())
+        
+        self.serialize(formatter)
     }
 }
 
-#[derive(Debug, Clone, ValueEnum)]
+#[derive(Debug, Default, Clone, ValueEnum, Serialize)]
 pub enum ResultFormat {
     Json,
     Yaml,
+    #[default]
     Personal,
 }
 
@@ -183,7 +196,7 @@ pub struct Arguments {
     pub path: Option<PathBuf>,
 
     /// Print the result in the chosen format.
-    #[arg(short('r'), long("result_format"), value_enum, default_value_t = ResultFormat::Personal)]
+    #[arg(short('r'), long("result_format"), value_enum, default_value_t = ResultFormat::default())]
     pub result_format: ResultFormat,
 
     /// Sort result by file size, otherwise sort by number of duplicate files.

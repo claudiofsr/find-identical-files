@@ -3,8 +3,9 @@ Find duplicate files according to their size and hashing algorithm.
 
 "A hash function is a mathematical algorithm that takes an input (in this case, a file)
 and produces a fixed-size string of characters, known as a hash value or checksum.
-This hash value is unique to the input data, meaning even a slight change
-in the input will result in a completely different hash value."
+The hash value acts as a summary representation of the original input.
+This hash value is unique (disregarding unlikely [collisions](https://en.wikipedia.org/wiki/Hash_collision)) 
+to the input data, meaning even a slight change in the input will result in a completely different hash value."
 
 Hash algorithm options are:
 
@@ -17,6 +18,9 @@ Hash algorithm options are:
 4. [sha256](https://crates.io/crates/ring)
 
 5. [sha512](https://crates.io/crates/ring)
+
+find_duplicate_files just reads the files and never changes their contents.
+See the function [fn open_file()](https://docs.rs/find_duplicate_files/0.16.6/src/find_duplicate_files/algorithms.rs.html#106-126) to verify.
 
 ## Usage examples
 
