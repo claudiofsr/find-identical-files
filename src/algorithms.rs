@@ -109,7 +109,7 @@ where
 {
     let file: File = match fs::OpenOptions::new()
         .read(true)
-        .write(false)
+        .write(false) // This option, when false, will indicate that the file should not be writable if opened.
         .create(false)
         .open(path)
         {
