@@ -17,15 +17,14 @@ use std::{
     //os::unix::prelude::MetadataExt,
 };
 
-/**
-Change the alias to `Box<dyn std::error::Error>`.
-
-<https://doc.rust-lang.org/rust-by-example/error/multiple_error_types/reenter_question_mark.html>
-*/
-pub type MyResult<T> = std::result::Result<T, Box<dyn std::error::Error>>;
+pub type MyError = Box<dyn std::error::Error + Send + Sync>;
+pub type MyResult<T> = Result<T, MyError>;
 
 #[cfg(feature = "walkdir")]
 use walkdir::{DirEntry, WalkDir};
+
+#[cfg(feature = "walkdir")]
+use rayon::prelude::*;
 
 #[cfg(not(feature = "walkdir"))]
 use jwalk::{DirEntry, Parallelism, WalkDirGeneric};
@@ -76,7 +75,7 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
         None => std::usize::MAX,
     };
 
-    let all_files: MyResult<Vec<FileInfo>> = WalkDir::new(path)
+    let entries: Vec<DirEntry> = WalkDir::new(path)
         .max_depth(max_depth)
         .into_iter()
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
@@ -92,6 +91,12 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
             }
         })
         .filter(|entry| entry.file_type().is_file())
+        .collect();
+
+
+    let all_files: MyResult<Vec<FileInfo>> = entries
+        .into_par_iter() // rayon parallel iterator
+        //.iter()
         .map(|entry| {
             let path: PathBuf = entry.into_path();
             let metadata = fs::metadata(path.clone())?;
