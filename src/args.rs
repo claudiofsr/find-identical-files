@@ -21,11 +21,11 @@ pub enum Algorithm {
 }
 
 /// Display an enum Algorithm in serde PascalCase.
-/// 
+///
 /// Rename all the fields according to the given case convention.
-/// 
+///
 /// <https://docs.rs/serde/latest/serde/ser/trait.Serializer.html#method.collect_str>
-/// 
+///
 /// <https://serde.rs/container-attrs.html>
 impl fmt::Display for Algorithm {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
@@ -33,7 +33,7 @@ impl fmt::Display for Algorithm {
         // Display an enum in lowercase
         // let field: String = format!("{self:?}");
         // write!(formatter, "{}", field.to_lowercase())
-        
+
         self.serialize(formatter)
     }
 }

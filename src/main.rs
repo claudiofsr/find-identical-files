@@ -1,10 +1,5 @@
 use find_duplicate_files::*;
-use hashbrown::HashMap;
-use rayon::prelude::*;
-use std::{
-    path::PathBuf,
-    time::Instant,
-};
+use std::time::Instant;
 
 fn main() -> MyResult<()> {
     set_env_variables();
@@ -56,75 +51,4 @@ fn main() -> MyResult<()> {
     }
 
     Ok(())
-}
-
-/// Get two or more files with same key: (size, Option<hash>)
-fn get_grouped_files(files_info: &[FileInfo]) -> Vec<GroupInfo> {
-    let mut group_by: HashMap<Key, Vec<PathBuf>> = HashMap::new();
-
-    files_info.iter().for_each(|file_info| {
-        group_by
-            // key: (size, Option<hash>), value: paths
-            .entry(file_info.key.clone())
-            // If there's no entry for the key, create a new Vec and return a mutable ref to it
-            .or_default()
-            // and insert the item onto the Vec
-            .push(file_info.path.clone())
-    });
-
-    // Converting group_by to vector
-    let grouped_files: Vec<GroupInfo> = group_by
-        .into_par_iter() // rayon parallel iterator
-        .filter(|(_key, paths)| paths.len() > 1) // filter duplicate files with same key
-        .map(|(key, paths)| {
-            let num_file = paths.len();
-            let sum_size = key.size * num_file;
-            GroupInfo {
-                key,
-                paths,
-                num_file,
-                sum_size,
-            }
-        })
-        .collect();
-
-    grouped_files
-}
-
-/// Get duplicate files from hashing first few bytes or whole file.
-///
-/// If opt_arguments is None, get the hash of the first few bytes.
-///
-/// If opt_arguments are Some, get whole file hash.
-fn get_duplicate_files(duplicate_size: &[GroupInfo], opt_arguments: Option<&Arguments>) -> Vec<GroupInfo> {
-    let duplicate_hash: Vec<GroupInfo> = duplicate_size
-        .par_iter() // rayon parallel iterator
-        .filter_map(|group_info| {
-            let hashed_files: Vec<FileInfo> = group_info
-                .paths
-                .clone()
-                .into_par_iter() // rayon parallel iterator
-                .map(|path| {
-                    FileInfo {
-                        key: Key {
-                            size: group_info.key.size,
-                            hash: path.get_hash(opt_arguments).expect("get_hash() failed!"),
-                        },
-                        path,
-                    }
-                })
-                .collect();
-
-            let duplicate_hash: Vec<GroupInfo> = get_grouped_files(&hashed_files);
-
-            if !duplicate_hash.is_empty() {
-                Some(duplicate_hash)
-            } else {
-                None
-            }
-        })
-        .flatten()
-        .collect();
-
-    duplicate_hash
 }

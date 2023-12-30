@@ -2,177 +2,36 @@ mod algorithms;
 mod args;
 mod structures;
 
+#[cfg(feature = "walkdir")]
+mod with_walkdir;
+
+// default: use jwalk
+#[cfg(not(feature = "walkdir"))]
+mod with_jwalk;
+
+#[cfg(feature = "walkdir")]
+pub use with_walkdir::*;
+
+#[cfg(not(feature = "walkdir"))]
+pub use with_jwalk::*;
+
 pub use self::{
     algorithms::*,
     args::*,
     structures::*,
 };
 
+use hashbrown::HashMap;
+use rayon::prelude::*;
 use std::{
     fs,
     str,
     path::PathBuf,
-    process::{self, Command},
-    //cmp::Ordering,
-    //os::unix::prelude::MetadataExt,
+    process::Command,
 };
 
 pub type MyError = Box<dyn std::error::Error + Send + Sync>;
 pub type MyResult<T> = Result<T, MyError>;
-
-#[cfg(feature = "walkdir")]
-use walkdir::{DirEntry, WalkDir};
-
-#[cfg(feature = "walkdir")]
-use rayon::prelude::*;
-
-#[cfg(not(feature = "walkdir"))]
-use jwalk::{DirEntry, Parallelism, WalkDirGeneric};
-
-/// Get all files into one vector. Use jwalk.
-#[cfg(not(feature = "walkdir"))]
-pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
-
-    let path: PathBuf = get_path(arguments)?;
-
-    let max_depth: usize = match arguments.max_depth {
-        Some(depth) => depth,
-        None => std::usize::MAX,
-    };
-
-    let jwalk = WalkDirGeneric::<((), Option<FileInfo>)>::new(path)
-        .max_depth(max_depth)
-        .parallelism(Parallelism::RayonNewPool(rayon::current_num_threads()))
-        .skip_hidden(arguments.omit_hidden)
-        .process_read_dir(|_depth, _path, _read_dir_state, dir_entry_results| {
-            analyze_dir_entry_results(dir_entry_results);
-        });
-
-    let all_files: MyResult<Vec<FileInfo>> = jwalk
-        .into_iter()
-        .map_while(|result| {
-            match result {
-                Ok(dir_entry) => Some(dir_entry),
-                Err(why) => {
-                    eprintln!("Error: {why}");
-                    process::exit(1)
-                }
-            }
-        })
-        .filter_map(|dir_entry| dir_entry.client_state.map(Ok))
-        .collect();
-
-    all_files
-}
-
-/// Get all files into one vector. Use walkdir.
-#[cfg(feature = "walkdir")]
-pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
-    let path: PathBuf = get_path(arguments)?;
-
-    let max_depth: usize = match arguments.max_depth {
-        Some(depth) => depth,
-        None => std::usize::MAX,
-    };
-
-    let entries: Vec<DirEntry> = WalkDir::new(path)
-        .max_depth(max_depth)
-        .into_iter()
-        .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
-        // Silently skip directories that the owner of the
-        // running process does not have permission to access.
-        .map_while(|result| {
-            match result {
-                Ok(dir_entry) => Some(dir_entry),
-                Err(why) => {
-                    eprintln!("Error: {why}");
-                    process::exit(1)
-                }
-            }
-        })
-        .filter(|entry| entry.file_type().is_file())
-        .collect();
-
-
-    let all_files: MyResult<Vec<FileInfo>> = entries
-        .into_par_iter() // rayon parallel iterator
-        //.iter()
-        .map(|entry| {
-            let path: PathBuf = entry.into_path();
-            let metadata = fs::metadata(path.clone())?;
-            Ok(FileInfo {
-                key: Key {
-                    size: usize::try_from(metadata.len())?,
-                    hash: None,
-                },
-                path,
-            })
-        })
-        .collect();
-
-    all_files
-}
-
-#[cfg(not(feature = "walkdir"))]
-type JwalkResults = Vec<Result<DirEntry<((), Option<FileInfo>)>, jwalk::Error>>;
-
-// https://docs.rs/jwalk
-// https://github.com/Byron/jwalk/blob/main/examples/du.rs
-#[cfg(not(feature = "walkdir"))]
-fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults) {
-
-    // inode: “index nodes”
-    // https://doc.rust-lang.org/std/os/unix/fs/trait.MetadataExt.html#tymethod.ino
-
-    /*
-    // 1. Custom sort
-    dir_entry_results
-    .sort_by(|a, b| match (a, b) {
-        (Ok(a), Ok(b)) => a.metadata().map(|m| m.ino()).unwrap_or(0).cmp(&b.metadata().map(|m| m.ino()).unwrap_or(0)),
-        (Ok(_), Err(_)) => Ordering::Less,
-        (Err(_), Ok(_)) => Ordering::Greater,
-        (Err(_), Err(_)) => Ordering::Equal,
-    });
-    */
-
-    // 3. Custom skip
-    dir_entry_results
-        .iter_mut()
-        //.par_iter_mut() // rayon parallel iterator
-        .map_while(|result| {
-            match result {
-                Ok(dir_entry) => Some(dir_entry),
-                Err(why) => {
-                    eprintln!("Error: {why}");
-                    process::exit(1)
-                }
-            }
-        })
-        .filter(|dir_entry| dir_entry.file_type().is_file())
-        .for_each(|dir_entry| {
-            if let Ok(size_u64) = dir_entry.metadata().map(|m| m.len()) {
-                dir_entry.client_state = Some(FileInfo {
-                    key: Key {
-                        size: usize::try_from(size_u64).expect("try u64 -> usize failed!"),
-                        hash: None,
-                    },
-                    path: dir_entry.path(),
-                });
-            }
-        });
-}
-
-// https://github.com/BurntSushi/walkdir
-// https://rust-lang-nursery.github.io/rust-cookbook/file/dir.html
-/// Identify hidden files efficiently on unix.
-#[cfg(feature = "walkdir")]
-pub fn is_hidden(entry: &DirEntry) -> bool {
-    entry
-        .file_name()
-        .to_str()
-        .map(|s| entry.depth() != 0 && s.starts_with('.'))
-        .unwrap_or(false)
-}
 
 /// Get path from arguments or from default (current directory).
 pub fn get_path(arguments: &Arguments) -> MyResult<PathBuf> {
@@ -210,6 +69,77 @@ pub fn my_print(buffer: &[u8]) -> MyResult<()> {
     // Print to stdout
     print!("{print_msg}");
     Ok(())
+}
+
+/// Get two or more files with same key: (size, Option<hash>)
+pub fn get_grouped_files(files_info: &[FileInfo]) -> Vec<GroupInfo> {
+    let mut group_by: HashMap<Key, Vec<PathBuf>> = HashMap::new();
+
+    files_info.iter().for_each(|file_info| {
+        group_by
+            // key: (size, Option<hash>), value: paths
+            .entry(file_info.key.clone())
+            // If there's no entry for the key, create a new Vec and return a mutable ref to it
+            .or_default()
+            // and insert the item onto the Vec
+            .push(file_info.path.clone())
+    });
+
+    // Converting group_by to vector
+    let grouped_files: Vec<GroupInfo> = group_by
+        .into_par_iter() // rayon parallel iterator
+        .filter(|(_key, paths)| paths.len() > 1) // filter duplicate files with same key
+        .map(|(key, paths)| {
+            let num_file = paths.len();
+            let sum_size = key.size * num_file;
+            GroupInfo {
+                key,
+                paths,
+                num_file,
+                sum_size,
+            }
+        })
+        .collect();
+
+    grouped_files
+}
+
+/// Get duplicate files from hashing first few bytes or whole file.
+///
+/// If opt_arguments is None, get the hash of the first few bytes.
+///
+/// If opt_arguments are Some, get whole file hash.
+pub fn get_duplicate_files(duplicate_size: &[GroupInfo], opt_arguments: Option<&Arguments>) -> Vec<GroupInfo> {
+    let duplicate_hash: Vec<GroupInfo> = duplicate_size
+        .par_iter() // rayon parallel iterator
+        .filter_map(|group_info| {
+            let hashed_files: Vec<FileInfo> = group_info
+                .paths
+                .clone()
+                .into_par_iter() // rayon parallel iterator
+                .map(|path| {
+                    FileInfo {
+                        key: Key {
+                            size: group_info.key.size,
+                            hash: path.get_hash(opt_arguments).expect("get_hash() failed!"),
+                        },
+                        path,
+                    }
+                })
+                .collect();
+
+            let duplicate_hash: Vec<GroupInfo> = get_grouped_files(&hashed_files);
+
+            if !duplicate_hash.is_empty() {
+                Some(duplicate_hash)
+            } else {
+                None
+            }
+        })
+        .flatten()
+        .collect();
+
+    duplicate_hash
 }
 
 // https://stackoverflow.com/questions/34837011/how-to-clear-the-terminal-screen-in-rust-after-a-new-line-is-printed
