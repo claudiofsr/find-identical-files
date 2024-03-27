@@ -30,11 +30,11 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
         //.iter()
         .map(|entry| {
             let metadata = entry.metadata()?;
+            let size_u64: u64 = metadata.len();
+            //let inode_number: u64 = metadata.ino();
+            let key = Key::new(size_u64, None);
             Ok(FileInfo {
-                key: Key {
-                    size: usize::try_from(metadata.len())?,
-                    hash: None,
-                },
+                key,
                 path: entry.into_path(),
             })
         })

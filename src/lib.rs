@@ -122,11 +122,12 @@ pub fn get_duplicate_files(duplicate_size: &[GroupInfo], opt_arguments: Option<&
                 .clone()
                 .into_par_iter() // rayon parallel iterator
                 .map(|path| {
+                    let mut key = group_info.key.clone();
+                    if let Ok(hash) = path.get_hash(opt_arguments) {
+                        key.set_hash(hash);
+                    }
                     FileInfo {
-                        key: Key {
-                            size: group_info.key.size,
-                            hash: path.get_hash(opt_arguments).expect("get_hash() failed!"),
-                        },
+                        key,
                         path,
                     }
                 })
@@ -201,6 +202,17 @@ where
     S: Serializer,
 {
     serializer.collect_str(&format!("{} bytes", &split_and_insert(*size, '.')))
+}
+
+/// Try converting type T to usize
+pub fn to_usize<T>(value: T) -> usize
+where 
+    T: TryInto<usize>
+{
+    match value.try_into() {
+        Ok(v) => v,
+        Err(_) => panic!("Error: try convert value -> usize!"),
+    }
 }
 
 #[cfg(test)]

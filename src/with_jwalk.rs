@@ -92,11 +92,9 @@ fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults) {
             if let Ok(metadata) = dir_entry.metadata() {
                 let size_u64: u64 = metadata.len();
                 //let inode_number: u64 = metadata.ino();
+                let key = Key::new(size_u64, None);
                 dir_entry.client_state = Some(FileInfo {
-                    key: Key {
-                        size: usize::try_from(size_u64).expect("try u64 -> usize failed!"),
-                        hash: None,
-                    },
+                    key,
                     path: dir_entry.path(),
                 });
             }

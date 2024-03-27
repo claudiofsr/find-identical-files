@@ -2,6 +2,7 @@ use find_duplicate_files::*;
 use std::time::Instant;
 
 /**
+    cargo clippy --features walkdir
     clear && cargo test -- --nocapture
     clear && cargo run -- -h
     cargo run --features walkdir -- -cvts
