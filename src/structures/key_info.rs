@@ -1,8 +1,5 @@
 use serde::Serialize;
-use crate::{
-    add_thousands_separator,
-    to_usize,
-};
+use crate::add_thousands_separator;
 
 /// This key will be used by FileInfo and GroupInfo.
 ///
@@ -19,13 +16,17 @@ pub struct Key {
 }
 
 impl Key {
-    pub fn new<T>(value: T, hash: Option<String>) -> Self
-    where 
-        T: TryInto<usize>,
-    {
-        Key {
-            size: to_usize(value),
-            hash,
+    pub fn new(value: u64, hash: Option<String>) -> Self {
+        match value.try_into() {
+            Ok(size) => {
+                Key {
+                    size,
+                    hash,
+                }
+            },
+            Err(why) => {
+                panic!("Error converting from u64 to usize: {why}")
+            }
         }
     }
 
@@ -50,5 +51,22 @@ mod test_key {
         };
         println!("key: {valid:#?}");
         assert_eq!(valid, result);
+    }
+
+    /// cargo test -- --show-output test_set_hash
+    #[test]
+    fn test_set_hash() {
+        let mut key = Key::new(123, None);
+        println!("key: {key:#?}");
+
+        let string = "foo bar".to_string();
+        key.set_hash(Some(string.clone()));
+        println!("key: {key:#?}");
+
+        let result = Key {
+            size: 123,
+            hash: Some(string),
+        };
+        assert_eq!(key, result);
     }
 }

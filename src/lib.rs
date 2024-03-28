@@ -75,7 +75,7 @@ pub fn my_print(buffer: &[u8]) -> MyResult<()> {
     Ok(())
 }
 
-/// Get two or more files with same key: (size, Option<hash>)
+/// Get two or more files with same key: (size, `Option<hash>`)
 pub fn get_grouped_files(files_info: &[FileInfo]) -> Vec<GroupInfo> {
     let mut group_by: HashMap<Key, Vec<PathBuf>> = HashMap::new();
 
@@ -202,17 +202,6 @@ where
     S: Serializer,
 {
     serializer.collect_str(&format!("{} bytes", &split_and_insert(*size, '.')))
-}
-
-/// Try converting type T to usize
-pub fn to_usize<T>(value: T) -> usize
-where 
-    T: TryInto<usize>
-{
-    match value.try_into() {
-        Ok(v) => v,
-        Err(_) => panic!("Error: try convert value -> usize!"),
-    }
 }
 
 #[cfg(test)]
