@@ -190,7 +190,7 @@ pub struct Arguments {
     /// Set a minimum file size to search for duplicate files.
     /// 
     /// keep files whose size is greater than or equal to a minimum value.
-    #[arg(short('k'), long("min_size"), required = false, default_value_t = 0)]
+    #[arg(short('b'), long("min_size"), required = false, default_value_t = 0)]
     pub min_size: u64,
 
     /// Omit hidden files (starts with '.'), otherwise search all files.

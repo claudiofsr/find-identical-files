@@ -24,7 +24,7 @@ set edit:completion:arg-completer[find_duplicate_files] = {|@words|
             cand --generate 'If provided, outputs the completion file for given shell'
             cand -m 'Set the maximum depth to search for duplicate files'
             cand --max_depth 'Set the maximum depth to search for duplicate files'
-            cand -k 'Set a minimum file size to search for duplicate files'
+            cand -b 'Set a minimum file size to search for duplicate files'
             cand --min_size 'Set a minimum file size to search for duplicate files'
             cand -p 'Set the path where to look for duplicate files, otherwise use the current directory'
             cand --path 'Set the path where to look for duplicate files, otherwise use the current directory'

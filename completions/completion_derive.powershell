@@ -27,7 +27,7 @@ Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBl
             [CompletionResult]::new('--generate', 'generate', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
             [CompletionResult]::new('-m', 'm', [CompletionResultType]::ParameterName, 'Set the maximum depth to search for duplicate files')
             [CompletionResult]::new('--max_depth', 'max_depth', [CompletionResultType]::ParameterName, 'Set the maximum depth to search for duplicate files')
-            [CompletionResult]::new('-k', 'k', [CompletionResultType]::ParameterName, 'Set a minimum file size to search for duplicate files')
+            [CompletionResult]::new('-b', 'b', [CompletionResultType]::ParameterName, 'Set a minimum file size to search for duplicate files')
             [CompletionResult]::new('--min_size', 'min_size', [CompletionResultType]::ParameterName, 'Set a minimum file size to search for duplicate files')
             [CompletionResult]::new('-p', 'p', [CompletionResultType]::ParameterName, 'Set the path where to look for duplicate files, otherwise use the current directory')
             [CompletionResult]::new('--path', 'path', [CompletionResultType]::ParameterName, 'Set the path where to look for duplicate files, otherwise use the current directory')

@@ -43,7 +43,7 @@ find_duplicate_files -p ~/Downloads -r json > fdf.json
 4. To find duplicate files in the current directory whose size is greater than or equal to 8 bytes:
 
 ```
-find_duplicate_files -k 8
+find_duplicate_files -b 8
 ```
 
 ## Help

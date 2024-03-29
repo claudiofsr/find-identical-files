@@ -21,7 +21,7 @@ _find_duplicate_files() {
 '--generate=[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '-m+[Set the maximum depth to search for duplicate files]:MAX_DEPTH: ' \
 '--max_depth=[Set the maximum depth to search for duplicate files]:MAX_DEPTH: ' \
-'-k+[Set a minimum file size to search for duplicate files]:MIN_SIZE: ' \
+'-b+[Set a minimum file size to search for duplicate files]:MIN_SIZE: ' \
 '--min_size=[Set a minimum file size to search for duplicate files]:MIN_SIZE: ' \
 '-p+[Set the path where to look for duplicate files, otherwise use the current directory]:PATH:_files' \
 '--path=[Set the path where to look for duplicate files, otherwise use the current directory]:PATH:_files' \
