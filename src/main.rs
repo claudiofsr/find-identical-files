@@ -11,6 +11,11 @@ use std::time::Instant;
     cargo b -r && cargo install --features walkdir --path=.
 */
 
+// Reading suggestion (not applied here):
+// Ordering Requests to Accelerate Disk I/O
+// Autor: Piotr Kołaczkowski
+// https://pkolaczk.github.io/disk-access-ordering/
+
 fn main() -> MyResult<()> {
 
     set_env_variables();
@@ -26,7 +31,7 @@ fn main() -> MyResult<()> {
 
     // To skip useless files, 3 procedures will be performed:
 
-    // 1. Group files by size such that the key: (size, None);
+    // 1. Group files by <size> such that the key: (size, None);
     // Ignore filegroups containing only one file.
     let duplicate_size: Vec<GroupInfo> = get_grouped_files(&all_files);
 
@@ -34,7 +39,7 @@ fn main() -> MyResult<()> {
         eprintln!("1. duplicate_size.len(): {}, time_elapsed: {:?}", duplicate_size.len(), time.elapsed());
     }
 
-    // 2. Group files by first bytes such that the key: (size, Some(bytes));
+    // 2. Group files by <first bytes> such that the key: (size, Some(bytes));
     // Ignore filegroups containing only one file.
     let duplicate_bytes: Vec<GroupInfo> = get_duplicate_files(&duplicate_size, None);
 
@@ -42,7 +47,7 @@ fn main() -> MyResult<()> {
         eprintln!("2. duplicate_bytes.len(): {}, time_elapsed: {:?}", duplicate_bytes.len(), time.elapsed());
     }
 
-    // 3. Group files by hash such that the key: (size, Some(hash)).
+    // 3. Group files by <hash> such that the key: (size, Some(hash)).
     // Ignore filegroups containing only one file.
     let mut duplicate_hash: Vec<GroupInfo> = get_duplicate_files(&duplicate_bytes, Some(&arguments));
 

@@ -77,17 +77,48 @@ pub fn my_print(buffer: &[u8]) -> MyResult<()> {
 
 /// Get two or more files with same key: (size, `Option<hash>`)
 pub fn get_grouped_files(files_info: &[FileInfo]) -> Vec<GroupInfo> {
+
     let mut group_by: HashMap<Key, Vec<PathBuf>> = HashMap::new();
 
-    files_info.iter().for_each(|file_info| {
-        group_by
-            // key: (size, Option<hash>), value: paths
-            .entry(file_info.key.clone())
-            // If there's no entry for the key, create a new Vec and return a mutable ref to it
-            .or_default()
-            // and insert the item onto the Vec
-            .push(file_info.path.clone())
-    });
+    files_info
+        .iter()
+        .for_each(|file_info| {
+            group_by
+                // key: (size, Option<hash>), value: paths
+                .entry(file_info.key.clone())
+                // If there's no entry for the key, create a new Vec and return a mutable ref to it
+                .or_default()
+                // and insert the item onto the Vec
+                .push(file_info.path.clone())
+        });
+
+    /*
+    // Group By Parallel Mode with 'MapReduce'
+    let group_by: HashMap<Key, Vec<PathBuf>> = files_info
+        .par_iter() // rayon: parallel iterator
+        .fold(HashMap::new, |mut hashmap_accumulator: HashMap<Key, Vec<PathBuf>>, file_info| {
+            hashmap_accumulator
+                // key: (size, Option<hash>), value: paths
+                .entry(file_info.key.clone())
+                // If there's no entry for the key, create a new Vec and return a mutable ref to it
+                .or_default()
+                // and insert the item onto the Vec
+                .push(file_info.path.clone());
+
+            hashmap_accumulator
+        })
+        .reduce(HashMap::new, |mut hashmap_a, hashmap_b| {
+            // Merge two HashMaps
+            hashmap_b.into_iter().for_each(|(key_b, value_b)| {
+                hashmap_a
+                    .entry(key_b)
+                    .or_default()
+                    .extend(value_b);
+            });
+
+            hashmap_a
+        });
+    */
 
     // Converting group_by to vector
     let grouped_files: Vec<GroupInfo> = group_by
