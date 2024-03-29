@@ -13,7 +13,7 @@ use std::time::Instant;
 
 // Reading suggestion (not applied here):
 // Ordering Requests to Accelerate Disk I/O
-// Autor: Piotr Kołaczkowski
+// Author: Piotr Kołaczkowski
 // https://pkolaczk.github.io/disk-access-ordering/
 
 fn main() -> MyResult<()> {
