@@ -40,6 +40,12 @@ find_duplicate_files -csta fxhash -r yaml
 find_duplicate_files -p ~/Downloads -r json > fdf.json
 ```
 
+4. To find duplicate files in the current directory whore size is greater than or equal to 8 bytes:
+
+```
+find_duplicate_files -k 8
+```
+
 ## Help
 
 Type in the terminal `find_duplicate_files -h` to see the help messages and all available options:
