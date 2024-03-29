@@ -25,22 +25,31 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 
     let entries: Vec<DirEntry> = get_entries(arguments)?;
 
-    let all_files: MyResult<Vec<FileInfo>> = entries
+    // keep files whose size is greater than or equal to a minimum value.
+    let min_size: u64 = arguments.min_size;
+
+    let all_files: Vec<FileInfo> = entries
         .into_par_iter() // rayon parallel iterator
         //.iter()
-        .map(|entry| {
-            let metadata = entry.metadata()?;
-            let size_u64: u64 = metadata.len();
-            //let inode_number: u64 = metadata.ino();
-            let key = Key::new(size_u64, None);
-            Ok(FileInfo {
-                key,
-                path: entry.into_path(),
-            })
+        .filter_map(|entry| {
+            if let Ok(metadata) = entry.metadata() {
+                let size_u64: u64 = metadata.len();
+                //let inode_number: u64 = metadata.ino();
+
+                if size_u64 >= min_size {
+                    let key = Key::new(size_u64, None);
+                    let path = entry.into_path();
+                    Some(FileInfo {key, path})
+                } else {
+                    None
+                }
+            } else {
+                None
+            }
         })
         .collect();
 
-    all_files
+    Ok(all_files)
 }
 
 /// Get result: Vec<DirEntry>.

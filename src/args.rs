@@ -187,6 +187,12 @@ pub struct Arguments {
     #[arg(short('m'), long("max_depth"), required = false)]
     pub max_depth: Option<usize>,
 
+    /// Set a minimum file size to search for duplicate files.
+    /// 
+    /// keep files whose size is greater than or equal to a minimum value.
+    #[arg(short('k'), long("min_size"), required = false, default_value_t = 0)]
+    pub min_size: u64,
+
     /// Omit hidden files (starts with '.'), otherwise search all files.
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
     pub omit_hidden: bool,

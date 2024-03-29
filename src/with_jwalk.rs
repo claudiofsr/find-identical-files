@@ -29,12 +29,15 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
         None => std::usize::MAX,
     };
 
+    // keep files whose size is greater than or equal to a minimum value.
+    let min_size: u64 = arguments.min_size;
+
     let jwalk = WalkDirGeneric::<((), Option<FileInfo>)>::new(path)
         .max_depth(max_depth)
         .parallelism(Parallelism::RayonNewPool(rayon::current_num_threads()))
         .skip_hidden(arguments.omit_hidden)
-        .process_read_dir(|_depth, _path, _read_dir_state, dir_entry_results| {
-            analyze_dir_entry_results(dir_entry_results);
+        .process_read_dir(move |_depth, _path, _read_dir_state, dir_entry_results| {
+            analyze_dir_entry_results(dir_entry_results, min_size);
         });
 
     let all_files: MyResult<Vec<FileInfo>> = jwalk
@@ -58,7 +61,7 @@ type JwalkResults = Vec<Result<DirEntry<((), Option<FileInfo>)>, jwalk::Error>>;
 
 // https://docs.rs/jwalk
 // https://github.com/Byron/jwalk/blob/main/examples/du.rs
-fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults) {
+fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults, min_size: u64) {
 
     // inode: “index nodes”
     // https://doc.rust-lang.org/std/os/unix/fs/trait.MetadataExt.html#tymethod.ino
@@ -92,11 +95,14 @@ fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults) {
             if let Ok(metadata) = dir_entry.metadata() {
                 let size_u64: u64 = metadata.len();
                 //let inode_number: u64 = metadata.ino();
-                let key = Key::new(size_u64, None);
-                dir_entry.client_state = Some(FileInfo {
-                    key,
-                    path: dir_entry.path(),
-                });
+
+                if size_u64 >= min_size {
+                    let key = Key::new(size_u64, None);
+                    let path = dir_entry.path();
+                    dir_entry.client_state = Some(FileInfo {key, path});
+                } else {
+                    dir_entry.client_state = None;
+                };
             }
         });
 }

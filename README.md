@@ -59,6 +59,8 @@ Options:
           If provided, outputs the completion file for given shell [possible values: bash, elvish, fish, powershell, zsh]
   -m, --max_depth <MAX_DEPTH>
           Set the maximum depth to search for duplicate files
+  -k, --min_size <MIN_SIZE>
+          Set a minimum file size to search for duplicate files [default: 0]
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
   -p, --path <PATH>

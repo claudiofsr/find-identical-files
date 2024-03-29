@@ -19,7 +19,7 @@ _find_duplicate_files() {
 
     case "${cmd}" in
         find_duplicate_files)
-            opts="-a -c -f -g -m -o -p -r -s -t -v -h -V --algorithm --clear_terminal --full_path --generate --max_depth --omit_hidden --path --result_format --sort --time --verbose --help --version"
+            opts="-a -c -f -g -m -k -o -p -r -s -t -v -h -V --algorithm --clear_terminal --full_path --generate --max_depth --min_size --omit_hidden --path --result_format --sort --time --verbose --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -49,6 +49,14 @@ _find_duplicate_files() {
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
+                --min_size)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -k)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
                 --path)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
@@ -75,4 +83,8 @@ _find_duplicate_files() {
     esac
 }
 
-complete -F _find_duplicate_files -o nosort -o bashdefault -o default find_duplicate_files
+if [[ "${BASH_VERSINFO[0]}" -eq 4 && "${BASH_VERSINFO[1]}" -ge 4 || "${BASH_VERSINFO[0]}" -gt 4 ]]; then
+    complete -F _find_duplicate_files -o nosort -o bashdefault -o default find_duplicate_files
+else
+    complete -F _find_duplicate_files -o bashdefault -o default find_duplicate_files
+fi
