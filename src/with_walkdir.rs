@@ -1,21 +1,8 @@
-use crate::{
-    Arguments,
-    MyResult,
-    FileInfo,
-    Key,
-    get_path,
-};
+use crate::{get_path, Arguments, FileInfo, Key, MyResult};
 
-use std::{
-    ops::RangeInclusive,
-    path::PathBuf,
-    process,
-};
+use std::{ops::RangeInclusive, path::PathBuf, process};
 
-use walkdir::{
-    DirEntry,
-    WalkDir,
-};
+use walkdir::{DirEntry, WalkDir};
 
 use rayon::prelude::*;
 
@@ -23,14 +10,13 @@ use rayon::prelude::*;
 ///
 /// Use walkdir.
 pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
-
     // Set a minimum file size (in bytes) to search for duplicate files.
     let min_size: u64 = arguments.min_size.unwrap_or(0);
 
     // Set a maximum file size (in bytes) to search for duplicate files.
     let max_size: u64 = arguments.max_size.unwrap_or(std::u64::MAX);
 
-    let size_range: RangeInclusive<u64> = min_size ..= max_size;
+    let size_range: RangeInclusive<u64> = min_size..=max_size;
 
     let entries: Vec<DirEntry> = get_entries(arguments)?;
 
@@ -45,7 +31,7 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
                 if size_range.contains(&size_u64) {
                     let key = Key::new(size_u64, None);
                     let path = entry.into_path();
-                    Some(FileInfo {key, path})
+                    Some(FileInfo { key, path })
                 } else {
                     None
                 }
@@ -73,13 +59,11 @@ fn get_entries(arguments: &Arguments) -> MyResult<Vec<DirEntry>> {
         .max_depth(max_depth)
         .into_iter()
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
-        .map_while(|result| {
-            match result {
-                Ok(dir_entry) => Some(dir_entry),
-                Err(why) => {
-                    eprintln!("Error: {why}");
-                    process::exit(1)
-                }
+        .map_while(|result| match result {
+            Ok(dir_entry) => Some(dir_entry),
+            Err(why) => {
+                eprintln!("Error: {why}");
+                process::exit(1)
             }
         })
         .filter(|entry| entry.file_type().is_file())

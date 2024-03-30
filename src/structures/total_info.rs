@@ -1,16 +1,11 @@
-use serde::Serialize;
 use crate::{
     add_thousands_separator,
+    args::{Algorithm, Arguments, ResultFormat::*},
     split_and_insert,
-    args::{
-        Algorithm,
-        Arguments,
-        ResultFormat::*,
-    },
-    GroupInfo,
-    MyResult,
     structures::group_info::GroupExtension,
+    GroupInfo, MyResult,
 };
+use serde::Serialize;
 use std::thread;
 
 /// Summarize information for all files found in the directory
@@ -29,17 +24,23 @@ pub struct TotalInfo {
     #[serde(rename = "Total number of different hashes")]
     pub total_num_hashes: usize,
     /// Total size of duplicate files
-    #[serde(rename = "Total size of duplicate files", serialize_with = "add_thousands_separator")]
+    #[serde(
+        rename = "Total size of duplicate files",
+        serialize_with = "add_thousands_separator"
+    )]
     pub total_size: usize,
 }
 
 impl TotalInfo {
     /// Print the duplicated files and get the summary information.
-    pub fn get_summary(duplicate_hash: &[GroupInfo], arguments: &Arguments, total_num_files: usize) -> Self {
+    pub fn get_summary(
+        duplicate_hash: &[GroupInfo],
+        arguments: &Arguments,
+        total_num_files: usize,
+    ) -> Self {
         let (result_display, result_total_info) = thread::scope(|s| {
-            let thread_a = s.spawn(|| -> MyResult<()> {
-                duplicate_hash.print_duplicated_files(arguments)
-            });
+            let thread_a =
+                s.spawn(|| -> MyResult<()> { duplicate_hash.print_duplicated_files(arguments) });
             let thread_b = s.spawn(|| -> TotalInfo {
                 duplicate_hash.get_total_info(arguments, total_num_files)
             });
@@ -73,9 +74,18 @@ impl TotalInfo {
             Personal => {
                 println!("Hashing algorithm: {}", arguments.algorithm); // or self.algorithm
                 println!("Total number of files: {}", self.total_num_files);
-                println!("Total number of duplicate files: {}", self.total_num_duplicate);
-                println!("Total number of different hashes: {}", self.total_num_hashes);
-                println!("Total size of duplicate files: {} bytes\n", split_and_insert(self.total_size, '.'));
+                println!(
+                    "Total number of duplicate files: {}",
+                    self.total_num_duplicate
+                );
+                println!(
+                    "Total number of different hashes: {}",
+                    self.total_num_hashes
+                );
+                println!(
+                    "Total size of duplicate files: {} bytes\n",
+                    split_and_insert(self.total_size, '.')
+                );
             }
         }
         Ok(())

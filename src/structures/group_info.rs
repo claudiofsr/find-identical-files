@@ -1,22 +1,12 @@
-use serde::Serialize;
 use crate::add_thousands_separator;
+use serde::Serialize;
 
 use crate::{
-    my_print,
-    split_and_insert,
-    args::{
-        Arguments,
-        ResultFormat::*,
-    },
-    Key,
-    MyResult,
-    TotalInfo,
+    args::{Arguments, ResultFormat::*},
+    my_print, split_and_insert, Key, MyResult, TotalInfo,
 };
 
-use std::{
-    io::Write,
-    path::PathBuf,
-};
+use std::{io::Write, path::PathBuf};
 
 use rayon::prelude::*;
 
@@ -33,7 +23,10 @@ pub struct GroupInfo {
     #[serde(rename = "Number of duplicate files")]
     pub num_file: usize,
     /// Sum of individual file sizes declared in paths
-    #[serde(rename = "Sum of file sizes", serialize_with = "add_thousands_separator")]
+    #[serde(
+        rename = "Sum of file sizes",
+        serialize_with = "add_thousands_separator"
+    )]
     pub sum_size: usize,
 }
 
@@ -52,11 +45,21 @@ impl GroupInfo {
                 writeln!(*write, "{serialized}").unwrap();
             }
             Personal => {
-                writeln!(write, "size: {} bytes", split_and_insert(self.key.size, '.')).unwrap();
+                writeln!(
+                    write,
+                    "size: {} bytes",
+                    split_and_insert(self.key.size, '.')
+                )
+                .unwrap();
                 writeln!(write, "hash: {}", self.key.hash.clone().unwrap_or_default()).unwrap();
                 writeln!(write, "Paths: {:#?}", self.paths).unwrap();
                 writeln!(write, "Number of duplicate files: {}", self.num_file).unwrap();
-                writeln!(write, "Sum of file sizes: {} bytes\n", split_and_insert(self.sum_size, '.')).unwrap();
+                writeln!(
+                    write,
+                    "Sum of file sizes: {} bytes\n",
+                    split_and_insert(self.sum_size, '.')
+                )
+                .unwrap();
             }
         }
     }

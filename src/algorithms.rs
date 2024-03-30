@@ -1,31 +1,21 @@
-use crate::{
-    Arguments,
-    MyResult,
-    args::Algorithm::*,
-};
+use crate::{args::Algorithm::*, Arguments, MyResult};
 use ahash::AHasher;
 use blake3::Hasher as Blake3Hasher;
+use ring::digest::{self, Context, SHA256 as DIGEST_SHA256, SHA512 as DIGEST_SHA512};
+use rustc_hash::FxHasher;
 use std::{
     fs::{self, File},
     hash::Hasher,
+    io::{BufReader, Read},
     path::{Path, PathBuf},
-    io::{Read, BufReader},
 };
-use ring::digest::{
-    self,
-    Context,
-    SHA256 as DIGEST_SHA256,
-    SHA512 as DIGEST_SHA512,
-};
-use rustc_hash::FxHasher;
 
 const FIRST_BYTES: usize = 64;
 const BUFFER_SIZE: usize = 64 * 1024;
-const STACK_SIZE:  usize = 64 * 1024 * 1024;
+const STACK_SIZE: usize = 64 * 1024 * 1024;
 
 const HEX: [char; 16] = [
-'0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
-'a', 'b', 'c', 'd', 'e', 'f',
+    '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
 ];
 
 /**
@@ -53,8 +43,8 @@ impl SliceExtension for &[u8] {
     fn to_hex_string(self) -> String {
         self.iter()
             .flat_map(|byte| {
-                let a: char = HEX[(*byte as usize)/16];
-                let b: char = HEX[(*byte as usize)%16];
+                let a: char = HEX[(*byte as usize) / 16];
+                let b: char = HEX[(*byte as usize) % 16];
                 [a, b]
             })
             .collect()
@@ -69,8 +59,7 @@ impl PathBufExtension for PathBuf {
     /// Hash the first few bytes or the entire file.
     ///
     /// <https://rust-lang-nursery.github.io/rust-cookbook/cryptography/hashing.html>
-    fn get_hash(&self, opt_arguments:Option<&Arguments>) -> MyResult<Option<String>>
-    {
+    fn get_hash(&self, opt_arguments: Option<&Arguments>) -> MyResult<Option<String>> {
         let mut file: File = open_file(self)?;
 
         let hash: String = match opt_arguments {
@@ -78,13 +67,13 @@ impl PathBufExtension for PathBuf {
                 // Hash the entire file with your chosen hashing algorithm.
                 let reader: BufReader<File> = BufReader::with_capacity(BUFFER_SIZE, file);
                 match arguments.algorithm {
-                    Ahash  => get_ahash(reader)?,
+                    Ahash => get_ahash(reader)?,
                     Blake3 => get_blake3(reader)?,
                     Fxhash => get_fxhash(reader)?,
                     SHA256 => get_sha(reader, &DIGEST_SHA256)?,
                     SHA512 => get_sha(reader, &DIGEST_SHA512)?,
                 }
-            },
+            }
             None => {
                 // Get only the first few bytes to hash.
                 let mut buffer = [0_u8; FIRST_BYTES];
@@ -112,15 +101,15 @@ where
         .write(false) // This option, when false, will indicate that the file should not be writable if opened.
         .create(false)
         .open(path)
-        {
-            Ok(file) => file,
-            Err(error) => {
-                eprintln!("Failed to open file {path:?}");
-                eprintln!("Perhaps some temporary files no longer exist!");
-                eprintln!("Or lack of permission to read this file!");
-                panic!("{error}");
-            }
-        };
+    {
+        Ok(file) => file,
+        Err(error) => {
+            eprintln!("Failed to open file {path:?}");
+            eprintln!("Perhaps some temporary files no longer exist!");
+            eprintln!("Or lack of permission to read this file!");
+            panic!("{error}");
+        }
+    };
 
     Ok(file)
 }
@@ -150,7 +139,7 @@ fn get_ahash<R: Read>(mut reader: R) -> MyResult<String> {
 /// <https://docs.rs/blake3/latest/blake3>
 fn get_blake3<R>(mut reader: R) -> MyResult<String>
 where
-    R: Read
+    R: Read,
 {
     let mut buffer = [0_u8; BUFFER_SIZE];
     let mut hasher = Blake3Hasher::new();

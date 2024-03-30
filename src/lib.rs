@@ -18,21 +18,16 @@ pub use with_jwalk::get_all_files;
 pub use self::{
     algorithms::{set_env_variables, PathBufExtension},
     args::Arguments,
-    structures::key_info::Key,
     structures::file_info::FileInfo,
-    structures::group_info::{GroupInfo, GroupExtension},
+    structures::group_info::{GroupExtension, GroupInfo},
+    structures::key_info::Key,
     structures::total_info::TotalInfo,
 };
 
 use hashbrown::HashMap;
 use rayon::prelude::*;
 use serde::Serializer;
-use std::{
-    fs,
-    str,
-    path::PathBuf,
-    process::Command,
-};
+use std::{fs, path::PathBuf, process::Command, str};
 
 pub type MyError = Box<dyn std::error::Error + Send + Sync>;
 pub type MyResult<T> = Result<T, MyError>;
@@ -77,20 +72,17 @@ pub fn my_print(buffer: &[u8]) -> MyResult<()> {
 
 /// Get two or more files with same key: (size, `Option<hash>`)
 pub fn get_grouped_files(files_info: &[FileInfo]) -> Vec<GroupInfo> {
-
     let mut group_by: HashMap<Key, Vec<PathBuf>> = HashMap::new();
 
-    files_info
-        .iter()
-        .for_each(|file_info| {
-            group_by
-                // key: (size, Option<hash>), value: paths
-                .entry(file_info.key.clone())
-                // If there's no entry for the key, create a new Vec and return a mutable ref to it
-                .or_default()
-                // and insert the item onto the Vec
-                .push(file_info.path.clone())
-        });
+    files_info.iter().for_each(|file_info| {
+        group_by
+            // key: (size, Option<hash>), value: paths
+            .entry(file_info.key.clone())
+            // If there's no entry for the key, create a new Vec and return a mutable ref to it
+            .or_default()
+            // and insert the item onto the Vec
+            .push(file_info.path.clone())
+    });
 
     /*
     // Group By Parallel Mode with 'MapReduce'
@@ -144,7 +136,10 @@ pub fn get_grouped_files(files_info: &[FileInfo]) -> Vec<GroupInfo> {
 /// If opt_arguments is None, get the hash of the first few bytes.
 ///
 /// If opt_arguments are Some, get whole file hash.
-pub fn get_duplicate_files(duplicate_size: &[GroupInfo], opt_arguments: Option<&Arguments>) -> Vec<GroupInfo> {
+pub fn get_duplicate_files(
+    duplicate_size: &[GroupInfo],
+    opt_arguments: Option<&Arguments>,
+) -> Vec<GroupInfo> {
     let duplicate_hash: Vec<GroupInfo> = duplicate_size
         .par_iter() // rayon parallel iterator
         .filter_map(|group_info| {
@@ -157,10 +152,7 @@ pub fn get_duplicate_files(duplicate_size: &[GroupInfo], opt_arguments: Option<&
                     if let Ok(hash) = path.get_hash(opt_arguments) {
                         key.set_hash(hash);
                     }
-                    FileInfo {
-                        key,
-                        path,
-                    }
+                    FileInfo { key, path }
                 })
                 .collect();
 

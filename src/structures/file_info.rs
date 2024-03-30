@@ -1,5 +1,5 @@
-use std::path::PathBuf;
 use crate::Key;
+use std::path::PathBuf;
 
 /// Individual file information
 #[derive(Debug, Clone)]

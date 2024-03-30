@@ -1,5 +1,5 @@
-use serde::Serialize;
 use crate::add_thousands_separator;
+use serde::Serialize;
 
 /// This key will be used by FileInfo and GroupInfo.
 ///
@@ -18,12 +18,7 @@ pub struct Key {
 impl Key {
     pub fn new(value: u64, hash: Option<String>) -> Self {
         match value.try_into() {
-            Ok(size) => {
-                Key {
-                    size,
-                    hash,
-                }
-            },
+            Ok(size) => Key { size, hash },
             Err(why) => {
                 panic!("Error converting from u64 to usize: {why}")
             }

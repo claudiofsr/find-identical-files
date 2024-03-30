@@ -1,7 +1,7 @@
 use clap::{CommandFactory, Parser, ValueEnum};
 use clap_complete::{generate, Generator, Shell};
 use serde::Serialize;
-use std::{io, fmt, path::PathBuf, process};
+use std::{fmt, io, path::PathBuf, process};
 
 use crate::clear_terminal_screen;
 
@@ -29,7 +29,6 @@ pub enum Algorithm {
 /// <https://serde.rs/container-attrs.html>
 impl fmt::Display for Algorithm {
     fn fmt(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
-
         // Display an enum in lowercase
         // let field: String = format!("{self:?}");
         // write!(formatter, "{}", field.to_lowercase())
@@ -48,31 +47,20 @@ pub enum ResultFormat {
 
 // https://stackoverflow.com/questions/74068168/clap-rs-not-printing-colors-during-help
 fn get_styles() -> clap::builder::Styles {
-
-    let cyan   = anstyle::Color::Ansi(anstyle::AnsiColor::Cyan);
-    let green  = anstyle::Color::Ansi(anstyle::AnsiColor::Green);
+    let cyan = anstyle::Color::Ansi(anstyle::AnsiColor::Cyan);
+    let green = anstyle::Color::Ansi(anstyle::AnsiColor::Green);
     let yellow = anstyle::Color::Ansi(anstyle::AnsiColor::Yellow);
 
     clap::builder::Styles::styled()
-        .placeholder(
-            anstyle::Style::new()
-                .fg_color(Some(yellow))
-        )
-        .usage(
-            anstyle::Style::new()
-                .fg_color(Some(cyan))
-                .bold()
-        )
+        .placeholder(anstyle::Style::new().fg_color(Some(yellow)))
+        .usage(anstyle::Style::new().fg_color(Some(cyan)).bold())
         .header(
             anstyle::Style::new()
                 .fg_color(Some(cyan))
                 .bold()
-                .underline()
+                .underline(),
         )
-        .literal(
-            anstyle::Style::new()
-                .fg_color(Some(green))
-        )
+        .literal(anstyle::Style::new().fg_color(Some(green)))
 }
 
 // https://docs.rs/clap/latest/clap/struct.Command.html#method.help_template
@@ -100,7 +88,8 @@ pub struct Arguments {
     pub algorithm: Algorithm,
 
     /// Clear the terminal screen before listing the duplicate files.
-    #[arg(short('c'), long("clear_terminal"), default_value_t = false)] // action = ArgAction::SetTrue
+    #[arg(short('c'), long("clear_terminal"), default_value_t = false)]
+    // action = ArgAction::SetTrue
     pub clear_terminal: bool,
 
     /// Prints full path of duplicate files, otherwise relative path.
@@ -192,13 +181,13 @@ pub struct Arguments {
     pub max_depth: Option<usize>,
 
     /// Set a minimum file size (in bytes) to search for duplicate files.
-    /// 
+    ///
     /// keep files whose size is greater than or equal to a minimum value.
     #[arg(short('b'), long("min_size"), required = false)]
     pub min_size: Option<u64>,
 
     /// Set a maximum file size (in bytes) to search for duplicate files.
-    /// 
+    ///
     /// keep files whose size is less than or equal to a maximum value.
     #[arg(short('B'), long("max_size"), required = false)]
     pub max_size: Option<u64>,
