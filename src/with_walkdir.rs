@@ -7,8 +7,9 @@ use crate::{
 };
 
 use std::{
-    process,
+    ops::RangeInclusive,
     path::PathBuf,
+    process,
 };
 
 use walkdir::{
@@ -23,10 +24,15 @@ use rayon::prelude::*;
 /// Use walkdir.
 pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 
-    let entries: Vec<DirEntry> = get_entries(arguments)?;
+    // Set a minimum file size (in bytes) to search for duplicate files.
+    let min_size: u64 = arguments.min_size.unwrap_or(0);
 
-    // keep files whose size is greater than or equal to a minimum value.
-    let min_size: u64 = arguments.min_size;
+    // Set a maximum file size (in bytes) to search for duplicate files.
+    let max_size: u64 = arguments.max_size.unwrap_or(std::u64::MAX);
+
+    let size_range: RangeInclusive<u64> = min_size ..= max_size;
+
+    let entries: Vec<DirEntry> = get_entries(arguments)?;
 
     let all_files: Vec<FileInfo> = entries
         .into_par_iter() // rayon parallel iterator
@@ -36,7 +42,7 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
                 let size_u64: u64 = metadata.len();
                 //let inode_number: u64 = metadata.ino();
 
-                if size_u64 >= min_size {
+                if size_range.contains(&size_u64) {
                     let key = Key::new(size_u64, None);
                     let path = entry.into_path();
                     Some(FileInfo {key, path})
@@ -56,12 +62,14 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 fn get_entries(arguments: &Arguments) -> MyResult<Vec<DirEntry>> {
     let path: PathBuf = get_path(arguments)?;
 
-    let max_depth: usize = match arguments.max_depth {
-        Some(depth) => depth,
-        None => std::usize::MAX,
-    };
+    // Set the minimum depth to search for duplicate files.
+    let min_depth: usize = arguments.min_depth.unwrap_or(0);
+
+    // Set the maximum depth to search for duplicate files.
+    let max_depth: usize = arguments.max_depth.unwrap_or(std::usize::MAX);
 
     let entries: Vec<DirEntry> = WalkDir::new(path)
+        .min_depth(min_depth)
         .max_depth(max_depth)
         .into_iter()
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))

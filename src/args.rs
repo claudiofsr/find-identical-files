@@ -183,15 +183,25 @@ pub struct Arguments {
     #[arg(short('g'), long("generate"), value_enum)]
     pub generator: Option<Shell>,
 
+    /// Set the minimum depth to search for duplicate files.
+    #[arg(short('d'), long("min_depth"), required = false)]
+    pub min_depth: Option<usize>,
+
     /// Set the maximum depth to search for duplicate files.
-    #[arg(short('m'), long("max_depth"), required = false)]
+    #[arg(short('D'), long("max_depth"), required = false)]
     pub max_depth: Option<usize>,
 
-    /// Set a minimum file size to search for duplicate files.
+    /// Set a minimum file size (in bytes) to search for duplicate files.
     /// 
     /// keep files whose size is greater than or equal to a minimum value.
-    #[arg(short('b'), long("min_size"), required = false, default_value_t = 0)]
-    pub min_size: u64,
+    #[arg(short('b'), long("min_size"), required = false)]
+    pub min_size: Option<u64>,
+
+    /// Set a maximum file size (in bytes) to search for duplicate files.
+    /// 
+    /// keep files whose size is less than or equal to a maximum value.
+    #[arg(short('B'), long("max_size"), required = false)]
+    pub max_size: Option<u64>,
 
     /// Omit hidden files (starts with '.'), otherwise search all files.
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]

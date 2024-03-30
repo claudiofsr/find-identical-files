@@ -46,6 +46,12 @@ find_duplicate_files -p ~/Downloads -r json > fdf.json
 find_duplicate_files -b 8
 ```
 
+5. To find duplicate files in the current directory whose size is between 100 and 200 bytes:
+
+```
+find_duplicate_files -b 100 -B 200
+```
+
 ## Help
 
 Type in the terminal `find_duplicate_files -h` to see the help messages and all available options:
@@ -63,10 +69,14 @@ Options:
           Prints full path of duplicate files, otherwise relative path
   -g, --generate <GENERATOR>
           If provided, outputs the completion file for given shell [possible values: bash, elvish, fish, powershell, zsh]
-  -m, --max_depth <MAX_DEPTH>
+  -d, --min_depth <MIN_DEPTH>
+          Set the minimum depth to search for duplicate files
+  -D, --max_depth <MAX_DEPTH>
           Set the maximum depth to search for duplicate files
   -b, --min_size <MIN_SIZE>
-          Set a minimum file size to search for duplicate files [default: 0]
+          Set a minimum file size (in bytes) to search for duplicate files
+  -B, --max_size <MAX_SIZE>
+          Set a maximum file size (in bytes) to search for duplicate files
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
   -p, --path <PATH>

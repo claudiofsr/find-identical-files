@@ -7,6 +7,7 @@ use crate::{
 };
 
 use std::{
+    ops::RangeInclusive,
     path::PathBuf,
     process,
 };
@@ -24,20 +25,27 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 
     let path: PathBuf = get_path(arguments)?;
 
-    let max_depth: usize = match arguments.max_depth {
-        Some(depth) => depth,
-        None => std::usize::MAX,
-    };
+    // Set the minimum depth to search for duplicate files.
+    let min_depth: usize = arguments.min_depth.unwrap_or(0);
 
-    // keep files whose size is greater than or equal to a minimum value.
-    let min_size: u64 = arguments.min_size;
+    // Set the maximum depth to search for duplicate files.
+    let max_depth: usize = arguments.max_depth.unwrap_or(std::usize::MAX);
+
+    // Set a minimum file size (in bytes) to search for duplicate files.
+    let min_size: u64 = arguments.min_size.unwrap_or(0);
+
+    // Set a maximum file size (in bytes) to search for duplicate files.
+    let max_size: u64 = arguments.max_size.unwrap_or(std::u64::MAX);
+
+    let size_range: RangeInclusive<u64> = min_size ..= max_size;
 
     let jwalk = WalkDirGeneric::<((), Option<FileInfo>)>::new(path)
+        .min_depth(min_depth)
         .max_depth(max_depth)
         .parallelism(Parallelism::RayonNewPool(rayon::current_num_threads()))
         .skip_hidden(arguments.omit_hidden)
         .process_read_dir(move |_depth, _path, _read_dir_state, dir_entry_results| {
-            analyze_dir_entry_results(dir_entry_results, min_size);
+            analyze_dir_entry_results(dir_entry_results, &size_range);
         });
 
     let all_files: MyResult<Vec<FileInfo>> = jwalk
@@ -61,7 +69,7 @@ type JwalkResults = Vec<Result<DirEntry<((), Option<FileInfo>)>, jwalk::Error>>;
 
 // https://docs.rs/jwalk
 // https://github.com/Byron/jwalk/blob/main/examples/du.rs
-fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults, min_size: u64) {
+fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults, size_range: &RangeInclusive<u64>) {
 
     // inode: “index nodes”
     // https://doc.rust-lang.org/std/os/unix/fs/trait.MetadataExt.html#tymethod.ino
@@ -96,7 +104,7 @@ fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults, min_size: u64
                 let size_u64: u64 = metadata.len();
                 //let inode_number: u64 = metadata.ino();
 
-                if size_u64 >= min_size {
+                if size_range.contains(&size_u64) {
                     let key = Key::new(size_u64, None);
                     let path = dir_entry.path();
                     dir_entry.client_state = Some(FileInfo {key, path});

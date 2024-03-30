@@ -19,7 +19,7 @@ _find_duplicate_files() {
 
     case "${cmd}" in
         find_duplicate_files)
-            opts="-a -c -f -g -m -b -o -p -r -s -t -v -h -V --algorithm --clear_terminal --full_path --generate --max_depth --min_size --omit_hidden --path --result_format --sort --time --verbose --help --version"
+            opts="-a -c -f -g -d -D -b -B -o -p -r -s -t -v -h -V --algorithm --clear_terminal --full_path --generate --min_depth --max_depth --min_size --max_size --omit_hidden --path --result_format --sort --time --verbose --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -41,11 +41,19 @@ _find_duplicate_files() {
                     COMPREPLY=($(compgen -W "bash elvish fish powershell zsh" -- "${cur}"))
                     return 0
                     ;;
+                --min_depth)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -d)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
                 --max_depth)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
-                -m)
+                -D)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
@@ -54,6 +62,14 @@ _find_duplicate_files() {
                     return 0
                     ;;
                 -b)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --max_size)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -B)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;

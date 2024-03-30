@@ -19,10 +19,14 @@ _find_duplicate_files() {
 '--algorithm=[Choose the hash algorithm]:ALGORITHM:(ahash blake3 fxhash sha256 sha512)' \
 '-g+[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '--generate=[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
-'-m+[Set the maximum depth to search for duplicate files]:MAX_DEPTH: ' \
+'-d+[Set the minimum depth to search for duplicate files]:MIN_DEPTH: ' \
+'--min_depth=[Set the minimum depth to search for duplicate files]:MIN_DEPTH: ' \
+'-D+[Set the maximum depth to search for duplicate files]:MAX_DEPTH: ' \
 '--max_depth=[Set the maximum depth to search for duplicate files]:MAX_DEPTH: ' \
-'-b+[Set a minimum file size to search for duplicate files]:MIN_SIZE: ' \
-'--min_size=[Set a minimum file size to search for duplicate files]:MIN_SIZE: ' \
+'-b+[Set a minimum file size (in bytes) to search for duplicate files]:MIN_SIZE: ' \
+'--min_size=[Set a minimum file size (in bytes) to search for duplicate files]:MIN_SIZE: ' \
+'-B+[Set a maximum file size (in bytes) to search for duplicate files]:MAX_SIZE: ' \
+'--max_size=[Set a maximum file size (in bytes) to search for duplicate files]:MAX_SIZE: ' \
 '-p+[Set the path where to look for duplicate files, otherwise use the current directory]:PATH:_files' \
 '--path=[Set the path where to look for duplicate files, otherwise use the current directory]:PATH:_files' \
 '-r+[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
