@@ -103,9 +103,9 @@ impl PathBufExtension for PathBuf {
 }
 
 /// File is an object providing access to an open file on the filesystem.
-pub fn open_file<P>(path: P) -> MyResult<File>
+pub fn open_file<P>(path: &P) -> MyResult<File>
 where
-    P: AsRef<Path> + std::marker::Copy + std::fmt::Debug,
+    P: AsRef<Path> + std::fmt::Debug,
 {
     let file: File = match fs::OpenOptions::new()
         .read(true)
