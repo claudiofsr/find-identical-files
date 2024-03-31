@@ -1,14 +1,11 @@
-use crate::add_thousands_separator;
-use serde::Serialize;
-
 use crate::{
+    add_thousands_separator,
     args::{Arguments, ResultFormat::*},
-    my_print, split_and_insert, Key, MyResult, TotalInfo,
+    my_print, split_and_insert, FileInfo, Key, MyResult, PathBufExtension, TotalInfo,
 };
-
-use std::{io::Write, path::PathBuf};
-
 use rayon::prelude::*;
+use serde::Serialize;
+use std::{io::Write, path::PathBuf};
 
 /// Grouped file information
 #[derive(Debug, Clone, Serialize)]
@@ -18,7 +15,7 @@ pub struct GroupInfo {
     pub key: Key,
     /// File Paths
     #[serde(rename = "Paths")]
-    pub paths: Vec<PathBuf>,
+    pub paths: Vec<PathBuf>, // Arc<[PathBuf]> for immutable data
     /// Number of duplicate files with the same size and blake3 hash
     #[serde(rename = "Number of duplicate files")]
     pub num_file: usize,
@@ -63,6 +60,25 @@ impl GroupInfo {
             }
         }
     }
+
+    pub fn update_hash(&self, opt_arguments: Option<&Arguments>) -> Vec<FileInfo> {
+        self.paths
+            .clone()
+            .into_par_iter() // rayon parallel iterator
+            .map(|path| {
+                let key = if let Ok(hash) = path.get_hash(opt_arguments) {
+                    Key {
+                        size: self.key.size,
+                        hash,
+                    }
+                } else {
+                    self.key.clone()
+                };
+
+                FileInfo { key, path }
+            })
+            .collect()
+    }
 }
 
 pub trait GroupExtension {
@@ -75,23 +91,23 @@ impl GroupExtension for [GroupInfo] {
     /// Sort the list of duplicate files.
     ///
     /// Two options:
-    /// 1. Sort by (file size, hash) and then by number of duplicate files;
-    /// 2. Sort by number of duplicate files and then by (file size, hash).
+    ///
+    /// 1. Sort by number of duplicate files and then by (file size, hash);
+    /// 2. Sort by (file size, hash). `default`
     fn sort_duplicate_files(&mut self, arguments: &Arguments) {
         if arguments.sort {
-            // Sort by (file size, hash) and then by number of duplicate files.
-            self.par_sort_unstable_by_key(|group_info| {
-                (
-                    group_info.key.size,
-                    group_info.key.hash.clone(),
-                    group_info.num_file,
-                )
-            });
-        } else {
             // Sort by number of duplicate files and then by (file size, hash).
             self.par_sort_unstable_by_key(|group_info| {
                 (
                     group_info.num_file,
+                    group_info.key.size,
+                    group_info.key.hash.clone(),
+                )
+            });
+        } else {
+            // Sort by (file size, hash) and then by number of duplicate files.
+            self.par_sort_unstable_by_key(|group_info| {
+                (
                     group_info.key.size,
                     group_info.key.hash.clone(),
                 )

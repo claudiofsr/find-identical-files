@@ -205,7 +205,7 @@ pub struct Arguments {
     #[arg(short('r'), long("result_format"), value_enum, default_value_t = ResultFormat::default())]
     pub result_format: ResultFormat,
 
-    /// Sort result by file size, otherwise sort by number of duplicate files.
+    /// Sort result by number of duplicate files, otherwise sort by file size.
     #[arg(short('s'), long("sort"), default_value_t = false)]
     pub sort: bool,
 

@@ -143,19 +143,7 @@ pub fn get_duplicate_files(
     let duplicate_hash: Vec<GroupInfo> = duplicate_size
         .par_iter() // rayon parallel iterator
         .filter_map(|group_info| {
-            let hashed_files: Vec<FileInfo> = group_info
-                .paths
-                .clone()
-                .into_par_iter() // rayon parallel iterator
-                .map(|path| {
-                    let mut key = group_info.key.clone();
-                    if let Ok(hash) = path.get_hash(opt_arguments) {
-                        key.set_hash(hash);
-                    }
-                    FileInfo { key, path }
-                })
-                .collect();
-
+            let hashed_files: Vec<FileInfo> = group_info.update_hash(opt_arguments);
             let duplicate_hash: Vec<GroupInfo> = get_grouped_files(&hashed_files);
 
             if !duplicate_hash.is_empty() {
