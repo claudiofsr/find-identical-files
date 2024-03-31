@@ -107,10 +107,7 @@ impl GroupExtension for [GroupInfo] {
         } else {
             // Sort by (file size, hash) and then by number of duplicate files.
             self.par_sort_unstable_by_key(|group_info| {
-                (
-                    group_info.key.size,
-                    group_info.key.hash.clone(),
-                )
+                (group_info.key.size, group_info.key.hash.clone())
             });
         }
     }

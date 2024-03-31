@@ -96,7 +96,7 @@ Options:
   -r, --result_format <RESULT_FORMAT>
           Print the result in the chosen format [default: personal] [possible values: json, yaml, personal]
   -s, --sort
-          Sort result by file size, otherwise sort by number of duplicate files
+          Sort result by number of duplicate files, otherwise sort by file size
   -t, --time
           Show total execution time
   -v, --verbose
