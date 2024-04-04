@@ -4,7 +4,7 @@ use blake3::Hasher as Blake3Hasher;
 use clap::ValueEnum;
 use rustc_hash::FxHasher;
 use serde::Serialize;
-use sha2::{Digest, Sha256 as Sha2_256, Sha512 as Sha2_512};
+use sha2::{Digest, Sha256, Sha512};
 use std::{
     fmt,
     fs::File,
@@ -111,8 +111,8 @@ impl Algorithm {
             Algorithm::Ahash => get_ahash(reader),
             Algorithm::Blake3 => get_blake3(reader),
             Algorithm::Fxhash => get_fxhash(reader),
-            Algorithm::SHA256 => get_sha2_256(reader),
-            Algorithm::SHA512 => get_sha2_512(reader),
+            Algorithm::SHA256 => get_sha256(reader),
+            Algorithm::SHA512 => get_sha512(reader),
         }
     }
 }
@@ -198,21 +198,23 @@ where
 /// Verify with
 ///
 /// openssl dgst -sha256 Some_File
-fn get_sha2_256<R>(mut reader: R) -> MyResult<String>
+fn get_sha256<R>(mut reader: R) -> MyResult<String>
 where
     R: Read,
 {
     let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = Sha2_256::new();
+    let mut hasher = Sha256::new();
 
     loop {
         let count = reader.read(&mut buffer)?;
         if count == 0 {
             break;
         }
+        // `update` can be called repeatedly and is generic over `AsRef<[u8]>`
         hasher.update(&buffer[..count]);
     }
 
+    // Note that calling `finalize()` consumes hasher
     let hash: String = hasher.finalize().to_hex_string();
 
     Ok(hash)
@@ -223,21 +225,23 @@ where
 /// Verify with
 ///
 /// openssl dgst -sha512 Some_File
-fn get_sha2_512<R>(mut reader: R) -> MyResult<String>
+fn get_sha512<R>(mut reader: R) -> MyResult<String>
 where
     R: Read,
 {
     let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = Sha2_512::new();
+    let mut hasher = Sha512::new();
 
     loop {
         let count = reader.read(&mut buffer)?;
         if count == 0 {
             break;
         }
+        // `update` can be called repeatedly and is generic over `AsRef<[u8]>`
         hasher.update(&buffer[..count]);
     }
 
+    // Note that calling `finalize()` consumes hasher
     let hash: String = hasher.finalize().to_hex_string();
 
     Ok(hash)

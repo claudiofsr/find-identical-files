@@ -8,7 +8,7 @@ use std::time::Instant;
     cargo run --features walkdir -- -cvts
     cargo doc --open
     cargo b -r && cargo install --path=.
-    cargo b -r && cargo install --features walkdir --path=.
+    cargo b -r && cargo install --path=. --features walkdir
 */
 
 // Reading suggestion (not applied here):

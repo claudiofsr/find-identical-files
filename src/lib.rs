@@ -2,18 +2,17 @@ mod args;
 mod enumerations;
 mod structures;
 
-#[cfg(feature = "walkdir")]
-mod with_walkdir;
-
-#[cfg(feature = "walkdir")]
-pub use with_walkdir::get_all_files;
-
-// default: use jwalk
-#[cfg(not(feature = "walkdir"))]
-mod with_jwalk;
-
-#[cfg(not(feature = "walkdir"))]
-pub use with_jwalk::get_all_files;
+// https://crates.io/crates/cfg-if
+cfg_if::cfg_if! {
+    if #[cfg(feature = "walkdir")] {
+        mod with_walkdir;
+        pub use with_walkdir::get_all_files;
+    } else {
+        // default: use jwalk
+        mod with_jwalk;
+        pub use with_jwalk::get_all_files;
+    }
+}
 
 pub use self::{
     args::Arguments,
