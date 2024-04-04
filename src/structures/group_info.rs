@@ -216,14 +216,14 @@ impl GroupExtension for [GroupInfo] {
             .create(true)
             .truncate(true) // replace the file
             .open(output_file)
-            {
-                Ok(f) => f,
-                Err(error) => {
-                    eprintln!("fn export_to_csv()");
-                    eprintln!("Couldn't create {:?}", output_file);
-                    panic!("Error: {error}");
-                },
-            };
+        {
+            Ok(f) => f,
+            Err(error) => {
+                eprintln!("fn export_to_csv()");
+                eprintln!("Couldn't create {:?}", output_file);
+                panic!("Error: {error}");
+            }
+        };
 
         let mut writer = csv::WriterBuilder::new()
             .delimiter(b';')
