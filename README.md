@@ -64,6 +64,12 @@ find_duplicate_files -b 8 -B 1024
 find_duplicate_files -b 1024 -B 1024
 ```
 
+8. Export the result to a CSV file (fdf.csv):
+
+```
+find_duplicate_files -e
+```
+
 ## Help
 
 Type in the terminal `find_duplicate_files -h` to see the help messages and all available options:
@@ -77,6 +83,8 @@ Options:
           Choose the hash algorithm [default: blake3] [possible values: ahash, blake3, fxhash, sha256, sha512]
   -c, --clear_terminal
           Clear the terminal screen before listing the duplicate files
+  -e, --export_to_csv
+          Export the result to a CSV file (fdf.csv)
   -f, --full_path
           Prints full path of duplicate files, otherwise relative path
   -g, --generate <GENERATOR>

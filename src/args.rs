@@ -60,6 +60,10 @@ pub struct Arguments {
     pub clear_terminal: bool,
 
     /// Export the result to a CSV file (fdf.csv).
+    /// 
+    /// CSV: Comma-separated Values
+    /// 
+    /// Delimiter: ';'
     #[arg(short('e'), long("export_to_csv"), default_value_t = false)]
     pub export_to_csv: bool,
 
