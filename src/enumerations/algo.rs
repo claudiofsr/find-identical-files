@@ -120,10 +120,7 @@ impl Algorithm {
 /// Calculates the aHash from Path.
 ///
 /// <https://crates.io/crates/ahash>
-fn get_ahash<R>(mut reader: R) -> MyResult<String>
-where
-    R: Read,
-{
+fn get_ahash(mut reader: impl Read) -> MyResult<String> {
     let mut buffer = [0_u8; BUFFER_SIZE];
     let mut hasher = AHasher::default();
 
@@ -198,6 +195,8 @@ where
 /// Verify with
 ///
 /// openssl dgst -sha256 Some_File
+///
+/// <https://github.com/RustCrypto/hashes/tree/master/sha2>
 fn get_sha256<R>(mut reader: R) -> MyResult<String>
 where
     R: Read,
@@ -225,6 +224,8 @@ where
 /// Verify with
 ///
 /// openssl dgst -sha512 Some_File
+///
+/// <https://github.com/RustCrypto/hashes/tree/master/sha2>
 fn get_sha512<R>(mut reader: R) -> MyResult<String>
 where
     R: Read,
