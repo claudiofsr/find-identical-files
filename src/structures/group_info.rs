@@ -7,9 +7,9 @@ use crate::{
 use rayon::prelude::*;
 use serde::Serialize;
 use std::{
+    fs::{File, OpenOptions},
     io::Write,
-    path::PathBuf,
-    //thread,
+    path::PathBuf, //thread,
 };
 
 /// Grouped file information
@@ -119,6 +119,8 @@ pub trait GroupExtension {
 
     /// Get Total Info
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo;
+
+    fn export_to_csv(&self, arguments: &Arguments) -> MyResult<()>;
 }
 
 impl GroupExtension for [GroupInfo] {
@@ -200,5 +202,60 @@ impl GroupExtension for [GroupInfo] {
             total_num_hashes: self.len(),
             total_size,
         }
+    }
+
+    fn export_to_csv(&self, arguments: &Arguments) -> MyResult<()> {
+        let output_file = "fdf.csv";
+
+        eprintln!("Write CSV File: {:?}", output_file);
+
+        // Open a file in write-only mode
+        let file: File = match OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(true) // replace the file
+            .open(output_file)
+            {
+                Ok(f) => f,
+                Err(error) => {
+                    eprintln!("fn export_to_csv()");
+                    eprintln!("Couldn't create {:?}", output_file);
+                    panic!("Error: {error}");
+                },
+            };
+
+        let mut writer = csv::WriterBuilder::new()
+            .delimiter(b';')
+            .has_headers(false)
+            .quote_style(csv::QuoteStyle::Necessary) // NonNumeric
+            .from_writer(file);
+
+        let hash_name = format!("Hash ({})", arguments.algorithm);
+
+        // headers: write column names
+        writer.write_record([
+            "Size",
+            &hash_name,
+            "Path",
+            "Number of duplicate files",
+            "Sum Size (bytes)",
+        ])?;
+
+        for group_info in self {
+            //writer.serialize(group_info)?;
+            let size = group_info.key.size.to_string();
+            let hash = group_info.key.hash.clone().unwrap_or_default();
+            let num_file = group_info.num_file.to_string();
+            let sum_size = group_info.sum_size.to_string();
+            for path in &group_info.paths {
+                let p = path.to_str().unwrap_or_default();
+                writer.write_record([&size, &hash, p, &num_file, &sum_size])?;
+            }
+        }
+
+        writer.flush()?;
+
+        Ok(())
     }
 }

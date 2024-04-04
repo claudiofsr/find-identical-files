@@ -33,6 +33,8 @@ _find_duplicate_files() {
 '--result_format=[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '-c[Clear the terminal screen before listing the duplicate files]' \
 '--clear_terminal[Clear the terminal screen before listing the duplicate files]' \
+'-e[Export the result to a CSV file (fdf.csv)]' \
+'--export_to_csv[Export the result to a CSV file (fdf.csv)]' \
 '-f[Prints full path of duplicate files, otherwise relative path]' \
 '--full_path[Prints full path of duplicate files, otherwise relative path]' \
 '-o[Omit hidden files (starts with '\''.'\''), otherwise search all files]' \

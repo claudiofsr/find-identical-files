@@ -36,6 +36,8 @@ set edit:completion:arg-completer[find_duplicate_files] = {|@words|
             cand --result_format 'Print the result in the chosen format'
             cand -c 'Clear the terminal screen before listing the duplicate files'
             cand --clear_terminal 'Clear the terminal screen before listing the duplicate files'
+            cand -e 'Export the result to a CSV file (fdf.csv)'
+            cand --export_to_csv 'Export the result to a CSV file (fdf.csv)'
             cand -f 'Prints full path of duplicate files, otherwise relative path'
             cand --full_path 'Prints full path of duplicate files, otherwise relative path'
             cand -o 'Omit hidden files (starts with ''.''), otherwise search all files'

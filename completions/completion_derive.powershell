@@ -39,6 +39,8 @@ Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBl
             [CompletionResult]::new('--result_format', 'result_format', [CompletionResultType]::ParameterName, 'Print the result in the chosen format')
             [CompletionResult]::new('-c', 'c', [CompletionResultType]::ParameterName, 'Clear the terminal screen before listing the duplicate files')
             [CompletionResult]::new('--clear_terminal', 'clear_terminal', [CompletionResultType]::ParameterName, 'Clear the terminal screen before listing the duplicate files')
+            [CompletionResult]::new('-e', 'e', [CompletionResultType]::ParameterName, 'Export the result to a CSV file (fdf.csv)')
+            [CompletionResult]::new('--export_to_csv', 'export_to_csv', [CompletionResultType]::ParameterName, 'Export the result to a CSV file (fdf.csv)')
             [CompletionResult]::new('-f', 'f', [CompletionResultType]::ParameterName, 'Prints full path of duplicate files, otherwise relative path')
             [CompletionResult]::new('--full_path', 'full_path', [CompletionResultType]::ParameterName, 'Prints full path of duplicate files, otherwise relative path')
             [CompletionResult]::new('-o', 'o', [CompletionResultType]::ParameterName, 'Omit hidden files (starts with ''.''), otherwise search all files')

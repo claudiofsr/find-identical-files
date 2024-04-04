@@ -7,6 +7,7 @@ complete -c find_duplicate_files -s B -l max_size -d 'Set a maximum file size (i
 complete -c find_duplicate_files -s p -l path -d 'Set the path where to look for duplicate files, otherwise use the current directory' -r -F
 complete -c find_duplicate_files -s r -l result_format -d 'Print the result in the chosen format' -r -f -a "{json	'',yaml	'',personal	''}"
 complete -c find_duplicate_files -s c -l clear_terminal -d 'Clear the terminal screen before listing the duplicate files'
+complete -c find_duplicate_files -s e -l export_to_csv -d 'Export the result to a CSV file (fdf.csv)'
 complete -c find_duplicate_files -s f -l full_path -d 'Prints full path of duplicate files, otherwise relative path'
 complete -c find_duplicate_files -s o -l omit_hidden -d 'Omit hidden files (starts with \'.\'), otherwise search all files'
 complete -c find_duplicate_files -s s -l sort -d 'Sort result by number of duplicate files, otherwise sort by file size'

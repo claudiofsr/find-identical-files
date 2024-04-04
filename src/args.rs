@@ -59,6 +59,10 @@ pub struct Arguments {
     // action = ArgAction::SetTrue
     pub clear_terminal: bool,
 
+    /// Export the result to a CSV file (fdf.csv).
+    #[arg(short('e'), long("export_to_csv"), default_value_t = false)]
+    pub export_to_csv: bool,
+
     /// Prints full path of duplicate files, otherwise relative path.
     #[arg(short('f'), long("full_path"), default_value_t = false)]
     pub full_path: bool,

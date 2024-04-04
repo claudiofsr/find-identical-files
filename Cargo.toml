@@ -1,7 +1,7 @@
 [package]
 name = "find_duplicate_files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
-version = "0.23.1"
+version = "0.24.0"
 rust-version = "1.77"
 repository = "https://github.com/claudiofsr/find_duplicate_files"
 homepage = "https://github.com/claudiofsr/find_duplicate_files"
@@ -31,6 +31,7 @@ blake3 = { version = "1.5", features = ["rayon"] }
 clap = { version = "4.5", features = ["derive", "color", "unstable-styles"] }
 clap_complete = "4.5"
 cfg-if = "1.0"
+csv = "1.3"
 hashbrown = { version = "0.14", features = ["rayon", "ahash"] }
 rayon = "1.10"
 rustc-hash = "1.1"

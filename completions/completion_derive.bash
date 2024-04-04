@@ -19,7 +19,7 @@ _find_duplicate_files() {
 
     case "${cmd}" in
         find_duplicate_files)
-            opts="-a -c -f -g -d -D -b -B -o -p -r -s -t -v -h -V --algorithm --clear_terminal --full_path --generate --min_depth --max_depth --min_size --max_size --omit_hidden --path --result_format --sort --time --verbose --help --version"
+            opts="-a -c -e -f -g -d -D -b -B -o -p -r -s -t -v -h -V --algorithm --clear_terminal --export_to_csv --full_path --generate --min_depth --max_depth --min_size --max_size --omit_hidden --path --result_format --sort --time --verbose --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
