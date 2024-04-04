@@ -245,7 +245,7 @@ impl GroupExtension for [GroupInfo] {
         for group_info in self {
             //writer.serialize(group_info)?;
             let size = group_info.key.size.to_string();
-            let hash = group_info.key.hash.clone().unwrap_or_default();
+            let hash = format!("{:#?}", group_info.key.hash.clone().unwrap_or_default());
             let num_file = group_info.num_file.to_string();
             let sum_size = group_info.sum_size.to_string();
             for path in &group_info.paths {
