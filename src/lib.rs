@@ -20,6 +20,7 @@ pub use self::{
     structures::file_info::{FileExtension, FileInfo},
     structures::group_info::{GroupExtension, GroupInfo},
     structures::key_info::Key,
+    structures::path_info::PathInfo,
     structures::total_info::TotalInfo,
 };
 
