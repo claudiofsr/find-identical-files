@@ -240,7 +240,6 @@ impl GroupExtension for [GroupInfo] {
 
     fn export_to_csv(&self) -> MyResult<()> {
         let output_file = "fdf.csv";
-
         eprintln!("Write CSV File: {:?}", output_file);
 
         // Open a file in write-only mode
