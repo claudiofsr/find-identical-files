@@ -77,8 +77,8 @@ fn main() -> MyResult<()> {
     TotalInfo::get_summary(&duplicate_hash, &arguments, all_files.len())
         .print_sumary(&arguments)?;
 
-    if arguments.export_to_csv {
-        duplicate_hash.export_to_csv()?;
+    if let Some(path) = arguments.csv_dir {
+        duplicate_hash.export_to_csv(path)?;
     }
 
     if arguments.time {

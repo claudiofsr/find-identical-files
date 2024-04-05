@@ -37,6 +37,7 @@ pub type MyResult<T> = Result<T, MyError>;
 
 const STACK_SIZE: usize = 64 * 1024 * 1024;
 const SEPARATOR: char = '.'; // thousands sep
+pub const CSV_FILENAME: &str = "fdf.csv";
 
 /**
 If `thread '<unknown>' has overflowed its stack`, set the stack size to a new value.
@@ -85,8 +86,8 @@ pub fn get_path(arguments: &Arguments) -> MyResult<PathBuf> {
             if std::path::Path::new(path).try_exists()? {
                 path.to_path_buf()
             } else {
-                eprintln!("The path {path:?} was not found!");
-                panic!("fn get_path()");
+                eprintln!("fn get_path()");
+                panic!("The path {path:?} was not found!");
             }
         }
         None => PathBuf::from("."),

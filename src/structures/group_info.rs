@@ -2,14 +2,15 @@ use crate::{
     add_thousands_separator,
     args::{Arguments, ResultFormat::*},
     my_print, split_and_insert, FileExtension, FileInfo, Key, MyResult, PathBufExtension, PathInfo,
-    TotalInfo, SEPARATOR,
+    TotalInfo, CSV_FILENAME, SEPARATOR,
 };
 use rayon::prelude::*;
 use serde::Serialize;
 use std::{
     fs::{File, OpenOptions},
     io::Write,
-    path::PathBuf, //thread,
+    path::PathBuf,
+    //thread,
 };
 
 /// Grouped file information
@@ -134,7 +135,7 @@ pub trait GroupExtension {
     /// Get Total Info
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo;
 
-    fn export_to_csv(&self) -> MyResult<()>;
+    fn export_to_csv(&self, path: PathBuf) -> MyResult<()>;
 }
 
 impl GroupExtension for [GroupInfo] {
@@ -218,9 +219,8 @@ impl GroupExtension for [GroupInfo] {
         }
     }
 
-    fn export_to_csv(&self) -> MyResult<()> {
-        let output_file = "fdf.csv";
-        eprintln!("Write CSV File: {:?}", output_file);
+    fn export_to_csv(&self, path: PathBuf) -> MyResult<()> {
+        let path_csv: PathBuf = get_path_csv(path)?;
 
         // Open a file in write-only mode
         let file: File = match OpenOptions::new()
@@ -228,12 +228,12 @@ impl GroupExtension for [GroupInfo] {
             .write(true)
             .create(true)
             .truncate(true) // replace the file
-            .open(output_file)
+            .open(&path_csv)
         {
             Ok(f) => f,
             Err(error) => {
                 eprintln!("fn export_to_csv()");
-                eprintln!("Couldn't create {:?}", output_file);
+                eprintln!("Couldn't create {:?}", path_csv);
                 panic!("Error: {error}");
             }
         };
@@ -254,4 +254,19 @@ impl GroupExtension for [GroupInfo] {
 
         Ok(())
     }
+}
+
+fn get_path_csv(path: PathBuf) -> MyResult<PathBuf> {
+    let mut path_csv: PathBuf = if std::path::Path::new(&path).try_exists()? {
+        path.to_path_buf()
+    } else {
+        eprintln!("fn export_to_csv()");
+        panic!("The path {path:?} was not found!");
+    };
+
+    path_csv.push(CSV_FILENAME);
+
+    eprintln!("Write CSV File: {:?}", path_csv);
+
+    Ok(path_csv)
 }
