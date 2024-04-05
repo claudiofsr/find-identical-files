@@ -23,6 +23,8 @@ Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBl
         'find_duplicate_files' {
             [CompletionResult]::new('-a', 'a', [CompletionResultType]::ParameterName, 'Choose the hash algorithm')
             [CompletionResult]::new('--algorithm', 'algorithm', [CompletionResultType]::ParameterName, 'Choose the hash algorithm')
+            [CompletionResult]::new('-e', 'e', [CompletionResultType]::ParameterName, 'Enter a directory to export duplicate file information to CSV format (fdf.csv)')
+            [CompletionResult]::new('--csv_dir', 'csv_dir', [CompletionResultType]::ParameterName, 'Enter a directory to export duplicate file information to CSV format (fdf.csv)')
             [CompletionResult]::new('-g', 'g', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
             [CompletionResult]::new('--generate', 'generate', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
             [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Set the minimum depth to search for duplicate files')
@@ -39,8 +41,6 @@ Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBl
             [CompletionResult]::new('--result_format', 'result_format', [CompletionResultType]::ParameterName, 'Print the result in the chosen format')
             [CompletionResult]::new('-c', 'c', [CompletionResultType]::ParameterName, 'Clear the terminal screen before listing the duplicate files')
             [CompletionResult]::new('--clear_terminal', 'clear_terminal', [CompletionResultType]::ParameterName, 'Clear the terminal screen before listing the duplicate files')
-            [CompletionResult]::new('-e', 'e', [CompletionResultType]::ParameterName, 'Export the result to a CSV file (fdf.csv)')
-            [CompletionResult]::new('--export_to_csv', 'export_to_csv', [CompletionResultType]::ParameterName, 'Export the result to a CSV file (fdf.csv)')
             [CompletionResult]::new('-f', 'f', [CompletionResultType]::ParameterName, 'Prints full path of duplicate files, otherwise relative path')
             [CompletionResult]::new('--full_path', 'full_path', [CompletionResultType]::ParameterName, 'Prints full path of duplicate files, otherwise relative path')
             [CompletionResult]::new('-o', 'o', [CompletionResultType]::ParameterName, 'Omit hidden files (starts with ''.''), otherwise search all files')

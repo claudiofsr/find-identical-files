@@ -17,6 +17,8 @@ _find_duplicate_files() {
     _arguments "${_arguments_options[@]}" \
 '-a+[Choose the hash algorithm]:ALGORITHM:(ahash blake3 fxhash sha256 sha512)' \
 '--algorithm=[Choose the hash algorithm]:ALGORITHM:(ahash blake3 fxhash sha256 sha512)' \
+'-e+[Enter a directory to export duplicate file information to CSV format (fdf.csv)]:CSV_DIR:_files' \
+'--csv_dir=[Enter a directory to export duplicate file information to CSV format (fdf.csv)]:CSV_DIR:_files' \
 '-g+[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '--generate=[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '-d+[Set the minimum depth to search for duplicate files]:MIN_DEPTH: ' \
@@ -33,8 +35,6 @@ _find_duplicate_files() {
 '--result_format=[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '-c[Clear the terminal screen before listing the duplicate files]' \
 '--clear_terminal[Clear the terminal screen before listing the duplicate files]' \
-'-e[Export the result to a CSV file (fdf.csv)]' \
-'--export_to_csv[Export the result to a CSV file (fdf.csv)]' \
 '-f[Prints full path of duplicate files, otherwise relative path]' \
 '--full_path[Prints full path of duplicate files, otherwise relative path]' \
 '-o[Omit hidden files (starts with '\''.'\''), otherwise search all files]' \
