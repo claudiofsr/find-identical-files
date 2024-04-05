@@ -94,7 +94,7 @@ impl GroupInfo {
             .collect()
     }
 
-    /// Flatten paths
+    /// Convert [`GroupInfo`] to Vec<[`PathInfo`]>
     pub fn flatten(&self) -> Vec<PathInfo> {
         self.paths
             .iter()
