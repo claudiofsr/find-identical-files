@@ -94,7 +94,7 @@ impl GroupInfo {
             .collect()
     }
 
-    /// Update hash
+    /// Flatten paths
     pub fn flatten(&self) -> Vec<PathInfo> {
         self.paths
             .iter()
