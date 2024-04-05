@@ -1,4 +1,7 @@
-use serde::Serialize;
+use serde::{
+    Serialize,
+    //Serializer,
+};
 use std::path::PathBuf;
 
 /// File Information including path
@@ -8,7 +11,7 @@ pub struct PathInfo {
     #[serde(rename = "File size (bytes)")]
     pub size: usize,
     /// Hash
-    #[serde(rename = "Hash")]
+    #[serde(rename = "Hash")] // serialize_with = "add_quotes"
     pub hash: Option<String>,
     /// File Paths
     #[serde(rename = "Path")]
@@ -20,3 +23,22 @@ pub struct PathInfo {
     #[serde(rename = "Sum of file sizes (bytes)")]
     pub sum_size: usize,
 }
+
+/*
+/// Add quotes
+fn add_quotes<S>(hash: &Option<String>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    match hash {
+        Some(string) => match string.parse::<u128>() {
+            Ok(integer) if integer > 1_000_000_000_000 => {
+                serializer.collect_str(&format!("'{:?}'", integer))
+            }
+            Ok(_) => serializer.collect_str(&string.to_string()),
+            Err(_) => serializer.collect_str(&string.to_string()),
+        },
+        None => serializer.serialize_none(),
+    }
+}
+*/
