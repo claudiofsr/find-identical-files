@@ -1,7 +1,7 @@
 use serde::Serialize;
 use std::path::PathBuf;
 
-/// Flatten paths
+/// File Information including path
 #[derive(Debug, Clone, Serialize)]
 pub struct PathInfo {
     /// File size (in bytes)
