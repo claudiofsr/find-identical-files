@@ -78,7 +78,7 @@ fn main() -> MyResult<()> {
         .print_sumary(&arguments)?;
 
     if arguments.export_to_csv {
-        duplicate_hash.export_to_csv(&arguments)?;
+        duplicate_hash.export_to_csv()?;
     }
 
     if arguments.time {

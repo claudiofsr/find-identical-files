@@ -32,6 +32,26 @@ pub struct GroupInfo {
     pub sum_size: usize,
 }
 
+/// Flatten paths
+#[derive(Debug, Clone, Serialize)]
+pub struct PathInfo {
+    /// File size (in bytes)
+    #[serde(rename = "File size (bytes)")]
+    pub size: usize,
+    /// Hash
+    #[serde(rename = "Hash")]
+    pub hash: Option<String>,
+    /// File Paths
+    #[serde(rename = "Path")]
+    pub path: PathBuf,
+    /// Number of duplicate files with the same size and blake3 hash
+    #[serde(rename = "Number of duplicate files")]
+    pub num_file: usize,
+    /// Sum of individual file sizes declared in paths
+    #[serde(rename = "Sum of file sizes (bytes)")]
+    pub sum_size: usize,
+}
+
 impl GroupInfo {
     /// Print GroupInfo fields in chosen format
     pub fn print_formatted(
@@ -92,6 +112,20 @@ impl GroupInfo {
             })
             .collect()
     }
+
+    /// Update hash
+    pub fn flatten(&self) -> Vec<PathInfo> {
+        self.paths
+            .iter()
+            .map(|path| PathInfo {
+                size: self.key.size,
+                hash: self.key.hash.clone(),
+                path: path.to_owned(),
+                num_file: self.num_file,
+                sum_size: self.sum_size,
+            })
+            .collect()
+    }
 }
 
 pub trait GroupExtension {
@@ -120,7 +154,7 @@ pub trait GroupExtension {
     /// Get Total Info
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo;
 
-    fn export_to_csv(&self, arguments: &Arguments) -> MyResult<()>;
+    fn export_to_csv(&self) -> MyResult<()>;
 }
 
 impl GroupExtension for [GroupInfo] {
@@ -204,7 +238,7 @@ impl GroupExtension for [GroupInfo] {
         }
     }
 
-    fn export_to_csv(&self, arguments: &Arguments) -> MyResult<()> {
+    fn export_to_csv(&self) -> MyResult<()> {
         let output_file = "fdf.csv";
 
         eprintln!("Write CSV File: {:?}", output_file);
@@ -227,30 +261,13 @@ impl GroupExtension for [GroupInfo] {
 
         let mut writer = csv::WriterBuilder::new()
             .delimiter(b';')
-            .has_headers(false)
+            .has_headers(true)
             .quote_style(csv::QuoteStyle::Necessary) // NonNumeric
             .from_writer(file);
 
-        let hash_name = format!("Hash ({})", arguments.algorithm);
-
-        // headers: write column names
-        writer.write_record([
-            "Size",
-            &hash_name,
-            "Path",
-            "Number of duplicate files",
-            "Sum Size (bytes)",
-        ])?;
-
         for group_info in self {
-            //writer.serialize(group_info)?;
-            let size = group_info.key.size.to_string();
-            let hash = format!("{:#?}", group_info.key.hash.clone().unwrap_or_default());
-            let num_file = group_info.num_file.to_string();
-            let sum_size = group_info.sum_size.to_string();
-            for path in &group_info.paths {
-                let p = path.to_str().unwrap_or_default();
-                writer.write_record([&size, &hash, p, &num_file, &sum_size])?;
+            for path_info in group_info.flatten() {
+                writer.serialize(path_info)?;
             }
         }
 

@@ -7,6 +7,6 @@ pub mod total_info;
 Structures defined in this directory:
     Key,
     FileInfo,
-    GroupInfo,
+    GroupInfo and PathInfo,
     TotalInfo,
 */
