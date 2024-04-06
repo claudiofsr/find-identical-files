@@ -67,6 +67,12 @@ pub struct Arguments {
     #[arg(short('e'), long("csv_dir"), required = false)]
     pub csv_dir: Option<PathBuf>,
 
+    /// Enter a directory to export duplicate file information to XLSX format (fdf.xlsx).
+    ///
+    /// XLSX: Excel file
+    #[arg(short('x'), long("xlsx_dir"), required = false)]
+    pub xlsx_dir: Option<PathBuf>,
+
     /// Prints full path of duplicate files, otherwise relative path.
     #[arg(short('f'), long("full_path"), default_value_t = false)]
     pub full_path: bool,

@@ -1,12 +1,12 @@
 use crate::add_thousands_separator;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 
 /// This key will be used by FileInfo and GroupInfo.
 ///
 /// For the FileInfo struct, the hash will be None.
 ///
 /// For the GroupInfo struct, the hash will be Some(blake3).
-#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Key {
     /// Individual file size (in bytes)
     #[serde(serialize_with = "add_thousands_separator")]

@@ -81,6 +81,10 @@ fn main() -> MyResult<()> {
         duplicate_hash.export_to_csv(path)?;
     }
 
+    if let Some(path) = arguments.xlsx_dir {
+        duplicate_hash.export_to_xlsx(path)?;
+    }
+
     if arguments.time {
         println!("Total Execution Time: {:?}", time.elapsed());
     }

@@ -1,11 +1,11 @@
 use crate::{
     add_thousands_separator,
     args::{Arguments, ResultFormat::*},
-    my_print, split_and_insert, FileExtension, FileInfo, Key, MyResult, PathBufExtension, PathInfo,
-    TotalInfo, CSV_FILENAME, SEPARATOR,
+    my_print, split_and_insert, write_xlsx, FileExtension, FileInfo, Key, MyResult,
+    PathBufExtension, PathInfo, TotalInfo, CSV_FILENAME, SEPARATOR, XLSX_FILENAME,
 };
 use rayon::prelude::*;
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::{
     fs::{File, OpenOptions},
     io::Write,
@@ -14,7 +14,7 @@ use std::{
 };
 
 /// Grouped file information
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupInfo {
     /// Key Information
     #[serde(rename = "File information")]
@@ -135,7 +135,14 @@ pub trait GroupExtension {
     /// Get Total Info
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo;
 
+    /// Convert Vec<[`GroupInfo`]> to Vec<[`PathInfo`]>
+    fn get_path_info(&self) -> Vec<PathInfo>;
+
+    /// Export to CSV format
     fn export_to_csv(&self, path: PathBuf) -> MyResult<()>;
+
+    /// Export to XLSX format
+    fn export_to_xlsx(&self, path: PathBuf) -> MyResult<()>;
 }
 
 impl GroupExtension for [GroupInfo] {
@@ -219,8 +226,15 @@ impl GroupExtension for [GroupInfo] {
         }
     }
 
+    fn get_path_info(&self) -> Vec<PathInfo> {
+        self.par_iter() // rayon parallel iterator
+            .flat_map(|group_info| group_info.flatten())
+            .collect()
+    }
+
     fn export_to_csv(&self, path: PathBuf) -> MyResult<()> {
-        let path_csv: PathBuf = get_path_csv(path)?;
+        let path_csv: PathBuf = get_path_csv(path, CSV_FILENAME)?;
+        eprintln!("Write CSV File: {:?}", path_csv);
 
         // Open a file in write-only mode
         let file: File = match OpenOptions::new()
@@ -244,29 +258,34 @@ impl GroupExtension for [GroupInfo] {
             .quote_style(csv::QuoteStyle::Necessary) // NonNumeric
             .from_writer(file);
 
-        for group_info in self {
-            for path_info in group_info.flatten() {
-                writer.serialize(path_info)?;
-            }
+        for path_info in self.get_path_info() {
+            writer.serialize(path_info)?;
         }
 
         writer.flush()?;
 
         Ok(())
     }
+
+    fn export_to_xlsx(&self, path: PathBuf) -> MyResult<()> {
+        let path_xlsx: PathBuf = get_path_csv(path, XLSX_FILENAME)?;
+        eprintln!("Write XLSX File: {:?}", path_xlsx);
+
+        write_xlsx(&self.get_path_info(), "Duplicate Files", path_xlsx)?;
+
+        Ok(())
+    }
 }
 
-fn get_path_csv(path: PathBuf) -> MyResult<PathBuf> {
+fn get_path_csv(path: PathBuf, filename: &str) -> MyResult<PathBuf> {
     let mut path_csv: PathBuf = if std::path::Path::new(&path).try_exists()? {
         path.to_path_buf()
     } else {
-        eprintln!("fn export_to_csv()");
+        eprintln!("fn get_path_csv()");
         panic!("The path {path:?} was not found!");
     };
 
-    path_csv.push(CSV_FILENAME);
-
-    eprintln!("Write CSV File: {:?}", path_csv);
+    path_csv.push(filename);
 
     Ok(path_csv)
 }

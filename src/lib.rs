@@ -1,5 +1,6 @@
 mod args;
 mod enumerations;
+mod excel;
 mod structures;
 
 // https://crates.io/crates/cfg-if
@@ -23,7 +24,7 @@ pub use self::{
     structures::path_info::PathInfo,
     structures::total_info::TotalInfo,
 };
-
+pub use excel::write_xlsx;
 use serde::Serializer;
 use std::{
     fs::{self, File},
@@ -38,6 +39,7 @@ pub type MyResult<T> = Result<T, MyError>;
 const STACK_SIZE: usize = 64 * 1024 * 1024;
 const SEPARATOR: char = '.'; // thousands sep
 pub const CSV_FILENAME: &str = "fdf.csv";
+pub const XLSX_FILENAME: &str = "fdf.xlsx";
 
 /**
 If `thread '<unknown>' has overflowed its stack`, set the stack size to a new value.

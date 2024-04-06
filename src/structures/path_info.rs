@@ -1,11 +1,11 @@
 use serde::{
-    Serialize,
-    //Serializer,
+    Deserialize,
+    Serialize, //Serializer,
 };
 use std::path::PathBuf;
 
 /// File Information including path
-#[derive(Debug, Clone, Serialize)]
+#[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct PathInfo {
     /// File size (in bytes)
     #[serde(rename = "File size (bytes)")]
