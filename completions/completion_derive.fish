@@ -1,5 +1,6 @@
 complete -c find_duplicate_files -s a -l algorithm -d 'Choose the hash algorithm' -r -f -a "{ahash	'',blake3	'',fxhash	'',sha256	'',sha512	''}"
 complete -c find_duplicate_files -s e -l csv_dir -d 'Enter a directory to export duplicate file information to CSV format (fdf.csv)' -r -F
+complete -c find_duplicate_files -s x -l xlsx_dir -d 'Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)' -r -F
 complete -c find_duplicate_files -s g -l generate -d 'If provided, outputs the completion file for given shell' -r -f -a "{bash	'',elvish	'',fish	'',powershell	'',zsh	''}"
 complete -c find_duplicate_files -s d -l min_depth -d 'Set the minimum depth to search for duplicate files' -r
 complete -c find_duplicate_files -s D -l max_depth -d 'Set the maximum depth to search for duplicate files' -r

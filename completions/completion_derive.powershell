@@ -25,6 +25,8 @@ Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBl
             [CompletionResult]::new('--algorithm', 'algorithm', [CompletionResultType]::ParameterName, 'Choose the hash algorithm')
             [CompletionResult]::new('-e', 'e', [CompletionResultType]::ParameterName, 'Enter a directory to export duplicate file information to CSV format (fdf.csv)')
             [CompletionResult]::new('--csv_dir', 'csv_dir', [CompletionResultType]::ParameterName, 'Enter a directory to export duplicate file information to CSV format (fdf.csv)')
+            [CompletionResult]::new('-x', 'x', [CompletionResultType]::ParameterName, 'Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)')
+            [CompletionResult]::new('--xlsx_dir', 'xlsx_dir', [CompletionResultType]::ParameterName, 'Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)')
             [CompletionResult]::new('-g', 'g', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
             [CompletionResult]::new('--generate', 'generate', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
             [CompletionResult]::new('-d', 'd', [CompletionResultType]::ParameterName, 'Set the minimum depth to search for duplicate files')

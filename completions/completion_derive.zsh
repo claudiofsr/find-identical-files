@@ -19,6 +19,8 @@ _find_duplicate_files() {
 '--algorithm=[Choose the hash algorithm]:ALGORITHM:(ahash blake3 fxhash sha256 sha512)' \
 '-e+[Enter a directory to export duplicate file information to CSV format (fdf.csv)]:CSV_DIR:_files' \
 '--csv_dir=[Enter a directory to export duplicate file information to CSV format (fdf.csv)]:CSV_DIR:_files' \
+'-x+[Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)]:XLSX_DIR:_files' \
+'--xlsx_dir=[Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)]:XLSX_DIR:_files' \
 '-g+[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '--generate=[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '-d+[Set the minimum depth to search for duplicate files]:MIN_DEPTH: ' \

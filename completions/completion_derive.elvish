@@ -22,6 +22,8 @@ set edit:completion:arg-completer[find_duplicate_files] = {|@words|
             cand --algorithm 'Choose the hash algorithm'
             cand -e 'Enter a directory to export duplicate file information to CSV format (fdf.csv)'
             cand --csv_dir 'Enter a directory to export duplicate file information to CSV format (fdf.csv)'
+            cand -x 'Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)'
+            cand --xlsx_dir 'Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)'
             cand -g 'If provided, outputs the completion file for given shell'
             cand --generate 'If provided, outputs the completion file for given shell'
             cand -d 'Set the minimum depth to search for duplicate files'
