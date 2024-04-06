@@ -7,7 +7,7 @@ use crate::{
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::{
-    fs::{self, File, OpenOptions},
+    fs::{File, OpenOptions},
     io::Write,
     path::PathBuf,
     //thread,
@@ -233,7 +233,7 @@ impl GroupExtension for [GroupInfo] {
     }
 
     fn export_to_csv(&self, path: PathBuf) -> MyResult<()> {
-        let path_csv: PathBuf = get_path_csv(path, CSV_FILENAME)?;
+        let path_csv: PathBuf = get_path_csv(&path, CSV_FILENAME)?;
         eprintln!("Write CSV File: {:?}", path_csv);
 
         // Open a file in write-only mode
@@ -268,7 +268,7 @@ impl GroupExtension for [GroupInfo] {
     }
 
     fn export_to_xlsx(&self, path: PathBuf) -> MyResult<()> {
-        let path_xlsx: PathBuf = get_path_csv(path, XLSX_FILENAME)?;
+        let path_xlsx: PathBuf = get_path_csv(&path, XLSX_FILENAME)?;
         eprintln!("Write XLSX File: {:?}", path_xlsx);
 
         write_xlsx(&self.get_path_info(), "Duplicate Files", path_xlsx)?;
@@ -277,16 +277,15 @@ impl GroupExtension for [GroupInfo] {
     }
 }
 
-fn get_path_csv(path: PathBuf, filename: &str) -> MyResult<PathBuf> {
-    let mut path_csv: PathBuf = if std::path::Path::new(&path).try_exists()? {
-        //path.to_path_buf()
-        fs::canonicalize(path)? // full path
+fn get_path_csv(path: &PathBuf, filename: &str) -> MyResult<PathBuf> {
+    let mut p: PathBuf = if std::path::Path::new(&path).try_exists()? {
+        path.to_owned()
     } else {
         eprintln!("fn get_path_csv()");
         panic!("The path {path:?} was not found!");
     };
 
-    path_csv.push(filename);
+    p.push(filename);
 
-    Ok(path_csv)
+    Ok(p)
 }
