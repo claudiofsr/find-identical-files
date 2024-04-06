@@ -78,6 +78,20 @@ Or to the `/tmp` directory:
 find_duplicate_files --csv_dir=/tmp
 ```
 
+9. Export the duplicate file information to a XLSX file (fdf.xlsx).
+
+To the currenty directory:
+
+```
+find_duplicate_files -x .
+```
+
+Or to the `/home/claudio/Downloads` directory:
+
+```
+find_duplicate_files --xlsx_dir=/home/claudio/Downloads
+```
+
 ## Help
 
 Type in the terminal `find_duplicate_files -h` to see the help messages and all available options:
@@ -93,6 +107,8 @@ Options:
           Clear the terminal screen before listing the duplicate files
   -e, --csv_dir <CSV_DIR>
           Enter a directory to export duplicate file information to CSV format (fdf.csv)
+  -x, --xlsx_dir <XLSX_DIR>
+          Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)
   -f, --full_path
           Prints full path of duplicate files, otherwise relative path
   -g, --generate <GENERATOR>

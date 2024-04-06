@@ -54,7 +54,11 @@ where
 }
 
 /// Get Worksheet according to some struct T
-fn get_worksheet<'de, T>(lines: &[T], fmt: &HashMap<&str, Format>, sheet_name: &str) -> MyResult<Worksheet>
+fn get_worksheet<'de, T>(
+    lines: &[T],
+    fmt: &HashMap<&str, Format>,
+    sheet_name: &str,
+) -> MyResult<Worksheet>
 where
     T: Serialize + Deserialize<'de>,
 {
