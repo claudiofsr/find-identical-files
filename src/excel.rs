@@ -25,6 +25,9 @@ where
     // Create a new Excel file object.
     let mut workbook = Workbook::new();
 
+    // Add some formats to use with the serialization data.
+    let fmt: HashMap<&str, Format> = create_formats();
+
     // Split a vector into smaller vectors of size N
     for (index, data) in lines.chunks(MAX_NUMBER_OF_ROWS).enumerate() {
         let mut new_name = sheet_name.to_string();
@@ -34,7 +37,7 @@ where
         }
 
         // Get worksheet with sheet name.
-        let worksheet: Worksheet = get_worksheet(data, &new_name)?;
+        let worksheet: Worksheet = get_worksheet(data, &fmt, &new_name)?;
 
         workbook.push_worksheet(worksheet);
     }
@@ -51,14 +54,11 @@ where
 }
 
 /// Get Worksheet according to some struct T
-fn get_worksheet<'de, T>(lines: &[T], sheet_name: &str) -> MyResult<Worksheet>
+fn get_worksheet<'de, T>(lines: &[T], fmt: &HashMap<&str, Format>, sheet_name: &str) -> MyResult<Worksheet>
 where
     T: Serialize + Deserialize<'de>,
 {
     let mut worksheet = Worksheet::new();
-
-    // Add some formats to use with the serialization data.
-    let fmt: HashMap<&str, Format> = create_formats();
 
     worksheet
         .set_name(sheet_name)?
