@@ -7,7 +7,7 @@ use crate::{
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::{
-    fs::{File, OpenOptions},
+    fs::{self, File, OpenOptions},
     io::Write,
     path::PathBuf,
     //thread,
@@ -279,7 +279,8 @@ impl GroupExtension for [GroupInfo] {
 
 fn get_path_csv(path: PathBuf, filename: &str) -> MyResult<PathBuf> {
     let mut path_csv: PathBuf = if std::path::Path::new(&path).try_exists()? {
-        path.to_path_buf()
+        //path.to_path_buf()
+        fs::canonicalize(path)? // full path
     } else {
         eprintln!("fn get_path_csv()");
         panic!("The path {path:?} was not found!");

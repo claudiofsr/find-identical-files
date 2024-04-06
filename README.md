@@ -86,10 +86,10 @@ To the currenty directory:
 find_duplicate_files -x .
 ```
 
-Or to the `/home/claudio/Downloads` directory:
+Or to the `~/Downloads` directory:
 
 ```
-find_duplicate_files --xlsx_dir=/home/claudio/Downloads
+find_duplicate_files --xlsx_dir=~/Downloads
 ```
 
 ## Help
