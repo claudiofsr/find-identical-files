@@ -86,7 +86,7 @@ pub fn get_path(arguments: &Arguments) -> MyResult<PathBuf> {
     let path: PathBuf = match &arguments.path {
         Some(path) => {
             if std::path::Path::new(path).try_exists()? {
-                path.to_path_buf()
+                path.to_owned()
             } else {
                 eprintln!("fn get_path()");
                 panic!("The path {path:?} was not found!");
