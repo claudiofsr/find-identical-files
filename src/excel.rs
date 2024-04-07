@@ -6,9 +6,9 @@ use std::path::PathBuf;
 
 use crate::MyResult;
 
-pub const HEADER_SIZE: f64 = 11.0;
-pub const FONT_SIZE: f64 = 12.0;
-pub const FONT_NAME: &str = "DejaVu Sans Mono"; // pacman -S ttf-dejavu
+const HEADER_SIZE: f64 = 11.0;
+const FONT_SIZE: f64 = 12.0;
+const FONT_NAME: &str = "DejaVu Sans Mono"; // pacman -S ttf-dejavu
 const MAX_NUMBER_OF_ROWS: usize = 1_000_000;
 
 /// Write XLSX File according to some struct T
