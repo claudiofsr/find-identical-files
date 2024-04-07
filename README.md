@@ -37,7 +37,7 @@ find_duplicate_files -csta fxhash -r yaml
 #### 3. To find duplicate files in the `Downloads` directory and redirect the output to a `json` file for further analysis:
 
 ```
-find_duplicate_files -p ~/Downloads -r json > fdf.json
+find_duplicate_files -i ~/Downloads -r json > fdf.json
 ```
 
 #### 4. To find duplicate files in the current directory whose size is greater than or equal to 8 bytes:
@@ -88,6 +88,12 @@ find_duplicate_files -x ~/Downloads
 
 ```
 find_duplicate_files --xlsx_dir=/tmp
+```
+
+#### 10. To find duplicate files in the `Downloads` directory and export the result to `/tmp/fdf.xlsx` with `ahash` algorithm:
+
+```
+find_duplicate_files -ti ~/Downloads -x /tmp -a ahash
 ```
 
 ## Help

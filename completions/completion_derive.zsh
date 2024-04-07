@@ -31,8 +31,8 @@ _find_duplicate_files() {
 '--min_size=[Set a minimum file size (in bytes) to search for duplicate files]:MIN_SIZE: ' \
 '-B+[Set a maximum file size (in bytes) to search for duplicate files]:MAX_SIZE: ' \
 '--max_size=[Set a maximum file size (in bytes) to search for duplicate files]:MAX_SIZE: ' \
-'-i+[Set the input directory where to look for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
-'--input_dir=[Set the input directory where to look for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
+'-i+[Set the input directory where to search for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
+'--input_dir=[Set the input directory where to search for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
 '-r+[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '--result_format=[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '-c[Clear the terminal screen before listing the duplicate files]' \
