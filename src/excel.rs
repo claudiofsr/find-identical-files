@@ -7,9 +7,14 @@ use std::path::PathBuf;
 
 use crate::MyResult;
 
+// Install fonts:
+// "DejaVu Sans Mono": pacman -S ttf-dejavu
+// "Noto Sans Mono" : pacman -S ttf-liberation
+// "Liberation Mono": pacman -S noto-fonts
+
 const HEADER_SIZE: f64 = 11.0;
 const FONT_SIZE: f64 = 12.0;
-const FONT_NAME: &str = "DejaVu Sans Mono"; // pacman -S ttf-dejavu
+const FONT_NAME: &str = "Liberation Mono";
 const MAX_NUMBER_OF_ROWS: usize = 1_000_000;
 
 // See the application in structures::path_info::PathInfo
