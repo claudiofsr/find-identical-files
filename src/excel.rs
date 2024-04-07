@@ -1,5 +1,6 @@
 use hashbrown::HashMap;
 use once_cell::sync::Lazy;
+use rayon::prelude::*;
 use rust_xlsxwriter::{Format, FormatAlign, Workbook, Worksheet, XlsxSerialize};
 use serde::Serialize;
 use std::path::PathBuf;
@@ -20,28 +21,37 @@ const MAX_NUMBER_OF_ROWS: usize = 1_000_000;
 /// <https://docs.rs/rust_xlsxwriter/latest/rust_xlsxwriter/serializer/index.html>
 pub fn write_xlsx<T>(lines: &[T], sheet_name: &str, path: PathBuf) -> MyResult<()>
 where
-    T: Serialize + XlsxSerialize,
+    T: Serialize + XlsxSerialize + Sync,
 {
     if lines.is_empty() {
         return Ok(());
     }
 
+    // chunks: Split the slice &[T] into smaller slices
+    let worksheets: MyResult<Vec<Worksheet>> = lines
+        .par_chunks(MAX_NUMBER_OF_ROWS) // rayon parallel iterator
+        .enumerate()
+        .map(|(index, data)| -> MyResult<Worksheet> {
+            //println!("thread id: {:?}", std::thread::current().id());
+            let mut new_name = sheet_name.to_string();
+
+            if index >= 1 {
+                new_name = format!("{} {}", sheet_name, index + 1);
+            }
+
+            // Get worksheet with sheet name.
+            let worksheet: Worksheet = get_worksheet(data, &new_name)?;
+
+            Ok(worksheet)
+        })
+        .collect();
+
     // Create a new Excel file object.
     let mut workbook = Workbook::new();
 
-    // Split a vector into smaller vectors of size N
-    for (index, data) in lines.chunks(MAX_NUMBER_OF_ROWS).enumerate() {
-        let mut new_name = sheet_name.to_string();
-
-        if index >= 1 {
-            new_name = format!("{} {}", sheet_name, index + 1);
-        }
-
-        // Get worksheet with sheet name.
-        let worksheet: Worksheet = get_worksheet(data, &new_name)?;
-
+    worksheets?.into_iter().for_each(|worksheet| {
         workbook.push_worksheet(worksheet);
-    }
+    });
 
     // Save the workbook to disk.
     workbook.save(&path).map_err(|xlsx_error| {

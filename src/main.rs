@@ -5,6 +5,7 @@ use std::time::Instant;
     cargo clippy --features walkdir
     clear && cargo test -- --nocapture
     clear && cargo run -- -h
+    clear && cargo run -- -ti ~/Downloads -x /tmp
     cargo run --features walkdir -- -cvts
     cargo doc --open
     cargo b -r && cargo install --path=.
