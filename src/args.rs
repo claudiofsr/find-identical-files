@@ -193,7 +193,7 @@ pub struct Arguments {
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
     pub omit_hidden: bool,
 
-    /// Set the input directory where to look for duplicate files
+    /// Set the input directory where to search for duplicate files
     /// [default: current directory].
     #[arg(short('i'), long("input_dir"), required = false)]
     pub input_dir: Option<PathBuf>,
