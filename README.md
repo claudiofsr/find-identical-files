@@ -122,7 +122,7 @@ Options:
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
   -i, --input_dir <INPUT_DIR>
-          Set the input directory where to look for duplicate files [default: current directory]
+          Set the input directory where to search for duplicate files [default: current directory]
   -r, --result_format <RESULT_FORMAT>
           Print the result in the chosen format [default: personal] [possible values: json, yaml, personal]
   -s, --sort
