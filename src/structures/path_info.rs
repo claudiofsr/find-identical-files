@@ -13,7 +13,10 @@ use crate::excel::get_xlsx_format;
 ///
 /// <https://docs.rs/rust_xlsxwriter/latest/rust_xlsxwriter/serializer/index.html>
 #[derive(XlsxSerialize, Serialize)]
-#[xlsx(table_default)]
+#[xlsx(
+    //header_format = get_xlsx_format("header"),
+    table_default
+)]
 pub struct PathInfo {
     /// File size (in bytes)
     #[serde(rename = "File size (bytes)")]
