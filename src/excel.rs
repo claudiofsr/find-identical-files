@@ -78,7 +78,6 @@ where
     lines.iter().try_for_each(|line| -> MyResult<()> {
         // Serialize the data.
         worksheet.serialize(line)?;
-
         Ok(())
     })?;
     */
