@@ -9,8 +9,8 @@ use crate::MyResult;
 
 // Install fonts:
 // "DejaVu Sans Mono": pacman -S ttf-dejavu
-// "Noto Sans Mono" : pacman -S ttf-liberation
-// "Liberation Mono": pacman -S noto-fonts
+// "Noto Sans Mono"  : pacman -S ttf-liberation
+// "Liberation Mono" : pacman -S noto-fonts
 
 const HEADER_SIZE: f64 = 11.0;
 const FONT_SIZE: f64 = 12.0;
