@@ -11,6 +11,8 @@ const FONT_SIZE: f64 = 12.0;
 const FONT_NAME: &str = "DejaVu Sans Mono"; // pacman -S ttf-dejavu
 const MAX_NUMBER_OF_ROWS: usize = 1_000_000;
 
+// See the application in structures::path_info::PathInfo
+
 /// Write XLSX File according to some struct T
 ///
 /// The lines (or rows) are given by &[T]
