@@ -1,3 +1,5 @@
+use hashbrown::HashMap;
+use once_cell::sync::Lazy;
 use rust_xlsxwriter::{Format, FormatAlign, Workbook, Worksheet, XlsxSerialize};
 use serde::Serialize;
 use std::path::PathBuf;
@@ -6,7 +8,7 @@ use crate::MyResult;
 
 pub const HEADER_SIZE: f64 = 11.0;
 pub const FONT_SIZE: f64 = 12.0;
-pub const FONT_NAME: &str = "DejaVu Sans Mono"; // "Hack"
+pub const FONT_NAME: &str = "DejaVu Sans Mono"; // pacman -S ttf-dejavu
 const MAX_NUMBER_OF_ROWS: usize = 1_000_000;
 
 /// Write XLSX File according to some struct T
@@ -25,12 +27,6 @@ where
     // Create a new Excel file object.
     let mut workbook = Workbook::new();
 
-    let fmt_header: Format = Format::new()
-        .set_align(FormatAlign::Center) // horizontally
-        .set_align(FormatAlign::VerticalCenter)
-        .set_text_wrap()
-        .set_font_size(HEADER_SIZE);
-
     // Split a vector into smaller vectors of size N
     for (index, data) in lines.chunks(MAX_NUMBER_OF_ROWS).enumerate() {
         let mut new_name = sheet_name.to_string();
@@ -40,7 +36,7 @@ where
         }
 
         // Get worksheet with sheet name.
-        let worksheet: Worksheet = get_worksheet(data, &fmt_header, &new_name)?;
+        let worksheet: Worksheet = get_worksheet(data, &new_name)?;
 
         workbook.push_worksheet(worksheet);
     }
@@ -57,11 +53,12 @@ where
 }
 
 /// Get Worksheet according to some struct T
-fn get_worksheet<T>(lines: &[T], fmt_header: &Format, sheet_name: &str) -> MyResult<Worksheet>
+fn get_worksheet<T>(lines: &[T], sheet_name: &str) -> MyResult<Worksheet>
 where
     T: Serialize + XlsxSerialize,
 {
     let mut worksheet = Worksheet::new();
+    let fmt_header = get_xlsx_format("header");
 
     worksheet
         .set_name(sheet_name)?
@@ -80,4 +77,53 @@ where
     worksheet.autofit();
 
     Ok(worksheet)
+}
+
+/// XLSX Formats
+///
+/// Example:
+///
+/// <https://docs.rs/once_cell/latest/once_cell/sync/struct.Lazy.html>
+static XLSX_FORMATS: Lazy<HashMap<&'static str, Format>> = Lazy::new(|| {
+    let fmt_header: Format = Format::new()
+        .set_align(FormatAlign::Center) // horizontally
+        .set_align(FormatAlign::VerticalCenter)
+        .set_text_wrap()
+        .set_font_size(HEADER_SIZE);
+
+    let fmt_center = Format::new()
+        .set_align(FormatAlign::Center)
+        .set_align(FormatAlign::VerticalCenter)
+        .set_font_name(FONT_NAME)
+        .set_font_size(FONT_SIZE);
+
+    let fmt_integer = Format::new()
+        .set_align(FormatAlign::VerticalCenter)
+        .set_num_format("#,##0")
+        .set_font_name(FONT_NAME)
+        .set_font_size(FONT_SIZE);
+
+    let fmt_default = Format::new()
+        .set_align(FormatAlign::VerticalCenter)
+        .set_font_name(FONT_NAME)
+        .set_font_size(FONT_SIZE);
+
+    let formats = [
+        ("header", fmt_header),
+        ("center", fmt_center),
+        ("integer", fmt_integer),
+        ("default", fmt_default),
+    ];
+
+    HashMap::from(formats)
+});
+
+/// Get XLSX format
+///
+/// Add some formats to use with the serialization data.
+pub fn get_xlsx_format(name: &str) -> &Format {
+    match XLSX_FORMATS.get(name) {
+        Some(format) => format,
+        None => panic!("Format {} not defined!", name),
+    }
 }

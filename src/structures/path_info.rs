@@ -1,4 +1,4 @@
-use crate::excel::{FONT_NAME, FONT_SIZE};
+use crate::excel::get_xlsx_format;
 use rust_xlsxwriter::XlsxSerialize;
 use serde::{
     Serialize,
@@ -16,56 +16,27 @@ use std::path::PathBuf;
 pub struct PathInfo {
     /// File size (in bytes)
     #[serde(rename = "File size (bytes)")]
-    #[xlsx(
-        value_format = Format::new()
-            .set_align(FormatAlign::VerticalCenter)
-            .set_num_format("#,##0")
-            .set_font_name(FONT_NAME)
-            .set_font_size(FONT_SIZE)
-    )]
+    #[xlsx(value_format = get_xlsx_format("integer"))]
     pub size: usize,
 
     /// Hash
     #[serde(rename = "Hash")] // serialize_with = "add_quotes"
-    #[xlsx(
-        value_format = Format::new()
-            .set_align(FormatAlign::Center)
-            .set_align(FormatAlign::VerticalCenter)
-            .set_font_name(FONT_NAME)
-            .set_font_size(FONT_SIZE)
-    )]
+    #[xlsx(value_format = get_xlsx_format("center"))]
     pub hash: Option<String>,
 
     /// File Paths
     #[serde(rename = "Path")]
-    #[xlsx(
-        value_format = Format::new()
-            .set_align(FormatAlign::VerticalCenter)
-            .set_font_name(FONT_NAME)
-            .set_font_size(FONT_SIZE)
-    )]
+    #[xlsx(value_format = get_xlsx_format("default"))]
     pub path: PathBuf,
 
     /// Number of duplicate files with the same size and blake3 hash
     #[serde(rename = "Number of duplicate files")]
-    #[xlsx(
-        value_format = Format::new()
-            .set_align(FormatAlign::VerticalCenter)
-            .set_num_format("#,##0")
-            .set_font_name(FONT_NAME)
-            .set_font_size(FONT_SIZE)
-    )]
+    #[xlsx(value_format = get_xlsx_format("integer"))]
     pub num_file: usize,
 
     /// Sum of individual file sizes declared in paths
     #[serde(rename = "Sum of file sizes (bytes)")]
-    #[xlsx(
-        value_format = Format::new()
-            .set_align(FormatAlign::VerticalCenter)
-            .set_num_format("#,##0")
-            .set_font_name(FONT_NAME)
-            .set_font_size(FONT_SIZE)
-    )]
+    #[xlsx(value_format = get_xlsx_format("integer"))]
     pub sum_size: usize,
 }
 

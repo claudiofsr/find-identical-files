@@ -1,7 +1,7 @@
 [package]
 name = "find_duplicate_files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
-version = "0.25.2"
+version = "0.25.3"
 rust-version = "1.77"
 repository = "https://github.com/claudiofsr/find_duplicate_files"
 homepage = "https://github.com/claudiofsr/find_duplicate_files"
@@ -26,13 +26,14 @@ unsafe_code = "forbid"
 
 [dependencies]
 ahash = "0.8"
-anstyle = "1.0"
+anstyle = "1.0" # used by clap color
 blake3 = { version = "1.5", features = ["rayon"] }
 clap = { version = "4.5", features = ["derive", "color", "unstable-styles"] }
 clap_complete = "4.5"
 cfg-if = "1.0"
 csv = "1.3"
 hashbrown = { version = "0.14", features = ["rayon", "ahash"] }
+once_cell = "1.19"
 rayon = "1.10"
 rustc-hash = "1.1"
 sha2 = "0.10"

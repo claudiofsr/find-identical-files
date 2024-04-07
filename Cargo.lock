@@ -127,9 +127,9 @@ checksum = "1fd0f2584146f6f2ef48085050886acf353beff7305ebd1ae69500e27c67f64b"
 
 [[package]]
 name = "cc"
-version = "1.0.90"
+version = "1.0.91"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8cd6604a82acf3039f1144f54b8eb34e91ffba622051189e71b781822d5ee1f5"
+checksum = "1fd97381a8cc6493395a5afc4c691c1084b3768db713b73aa215217aa245d153"
 
 [[package]]
 name = "cfg-if"
@@ -327,7 +327,7 @@ checksum = "5443807d6dff69373d433ab9ef5378ad8df50ca6298caf15de6e52e24aaf54d5"
 
 [[package]]
 name = "find_duplicate_files"
-version = "0.25.2"
+version = "0.25.3"
 dependencies = [
  "ahash",
  "anstyle",
@@ -338,6 +338,7 @@ dependencies = [
  "csv",
  "hashbrown",
  "jwalk",
+ "once_cell",
  "rayon",
  "rust_xlsxwriter",
  "rustc-hash",
