@@ -74,6 +74,15 @@ where
         worksheet.serialize(line)?;
     }
 
+    /*
+    lines.iter().try_for_each(|line| -> MyResult<()> {
+        // Serialize the data.
+        worksheet.serialize(line)?;
+
+        Ok(())
+    })?;
+    */
+
     worksheet.autofit();
 
     Ok(worksheet)
