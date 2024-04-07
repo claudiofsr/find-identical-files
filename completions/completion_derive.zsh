@@ -17,10 +17,10 @@ _find_duplicate_files() {
     _arguments "${_arguments_options[@]}" \
 '-a+[Choose the hash algorithm]:ALGORITHM:(ahash blake3 fxhash sha256 sha512)' \
 '--algorithm=[Choose the hash algorithm]:ALGORITHM:(ahash blake3 fxhash sha256 sha512)' \
-'-e+[Enter a directory to export duplicate file information to CSV format (fdf.csv)]:CSV_DIR:_files' \
-'--csv_dir=[Enter a directory to export duplicate file information to CSV format (fdf.csv)]:CSV_DIR:_files' \
-'-x+[Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)]:XLSX_DIR:_files' \
-'--xlsx_dir=[Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)]:XLSX_DIR:_files' \
+'-e+[Set the output directory for the CSV file (fdf.csv)]:CSV_DIR:_files' \
+'--csv_dir=[Set the output directory for the CSV file (fdf.csv)]:CSV_DIR:_files' \
+'-x+[Set the output directory for the XLSX file (fdf.xlsx)]:XLSX_DIR:_files' \
+'--xlsx_dir=[Set the output directory for the XLSX file (fdf.xlsx)]:XLSX_DIR:_files' \
 '-g+[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '--generate=[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '-d+[Set the minimum depth to search for duplicate files]:MIN_DEPTH: ' \
@@ -31,8 +31,8 @@ _find_duplicate_files() {
 '--min_size=[Set a minimum file size (in bytes) to search for duplicate files]:MIN_SIZE: ' \
 '-B+[Set a maximum file size (in bytes) to search for duplicate files]:MAX_SIZE: ' \
 '--max_size=[Set a maximum file size (in bytes) to search for duplicate files]:MAX_SIZE: ' \
-'-p+[Set the path where to look for duplicate files, otherwise use the current directory]:PATH:_files' \
-'--path=[Set the path where to look for duplicate files, otherwise use the current directory]:PATH:_files' \
+'-i+[Set the input directory where to look for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
+'--input_dir=[Set the input directory where to look for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
 '-r+[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '--result_format=[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '-c[Clear the terminal screen before listing the duplicate files]' \

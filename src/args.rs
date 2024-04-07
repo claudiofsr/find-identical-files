@@ -59,7 +59,11 @@ pub struct Arguments {
     // action = ArgAction::SetTrue
     pub clear_terminal: bool,
 
-    /// Enter a directory to export duplicate file information to CSV format (fdf.csv).
+    /// Set the output directory for the CSV file (fdf.csv).
+    ///
+    /// By default, use the current directory.
+    ///
+    /// That is, export duplicate file information to CSV format.
     ///
     /// CSV: Comma-separated Values
     ///
@@ -67,7 +71,11 @@ pub struct Arguments {
     #[arg(short('e'), long("csv_dir"), required = false)]
     pub csv_dir: Option<PathBuf>,
 
-    /// Enter a directory to export duplicate file information to XLSX format (fdf.xlsx).
+    /// Set the output directory for the XLSX file (fdf.xlsx).
+    ///
+    /// By default, use the current directory.
+    ///
+    /// That is, export duplicate file information to XLSX format.
     ///
     /// XLSX: Excel file
     #[arg(short('x'), long("xlsx_dir"), required = false)]
@@ -185,10 +193,10 @@ pub struct Arguments {
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
     pub omit_hidden: bool,
 
-    /// Set the path where to look for duplicate files,
-    /// otherwise use the current directory.
-    #[arg(short('p'), long("path"), required = false)]
-    pub path: Option<PathBuf>,
+    /// Set the input directory where to look for duplicate files
+    /// [default: current directory].
+    #[arg(short('i'), long("input_dir"), required = false)]
+    pub input_dir: Option<PathBuf>,
 
     /// Print the result in the chosen format.
     #[arg(short('r'), long("result_format"), value_enum, default_value_t = ResultFormat::default())]
@@ -255,7 +263,7 @@ impl Arguments {
 
     /// Validate directory paths
     pub fn validate_dir_path(&self) -> MyResult<()> {
-        let paths = [&self.path, &self.csv_dir, &self.xlsx_dir];
+        let paths = [&self.input_dir, &self.csv_dir, &self.xlsx_dir];
 
         for dir_path in paths.into_iter().flatten() {
             if !std::path::Path::new(&dir_path).try_exists()? {

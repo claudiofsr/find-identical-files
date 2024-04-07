@@ -83,7 +83,7 @@ where
 
 /// Get path from arguments or from default (current directory).
 pub fn get_path(arguments: &Arguments) -> MyResult<PathBuf> {
-    let path: PathBuf = match &arguments.path {
+    let path: PathBuf = match &arguments.input_dir {
         Some(path) => path.to_owned(),
         None => PathBuf::from("."),
     };
