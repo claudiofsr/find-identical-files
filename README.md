@@ -104,9 +104,9 @@ Options:
   -c, --clear_terminal
           Clear the terminal screen before listing the duplicate files
   -e, --csv_dir <CSV_DIR>
-          Enter a directory to export duplicate file information to CSV format (fdf.csv)
+          Set the output directory for the CSV file (fdf.csv)
   -x, --xlsx_dir <XLSX_DIR>
-          Enter a directory to export duplicate file information to XLSX format (fdf.xlsx)
+          Set the output directory for the XLSX file (fdf.xlsx)
   -f, --full_path
           Prints full path of duplicate files, otherwise relative path
   -g, --generate <GENERATOR>
@@ -121,8 +121,8 @@ Options:
           Set a maximum file size (in bytes) to search for duplicate files
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
-  -p, --path <PATH>
-          Set the path where to look for duplicate files, otherwise use the current directory
+  -i, --input_dir <INPUT_DIR>
+          Set the input directory where to look for duplicate files [default: current directory]
   -r, --result_format <RESULT_FORMAT>
           Print the result in the chosen format [default: personal] [possible values: json, yaml, personal]
   -s, --sort
