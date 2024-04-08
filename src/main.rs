@@ -78,13 +78,21 @@ fn main() -> MyResult<()> {
     TotalInfo::get_summary(&duplicate_hash, &arguments, all_files.len())
         .print_sumary(&arguments)?;
 
-    if let Some(dir_path) = arguments.csv_dir {
-        duplicate_hash.export_to_csv(dir_path)?;
-    }
+    std::thread::scope(|s| {
+        s.spawn(|| -> MyResult<()> {
+            if let Some(dir_path) = arguments.csv_dir {
+                duplicate_hash.export_to_csv(dir_path)?;
+            }
+            Ok(())
+        });
 
-    if let Some(dir_path) = arguments.xlsx_dir {
-        duplicate_hash.export_to_xlsx(dir_path)?;
-    }
+        s.spawn(|| -> MyResult<()> {
+            if let Some(dir_path) = arguments.xlsx_dir {
+                duplicate_hash.export_to_xlsx(dir_path)?;
+            }
+            Ok(())
+        });
+    });
 
     if arguments.time {
         println!("Total Execution Time: {:?}", time.elapsed());
