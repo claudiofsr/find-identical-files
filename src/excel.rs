@@ -32,7 +32,7 @@ where
         return Ok(());
     }
 
-    // chunks: Split the slice &[T] into smaller slices
+    // Each chunk divides the slice &[T] into smaller slices.
     let worksheets: MyResult<Vec<Worksheet>> = lines
         .par_chunks(MAX_NUMBER_OF_ROWS) // rayon parallel iterator
         .enumerate()
