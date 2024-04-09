@@ -78,6 +78,7 @@ fn main() -> MyResult<()> {
     TotalInfo::get_summary(&duplicate_hash, &arguments, all_files.len())
         .print_sumary(&arguments)?;
 
+    // Export duplicate file information to CSV or XLSX format.
     std::thread::scope(|s| {
         s.spawn(|| -> MyResult<()> {
             if let Some(dir_path) = arguments.csv_dir {

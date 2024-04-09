@@ -200,14 +200,14 @@ pub struct Arguments {
     pub verbose: bool,
 
     /// Wipe (Clear) the terminal screen before listing the duplicate files.
-    /// 
+    ///
     /// On Linux, to clear use the command:
-    /// 
+    ///
     /// tput reset
-    /// 
-    /// Unlike the clear command, the reset command does more than just clear the terminal screen. 
-    /// 
-    /// It also resets the terminal to its default settings. 
+    ///
+    /// Unlike the clear command, the reset command does more than just clear the terminal screen.
+    ///
+    /// It also resets the terminal to its default settings.
     #[arg(short('w'), long("wipe_terminal"), default_value_t = false)]
     // action = ArgAction::SetTrue
     pub wipe_terminal: bool,
