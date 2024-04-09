@@ -19,7 +19,7 @@ _find_duplicate_files() {
 
     case "${cmd}" in
         find_duplicate_files)
-            opts="-a -c -e -x -f -g -d -D -b -B -o -i -r -s -t -v -h -V --algorithm --clear_terminal --csv_dir --xlsx_dir --full_path --generate --min_depth --max_depth --min_size --max_size --omit_hidden --input_dir --result_format --sort --time --verbose --help --version"
+            opts="-a -b -B -c -d -D -f -g -i -o -r -s -t -v -w -x -h -V --algorithm --min_size --max_size --csv_dir --min_depth --max_depth --full_path --generate --input_dir --omit_hidden --result_format --sort --time --verbose --wipe_terminal --xlsx_dir --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -31,46 +31,6 @@ _find_duplicate_files() {
                     ;;
                 -a)
                     COMPREPLY=($(compgen -W "ahash blake3 fxhash sha256 sha512" -- "${cur}"))
-                    return 0
-                    ;;
-                --csv_dir)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -e)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                --xlsx_dir)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -x)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                --generate)
-                    COMPREPLY=($(compgen -W "bash elvish fish powershell zsh" -- "${cur}"))
-                    return 0
-                    ;;
-                -g)
-                    COMPREPLY=($(compgen -W "bash elvish fish powershell zsh" -- "${cur}"))
-                    return 0
-                    ;;
-                --min_depth)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -d)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                --max_depth)
-                    COMPREPLY=($(compgen -f "${cur}"))
-                    return 0
-                    ;;
-                -D)
-                    COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
                 --min_size)
@@ -89,6 +49,38 @@ _find_duplicate_files() {
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
+                --csv_dir)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -c)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --min_depth)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -d)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --max_depth)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -D)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --generate)
+                    COMPREPLY=($(compgen -W "bash elvish fish powershell zsh" -- "${cur}"))
+                    return 0
+                    ;;
+                -g)
+                    COMPREPLY=($(compgen -W "bash elvish fish powershell zsh" -- "${cur}"))
+                    return 0
+                    ;;
                 --input_dir)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
@@ -103,6 +95,14 @@ _find_duplicate_files() {
                     ;;
                 -r)
                     COMPREPLY=($(compgen -W "json yaml personal" -- "${cur}"))
+                    return 0
+                    ;;
+                --xlsx_dir)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -x)
+                    COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;
                 *)

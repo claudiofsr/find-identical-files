@@ -54,10 +54,21 @@ pub struct Arguments {
     #[arg(short('a'), long("algorithm"), value_enum, default_value_t = Algorithm::default())]
     pub algorithm: Algorithm,
 
-    /// Clear the terminal screen before listing the duplicate files.
-    #[arg(short('c'), long("clear_terminal"), default_value_t = false)]
-    // action = ArgAction::SetTrue
-    pub clear_terminal: bool,
+    /// Set a minimum file size (in bytes) to search for duplicate files.
+    ///
+    /// keep files whose size is greater than or equal to a minimum value.
+    ///
+    /// size >= min_size
+    #[arg(short('b'), long("min_size"), required = false)]
+    pub min_size: Option<u64>,
+
+    /// Set a maximum file size (in bytes) to search for duplicate files.
+    ///
+    /// keep files whose size is less than or equal to a maximum value.
+    ///
+    /// size <= max_size
+    #[arg(short('B'), long("max_size"), required = false)]
+    pub max_size: Option<u64>,
 
     /// Set the output directory for the CSV file (fdf.csv).
     ///
@@ -68,18 +79,20 @@ pub struct Arguments {
     /// CSV: Comma-separated Values
     ///
     /// Delimiter: ';'
-    #[arg(short('e'), long("csv_dir"), required = false)]
+    #[arg(short('c'), long("csv_dir"), required = false)]
     pub csv_dir: Option<PathBuf>,
 
-    /// Set the output directory for the XLSX file (fdf.xlsx).
+    /// Set the minimum depth to search for duplicate files.
     ///
-    /// By default, use the current directory.
+    /// depth >= min_depth
+    #[arg(short('d'), long("min_depth"), required = false)]
+    pub min_depth: Option<usize>,
+
+    /// Set the maximum depth to search for duplicate files.
     ///
-    /// That is, export duplicate file information to XLSX format.
-    ///
-    /// XLSX: Excel file
-    #[arg(short('x'), long("xlsx_dir"), required = false)]
-    pub xlsx_dir: Option<PathBuf>,
+    /// depth <= max_depth
+    #[arg(short('D'), long("max_depth"), required = false)]
+    pub max_depth: Option<usize>,
 
     /// Prints full path of duplicate files, otherwise relative path.
     #[arg(short('f'), long("full_path"), default_value_t = false)]
@@ -161,42 +174,14 @@ pub struct Arguments {
     #[arg(short('g'), long("generate"), value_enum)]
     pub generator: Option<Shell>,
 
-    /// Set the minimum depth to search for duplicate files.
-    ///
-    /// depth >= min_depth
-    #[arg(short('d'), long("min_depth"), required = false)]
-    pub min_depth: Option<usize>,
-
-    /// Set the maximum depth to search for duplicate files.
-    ///
-    /// depth <= max_depth
-    #[arg(short('D'), long("max_depth"), required = false)]
-    pub max_depth: Option<usize>,
-
-    /// Set a minimum file size (in bytes) to search for duplicate files.
-    ///
-    /// keep files whose size is greater than or equal to a minimum value.
-    ///
-    /// size >= min_size
-    #[arg(short('b'), long("min_size"), required = false)]
-    pub min_size: Option<u64>,
-
-    /// Set a maximum file size (in bytes) to search for duplicate files.
-    ///
-    /// keep files whose size is less than or equal to a maximum value.
-    ///
-    /// size <= max_size
-    #[arg(short('B'), long("max_size"), required = false)]
-    pub max_size: Option<u64>,
-
-    /// Omit hidden files (starts with '.'), otherwise search all files.
-    #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
-    pub omit_hidden: bool,
-
     /// Set the input directory where to search for duplicate files
     /// [default: current directory].
     #[arg(short('i'), long("input_dir"), required = false)]
     pub input_dir: Option<PathBuf>,
+
+    /// Omit hidden files (starts with '.'), otherwise search all files.
+    #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
+    pub omit_hidden: bool,
 
     /// Print the result in the chosen format.
     #[arg(short('r'), long("result_format"), value_enum, default_value_t = ResultFormat::default())]
@@ -213,6 +198,29 @@ pub struct Arguments {
     /// Show intermediate runtime messages.
     #[arg(short('v'), long("verbose"), default_value_t = false)]
     pub verbose: bool,
+
+    /// Wipe (Clear) the terminal screen before listing the duplicate files.
+    /// 
+    /// On Linux, to clear use the command:
+    /// 
+    /// tput reset
+    /// 
+    /// Unlike the clear command, the reset command does more than just clear the terminal screen. 
+    /// 
+    /// It also resets the terminal to its default settings. 
+    #[arg(short('w'), long("wipe_terminal"), default_value_t = false)]
+    // action = ArgAction::SetTrue
+    pub wipe_terminal: bool,
+
+    /// Set the output directory for the XLSX file (fdf.xlsx).
+    ///
+    /// By default, use the current directory.
+    ///
+    /// That is, export duplicate file information to XLSX format.
+    ///
+    /// XLSX: Excel file
+    #[arg(short('x'), long("xlsx_dir"), required = false)]
+    pub xlsx_dir: Option<PathBuf>,
 }
 
 impl Arguments {
@@ -224,7 +232,7 @@ impl Arguments {
             args.print_completions(generator);
         }
 
-        if args.clear_terminal {
+        if args.wipe_terminal {
             clear_terminal_screen();
         }
 

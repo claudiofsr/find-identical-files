@@ -69,7 +69,7 @@ find_duplicate_files -b 1024 -B 1024
 8.1 The CSV file will be saved in the currenty directory:
 
 ```
-find_duplicate_files -e .
+find_duplicate_files -c .
 ```
 8.2 The CSV file will be saved in the `/tmp` directory:
 
@@ -107,28 +107,24 @@ Usage: find_duplicate_files [OPTIONS]
 Options:
   -a, --algorithm <ALGORITHM>
           Choose the hash algorithm [default: blake3] [possible values: ahash, blake3, fxhash, sha256, sha512]
-  -c, --clear_terminal
-          Clear the terminal screen before listing the duplicate files
-  -e, --csv_dir <CSV_DIR>
-          Set the output directory for the CSV file (fdf.csv)
-  -x, --xlsx_dir <XLSX_DIR>
-          Set the output directory for the XLSX file (fdf.xlsx)
-  -f, --full_path
-          Prints full path of duplicate files, otherwise relative path
-  -g, --generate <GENERATOR>
-          If provided, outputs the completion file for given shell [possible values: bash, elvish, fish, powershell, zsh]
-  -d, --min_depth <MIN_DEPTH>
-          Set the minimum depth to search for duplicate files
-  -D, --max_depth <MAX_DEPTH>
-          Set the maximum depth to search for duplicate files
   -b, --min_size <MIN_SIZE>
           Set a minimum file size (in bytes) to search for duplicate files
   -B, --max_size <MAX_SIZE>
           Set a maximum file size (in bytes) to search for duplicate files
-  -o, --omit_hidden
-          Omit hidden files (starts with '.'), otherwise search all files
+  -c, --csv_dir <CSV_DIR>
+          Set the output directory for the CSV file (fdf.csv)
+  -d, --min_depth <MIN_DEPTH>
+          Set the minimum depth to search for duplicate files
+  -D, --max_depth <MAX_DEPTH>
+          Set the maximum depth to search for duplicate files
+  -f, --full_path
+          Prints full path of duplicate files, otherwise relative path
+  -g, --generate <GENERATOR>
+          If provided, outputs the completion file for given shell [possible values: bash, elvish, fish, powershell, zsh]
   -i, --input_dir <INPUT_DIR>
           Set the input directory where to search for duplicate files [default: current directory]
+  -o, --omit_hidden
+          Omit hidden files (starts with '.'), otherwise search all files
   -r, --result_format <RESULT_FORMAT>
           Print the result in the chosen format [default: personal] [possible values: json, yaml, personal]
   -s, --sort
@@ -137,6 +133,10 @@ Options:
           Show total execution time
   -v, --verbose
           Show intermediate runtime messages
+  -w, --wipe_terminal
+          Wipe (Clear) the terminal screen before listing the duplicate files
+  -x, --xlsx_dir <XLSX_DIR>
+          Set the output directory for the XLSX file (fdf.xlsx)
   -h, --help
           Print help (see more with '--help')
   -V, --version

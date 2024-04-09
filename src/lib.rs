@@ -114,10 +114,12 @@ pub fn my_print(buffer: &[u8]) -> MyResult<()> {
 
 // https://stackoverflow.com/questions/34837011/how-to-clear-the-terminal-screen-in-rust-after-a-new-line-is-printed
 // https://stackoverflow.com/questions/65497187/cant-run-a-system-command-in-windows
+// https://askubuntu.com/questions/25077/how-to-really-clear-the-terminal
+// https://www.redswitches.com/blog/how-to-clear-terminal-screen-in-linux
 // Remove unwanted characters
 // clear | cat -v ; echo
 // ^[[H^[[2J^[[3J
-/// Clear the terminal screen
+/// Clear (wipe) the terminal screen
 pub fn clear_terminal_screen() {
     if cfg!(target_os = "windows") {
         Command::new("cmd")
@@ -127,9 +129,10 @@ pub fn clear_terminal_screen() {
             .wait()
             .expect("failed to wait");
     } else {
-        Command::new("clear")
+        Command::new("tput") // "clear" or "tput reset"
+            .arg("reset")
             .spawn()
-            .expect("clear command failed to start")
+            .expect("tput command failed to start")
             .wait()
             .expect("failed to wait");
     };
