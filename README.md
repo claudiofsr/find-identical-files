@@ -123,6 +123,8 @@ Options:
           If provided, outputs the completion file for given shell [possible values: bash, elvish, fish, powershell, zsh]
   -i, --input_dir <INPUT_DIR>
           Set the input directory where to search for duplicate files [default: current directory]
+  -n, --min_number <MIN_NUMBER>
+          Minimum number of identical files to be reported [default: 2]
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
   -r, --result_format <RESULT_FORMAT>

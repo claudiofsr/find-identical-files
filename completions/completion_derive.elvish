@@ -34,6 +34,8 @@ set edit:completion:arg-completer[find_duplicate_files] = {|@words|
             cand --generate 'If provided, outputs the completion file for given shell'
             cand -i 'Set the input directory where to search for duplicate files [default: current directory]'
             cand --input_dir 'Set the input directory where to search for duplicate files [default: current directory]'
+            cand -n 'Minimum number of identical files to be reported'
+            cand --min_number 'Minimum number of identical files to be reported'
             cand -r 'Print the result in the chosen format'
             cand --result_format 'Print the result in the chosen format'
             cand -x 'Set the output directory for the XLSX file (fdf.xlsx)'

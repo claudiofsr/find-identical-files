@@ -37,6 +37,8 @@ Register-ArgumentCompleter -Native -CommandName 'find_duplicate_files' -ScriptBl
             [CompletionResult]::new('--generate', 'generate', [CompletionResultType]::ParameterName, 'If provided, outputs the completion file for given shell')
             [CompletionResult]::new('-i', 'i', [CompletionResultType]::ParameterName, 'Set the input directory where to search for duplicate files [default: current directory]')
             [CompletionResult]::new('--input_dir', 'input_dir', [CompletionResultType]::ParameterName, 'Set the input directory where to search for duplicate files [default: current directory]')
+            [CompletionResult]::new('-n', 'n', [CompletionResultType]::ParameterName, 'Minimum number of identical files to be reported')
+            [CompletionResult]::new('--min_number', 'min_number', [CompletionResultType]::ParameterName, 'Minimum number of identical files to be reported')
             [CompletionResult]::new('-r', 'r', [CompletionResultType]::ParameterName, 'Print the result in the chosen format')
             [CompletionResult]::new('--result_format', 'result_format', [CompletionResultType]::ParameterName, 'Print the result in the chosen format')
             [CompletionResult]::new('-x', 'x', [CompletionResultType]::ParameterName, 'Set the output directory for the XLSX file (fdf.xlsx)')
