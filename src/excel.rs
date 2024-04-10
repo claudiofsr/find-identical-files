@@ -78,7 +78,7 @@ fn get_properties() -> MyResult<DocProperties> {
         .set_subject("Find duplicate files according to their size and hashing algorithm")
         .set_author("Claudio FSR (https://github.com/claudiofsr/find_duplicate_files)")
         .set_keywords("find, duplicate, hash algorithm")
-        .set_comment("Built with Rust on Manjaro Linux")
+        .set_comment("Built with Rust")
         .set_hyperlink_base("https://github.com/claudiofsr/find_duplicate_files");
 
     Ok(properties)
