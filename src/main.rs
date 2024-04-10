@@ -47,7 +47,7 @@ fn main() -> MyResult<()> {
         );
     }
 
-    // 2. Group files by <first bytes> such that the key: (size, Some(hash(first_bytes)));
+    // 2. Group files by <hash(first_bytes)> such that the key: (size, Some(hash(first_bytes)));
     // Ignore filegroups containing only one file.
     let duplicate_bytes: Vec<GroupInfo> = duplicate_size.get_duplicate_files(&arguments, false);
 
@@ -78,7 +78,7 @@ fn main() -> MyResult<()> {
     TotalInfo::get_summary(&duplicate_hash, &arguments, all_files.len())
         .print_sumary(&arguments)?;
 
-    // Export duplicate file information to CSV or XLSX format.
+    // Export duplicate file information simultaneously to CSV and/or XLSX format.
     std::thread::scope(|s| {
         s.spawn(|| -> MyResult<()> {
             if let Some(dir_path) = arguments.csv_dir {
