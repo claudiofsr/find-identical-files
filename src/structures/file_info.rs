@@ -14,11 +14,11 @@ pub struct FileInfo {
 
 pub trait FileExtension {
     /// Get two or more files with same key: (size, `Option<hash>`)
-    fn get_grouped_files(&self, arguments: &Arguments) -> Vec<GroupInfo>;
+    fn get_grouped_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo>;
 }
 
 impl FileExtension for [FileInfo] {
-    fn get_grouped_files(&self, arguments: &Arguments) -> Vec<GroupInfo> {
+    fn get_grouped_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo> {
         let mut group_by: HashMap<Key, Vec<PathBuf>> = HashMap::new();
 
         self.iter().for_each(|file_info| {
@@ -59,10 +59,23 @@ impl FileExtension for [FileInfo] {
             });
         */
 
+        let min_number: usize = arguments.min_number.unwrap_or(2);
+        let max_number: usize = arguments.max_number.unwrap_or(std::usize::MAX);
+
         // Converting group_by to vector
         let grouped_files: Vec<GroupInfo> = group_by
             .into_par_iter() // rayon parallel iterator
-            .filter(|(_key, paths)| paths.len() >= arguments.min_number) // filter duplicate files with same key
+            .filter(|(_key, paths)| {
+                // Filter identical files with same key
+                // procedure 1: filter only by size
+                // procedure 2: filter by size and by hash of the first bytes
+                // procedure 3: filter by size and by hash of the entire file
+                if procedure <= 2 {
+                    paths.len() >= min_number
+                } else {
+                    paths.len() >= min_number && paths.len() <= max_number
+                }
+            })
             .map(|(key, paths)| {
                 let num_file = paths.len();
                 let sum_size = key.size * num_file;

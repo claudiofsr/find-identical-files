@@ -6,7 +6,8 @@ complete -c find_duplicate_files -s d -l min_depth -d 'Set the minimum depth to 
 complete -c find_duplicate_files -s D -l max_depth -d 'Set the maximum depth to search for duplicate files' -r
 complete -c find_duplicate_files -s g -l generate -d 'If provided, outputs the completion file for given shell' -r -f -a "{bash	'',elvish	'',fish	'',powershell	'',zsh	''}"
 complete -c find_duplicate_files -s i -l input_dir -d 'Set the input directory where to search for duplicate files [default: current directory]' -r -F
-complete -c find_duplicate_files -s n -l min_number -d 'Minimum number of identical files to be reported' -r
+complete -c find_duplicate_files -s n -l min_number -d 'Minimum \'number of identical files\' to be reported' -r
+complete -c find_duplicate_files -s N -l max_number -d 'Maximum \'number of identical files\' to be reported' -r
 complete -c find_duplicate_files -s r -l result_format -d 'Print the result in the chosen format' -r -f -a "{json	'',yaml	'',personal	''}"
 complete -c find_duplicate_files -s x -l xlsx_dir -d 'Set the output directory for the XLSX file (fdf.xlsx)' -r -F
 complete -c find_duplicate_files -s f -l full_path -d 'Prints full path of duplicate files, otherwise relative path'

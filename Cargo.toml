@@ -1,22 +1,22 @@
 [package]
 name = "find_duplicate_files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
-version = "0.27.1"
+version = "0.28.0"
 rust-version = "1.77"
 repository = "https://github.com/claudiofsr/find_duplicate_files"
 homepage = "https://github.com/claudiofsr/find_duplicate_files"
 documentation = "https://docs.rs/find_duplicate_files"
 edition = "2021"
-description = "find duplicate files according to their size and hashing algorithm"
+description = "find identical files according to their size and hashing algorithm"
 license = "BSD-3-Clause"
 readme = "README.md"
 categories = ["command-line-utilities"]
 keywords = [
     "find",
-    "duplicate",
+    "identical",
+    "size",
     "hash",
     "blake3",
-    "fxhash",
 ]
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html

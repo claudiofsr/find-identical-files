@@ -179,11 +179,17 @@ pub struct Arguments {
     #[arg(short('i'), long("input_dir"), required = false)]
     pub input_dir: Option<PathBuf>,
 
-    /// Minimum number of identical files to be reported
-    /// 
+    /// Minimum 'number of identical files' to be reported
+    ///
     /// If n = 0 or n = 1, all files will be reported.
-    #[arg(short('n'), long("min_number"), default_value_t = 2)]
-    pub min_number: usize,
+    ///
+    /// Default value = 2
+    #[arg(short('n'), long("min_number"), required = false)]
+    pub min_number: Option<usize>,
+
+    /// Maximum 'number of identical files' to be reported
+    #[arg(short('N'), long("max_number"), required = false)]
+    pub max_number: Option<usize>,
 
     /// Omit hidden files (starts with '.'), otherwise search all files.
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]

@@ -72,12 +72,12 @@ impl GroupInfo {
     }
 
     /// Update hash
-    pub fn update_hash(&self, arguments: &Arguments, complete: bool) -> Vec<FileInfo> {
+    pub fn update_hash(&self, arguments: &Arguments, procedure: u8) -> Vec<FileInfo> {
         self.paths
             .clone()
             .into_par_iter() // rayon parallel iterator
             .map(|path| {
-                let key = match path.get_hash(arguments, complete) {
+                let key = match path.get_hash(arguments, procedure) {
                     Ok(hash) => Key {
                         size: self.key.size,
                         hash,
@@ -114,11 +114,11 @@ pub trait GroupExtension {
     /**
     Get duplicate files from the hash of the first bytes or the entire file.
 
-    If complete is false, get the hash of the first bytes.
+    If procedure = 2, get the hash of the first bytes.
 
-    If complete is true, get the hash of the entire file.
+    If procedure = 3, get the hash of the entire file.
     */
-    fn get_duplicate_files(&self, arguments: &Arguments, complete: bool) -> Vec<GroupInfo>;
+    fn get_duplicate_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo>;
 
     /**
     Sort the list of duplicate files.
@@ -147,13 +147,13 @@ pub trait GroupExtension {
 }
 
 impl GroupExtension for [GroupInfo] {
-    fn get_duplicate_files(&self, arguments: &Arguments, complete: bool) -> Vec<GroupInfo> {
+    fn get_duplicate_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo> {
         let duplicate_hash: Vec<GroupInfo> = self
             .par_iter() // rayon parallel iterator
             .flat_map(|group_info| {
                 group_info
-                    .update_hash(arguments, complete)
-                    .get_grouped_files(arguments)
+                    .update_hash(arguments, procedure)
+                    .get_grouped_files(arguments, procedure)
             })
             .collect();
 
@@ -210,9 +210,9 @@ impl GroupExtension for [GroupInfo] {
             let thread_a = s.spawn(|| self.par_iter().map(|group_info| group_info.num_file).sum());
             let thread_b = s.spawn(|| self.par_iter().map(|group_info| group_info.sum_size).sum());
 
-            // Wait for background thread to complete.
+            // Wait for background thread to procedure.
             // Call join() on each handle to make sure all the threads finish.
-            // join() returns immediately when the associated thread completes.
+            // join() returns immediately when the associated thread procedures.
             (thread_a.join(), thread_b.join())
         });
 

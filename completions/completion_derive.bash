@@ -19,7 +19,7 @@ _find_duplicate_files() {
 
     case "${cmd}" in
         find_duplicate_files)
-            opts="-a -b -B -c -d -D -f -g -i -n -o -r -s -t -v -w -x -h -V --algorithm --min_size --max_size --csv_dir --min_depth --max_depth --full_path --generate --input_dir --min_number --omit_hidden --result_format --sort --time --verbose --wipe_terminal --xlsx_dir --help --version"
+            opts="-a -b -B -c -d -D -f -g -i -n -N -o -r -s -t -v -w -x -h -V --algorithm --min_size --max_size --csv_dir --min_depth --max_depth --full_path --generate --input_dir --min_number --max_number --omit_hidden --result_format --sort --time --verbose --wipe_terminal --xlsx_dir --help --version"
             if [[ ${cur} == -* || ${COMP_CWORD} -eq 1 ]] ; then
                 COMPREPLY=( $(compgen -W "${opts}" -- "${cur}") )
                 return 0
@@ -94,6 +94,14 @@ _find_duplicate_files() {
                     return 0
                     ;;
                 -n)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                --max_number)
+                    COMPREPLY=($(compgen -f "${cur}"))
+                    return 0
+                    ;;
+                -N)
                     COMPREPLY=($(compgen -f "${cur}"))
                     return 0
                     ;;

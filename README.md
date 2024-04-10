@@ -1,5 +1,5 @@
 # find_duplicate_files
-Find duplicate files according to their size and hashing algorithm.
+Find identical files according to their size and hashing algorithm.
 
 "A hash function is a mathematical algorithm that takes an input (in this case, a file)
 and produces a fixed-size string of characters, known as a hash value or checksum.
@@ -29,12 +29,13 @@ See the function [fn open_file()](https://docs.rs/find_duplicate_files/latest/sr
 find_duplicate_files
 ```
 
-#### 2. To find duplicate files in the current directory with at least 5 identical files, run the command:
+#### 2. Search files in current directory with at least 5 identical files, run the command:
 ```
 find_duplicate_files -n 5
 ```
 
 If n = 0 or n = 1, all files will be reported.
+If n = 2, search for duplicate files.
 
 #### 3. To find duplicate files with `fxhash` algorithm and `yaml` format:
 ```
@@ -107,7 +108,7 @@ find_duplicate_files -twi ~/Downloads -x /tmp -a ahash
 
 Type in the terminal `find_duplicate_files -h` to see the help messages and all available options:
 ```
-find duplicate files according to their size and hashing algorithm
+find identical files according to their size and hashing algorithm
 
 Usage: find_duplicate_files [OPTIONS]
 
@@ -131,7 +132,9 @@ Options:
   -i, --input_dir <INPUT_DIR>
           Set the input directory where to search for duplicate files [default: current directory]
   -n, --min_number <MIN_NUMBER>
-          Minimum number of identical files to be reported [default: 2]
+          Minimum 'number of identical files' to be reported
+  -N, --max_number <MAX_NUMBER>
+          Maximum 'number of identical files' to be reported
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
   -r, --result_format <RESULT_FORMAT>

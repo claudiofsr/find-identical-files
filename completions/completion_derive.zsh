@@ -31,8 +31,10 @@ _find_duplicate_files() {
 '--generate=[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '-i+[Set the input directory where to search for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
 '--input_dir=[Set the input directory where to search for duplicate files \[default\: current directory\]]:INPUT_DIR:_files' \
-'-n+[Minimum number of identical files to be reported]:MIN_NUMBER: ' \
-'--min_number=[Minimum number of identical files to be reported]:MIN_NUMBER: ' \
+'-n+[Minimum '\''number of identical files'\'' to be reported]:MIN_NUMBER: ' \
+'--min_number=[Minimum '\''number of identical files'\'' to be reported]:MIN_NUMBER: ' \
+'-N+[Maximum '\''number of identical files'\'' to be reported]:MAX_NUMBER: ' \
+'--max_number=[Maximum '\''number of identical files'\'' to be reported]:MAX_NUMBER: ' \
 '-r+[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '--result_format=[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '-x+[Set the output directory for the XLSX file (fdf.xlsx)]:XLSX_DIR:_files' \
