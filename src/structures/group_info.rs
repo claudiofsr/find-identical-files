@@ -97,7 +97,8 @@ impl GroupInfo {
     /// Convert [`GroupInfo`] to Vec<[`PathInfo`]>
     pub fn flatten(&self) -> Vec<PathInfo> {
         self.paths
-            .iter()
+            .clone()
+            .into_par_iter() // rayon parallel iterator
             .map(|path| PathInfo {
                 size: self.key.size,
                 hash: self.key.hash.clone(),

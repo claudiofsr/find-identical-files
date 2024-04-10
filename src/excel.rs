@@ -1,7 +1,7 @@
 use hashbrown::HashMap;
 use once_cell::sync::Lazy;
 use rayon::prelude::*;
-use rust_xlsxwriter::{Format, FormatAlign, Workbook, Worksheet, XlsxSerialize};
+use rust_xlsxwriter::{DocProperties, Format, FormatAlign, Workbook, Worksheet, XlsxSerialize};
 use serde::Serialize;
 use std::path::PathBuf;
 
@@ -53,6 +53,8 @@ where
 
     // Create a new Excel file object.
     let mut workbook = Workbook::new();
+    let properties = get_properties()?;
+    workbook.set_properties(&properties);
 
     worksheets?.into_iter().for_each(|worksheet| {
         workbook.push_worksheet(worksheet);
@@ -67,6 +69,19 @@ where
     })?;
 
     Ok(())
+}
+
+fn get_properties() -> MyResult<DocProperties> {
+    // Add it to the document metadata.
+    let properties = DocProperties::new()
+        .set_title("Find Duplicate Files")
+        .set_subject("Find duplicate files according to their size and hashing algorithm")
+        .set_author("Claudio FSR (https://github.com/claudiofsr/find_duplicate_files)")
+        .set_keywords("find, duplicate, hash algorithm")
+        .set_comment("Built with Rust on Manjaro Linux")
+        .set_hyperlink_base("https://github.com/claudiofsr/find_duplicate_files");
+
+    Ok(properties)
 }
 
 /// Get Worksheet according to some struct T
