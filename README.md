@@ -29,42 +29,47 @@ See the function [fn open_file()](https://docs.rs/find_duplicate_files/latest/sr
 find_duplicate_files
 ```
 
-#### 2. To find duplicate files with `fxhash` algorithm and `yaml` format:
+#### 2. To find duplicate files in the current directory with at least 5 identical files, run the command:
+```
+find_duplicate_files -n 5
+```
+
+#### 3. To find duplicate files with `fxhash` algorithm and `yaml` format:
 ```
 find_duplicate_files -csta fxhash -r yaml
 ```
 
-#### 3. To find duplicate files in the `Downloads` directory and redirect the output to a `json` file for further analysis:
+#### 4. To find duplicate files in the `Downloads` directory and redirect the output to a `json` file for further analysis:
 
 ```
 find_duplicate_files -i ~/Downloads -r json > fdf.json
 ```
 
-#### 4. To find duplicate files in the current directory whose size is greater than or equal to 8 bytes:
+#### 5. To find duplicate files in the current directory whose size is greater than or equal to 8 bytes:
 
 ```
 find_duplicate_files -b 8
 ```
 
-#### 5. To find duplicate files in the current directory whose size is less than or equal to 1024 bytes:
+#### 6. To find duplicate files in the current directory whose size is less than or equal to 1024 bytes:
 
 ```
 find_duplicate_files -B 1024
 ```
 
-#### 6. To find duplicate files in the current directory whose size is between 8 and 1024 bytes:
+#### 7. To find duplicate files in the current directory whose size is between 8 and 1024 bytes:
 
 ```
 find_duplicate_files -b 8 -B 1024
 ```
 
-#### 7. To find duplicate files in the current directory whose size is exactly 1024 bytes:
+#### 8. To find duplicate files in the current directory whose size is exactly 1024 bytes:
 
 ```
 find_duplicate_files -b 1024 -B 1024
 ```
 
-#### 8. Export duplicate file information from the current directory to an CSV file (fdf.csv).
+#### 9. Export duplicate file information from the current directory to an CSV file (fdf.csv).
 
 8.1 The CSV file will be saved in the currenty directory:
 
@@ -77,7 +82,7 @@ find_duplicate_files -c .
 find_duplicate_files --csv_dir=/tmp
 ```
 
-#### 9. Export duplicate file information from the current directory to an XLSX file (fdf.xlsx).
+#### 10. Export duplicate file information from the current directory to an XLSX file (fdf.xlsx).
 
 9.1 The XLSX file will be saved in the `~/Downloads` directory:
 
@@ -90,7 +95,7 @@ find_duplicate_files -x ~/Downloads
 find_duplicate_files --xlsx_dir=/tmp
 ```
 
-#### 10. To find duplicate files in the `Downloads` directory and export the result to `/tmp/fdf.xlsx` with `ahash` algorithm:
+#### 11. To find duplicate files in the `Downloads` directory and export the result to `/tmp/fdf.xlsx` with `ahash` algorithm:
 
 ```
 find_duplicate_files -ti ~/Downloads -x /tmp -a ahash
