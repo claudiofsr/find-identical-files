@@ -35,7 +35,7 @@ find_duplicate_files -n 5
 ```
 
 If n = 0 or n = 1, all files will be reported.
-If n = 2, search for duplicate files.
+If n = 2 (default), search for duplicate files.
 
 #### 3. To find duplicate files with `fxhash` algorithm and `yaml` format:
 ```
