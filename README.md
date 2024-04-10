@@ -36,7 +36,7 @@ find_duplicate_files -n 5
 
 #### 3. To find duplicate files with `fxhash` algorithm and `yaml` format:
 ```
-find_duplicate_files -csta fxhash -r yaml
+find_duplicate_files -twa fxhash -r yaml
 ```
 
 #### 4. To find duplicate files in the `Downloads` directory and redirect the output to a `json` file for further analysis:
