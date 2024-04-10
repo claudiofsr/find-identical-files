@@ -180,6 +180,8 @@ pub struct Arguments {
     pub input_dir: Option<PathBuf>,
 
     /// Minimum number of identical files to be reported
+    /// 
+    /// If n = 0 or n = 1, all files will be reported.
     #[arg(short('n'), long("min_number"), default_value_t = 2)]
     pub min_number: usize,
 
