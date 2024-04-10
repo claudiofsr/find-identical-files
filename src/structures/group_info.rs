@@ -118,7 +118,7 @@ pub trait GroupExtension {
 
     If procedure = 3, get the hash of the entire file.
     */
-    fn get_duplicate_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo>;
+    fn get_identical_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo>;
 
     /**
     Sort the list of duplicate files.
@@ -128,10 +128,10 @@ pub trait GroupExtension {
     1. Sort by number of duplicate files and then by (file size, hash);
     2. Sort by (file size, hash). `default`
     */
-    fn sort_duplicate_files(&mut self, arguments: &Arguments);
+    fn sort_identical_files(&mut self, arguments: &Arguments);
 
     /// Print duplicate files
-    fn print_duplicated_files(&self, arguments: &Arguments) -> MyResult<()>;
+    fn print_identical_files(&self, arguments: &Arguments) -> MyResult<()>;
 
     /// Get Total Info
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo;
@@ -147,7 +147,7 @@ pub trait GroupExtension {
 }
 
 impl GroupExtension for [GroupInfo] {
-    fn get_duplicate_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo> {
+    fn get_identical_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo> {
         let duplicate_hash: Vec<GroupInfo> = self
             .par_iter() // rayon parallel iterator
             .flat_map(|group_info| {
@@ -160,7 +160,7 @@ impl GroupExtension for [GroupInfo] {
         duplicate_hash
     }
 
-    fn sort_duplicate_files(&mut self, arguments: &Arguments) {
+    fn sort_identical_files(&mut self, arguments: &Arguments) {
         if arguments.sort {
             // Sort by number of duplicate files and then by (file size, hash).
             self.par_sort_unstable_by_key(|group_info| {
@@ -178,7 +178,7 @@ impl GroupExtension for [GroupInfo] {
         }
     }
 
-    fn print_duplicated_files(&self, arguments: &Arguments) -> MyResult<()> {
+    fn print_identical_files(&self, arguments: &Arguments) -> MyResult<()> {
         let all_buffer: Vec<u8> = self
             .par_chunks(rayon::current_num_threads())
             .flat_map(|groups_info| -> MyResult<Vec<u8>> {

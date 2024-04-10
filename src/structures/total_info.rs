@@ -40,7 +40,7 @@ impl TotalInfo {
     ) -> Self {
         let (result_display, result_total_info) = thread::scope(|s| {
             let thread_a =
-                s.spawn(|| -> MyResult<()> { duplicate_hash.print_duplicated_files(arguments) });
+                s.spawn(|| -> MyResult<()> { duplicate_hash.print_identical_files(arguments) });
             let thread_b = s.spawn(|| -> TotalInfo {
                 duplicate_hash.get_total_info(arguments, total_num_files)
             });
