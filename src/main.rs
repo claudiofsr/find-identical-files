@@ -37,7 +37,7 @@ fn main() -> MyResult<()> {
 
     // 1. Group files by <size> such that the key: (size, None);
     // Ignore filegroups containing only one file.
-    let duplicate_size: Vec<GroupInfo> = all_files.get_grouped_files();
+    let duplicate_size: Vec<GroupInfo> = all_files.get_grouped_files(&arguments);
 
     if arguments.verbose {
         eprintln!(
@@ -49,7 +49,7 @@ fn main() -> MyResult<()> {
 
     // 2. Group files by <first bytes> such that the key: (size, Some(bytes));
     // Ignore filegroups containing only one file.
-    let duplicate_bytes: Vec<GroupInfo> = duplicate_size.get_duplicate_files(None);
+    let duplicate_bytes: Vec<GroupInfo> = duplicate_size.get_duplicate_files(&arguments, false);
 
     if arguments.verbose {
         eprintln!(
@@ -61,7 +61,7 @@ fn main() -> MyResult<()> {
 
     // 3. Group files by <hash> such that the key: (size, Some(hash)).
     // Ignore filegroups containing only one file.
-    let mut duplicate_hash: Vec<GroupInfo> = duplicate_bytes.get_duplicate_files(Some(&arguments));
+    let mut duplicate_hash: Vec<GroupInfo> = duplicate_bytes.get_duplicate_files(&arguments, true);
 
     if arguments.verbose {
         eprintln!(

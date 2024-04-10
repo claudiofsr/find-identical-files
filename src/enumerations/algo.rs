@@ -36,33 +36,30 @@ impl SliceExtension for &[u8] {
 }
 
 pub trait PathBufExtension {
-    fn get_hash(&self, opt_arguments: Option<&Arguments>) -> MyResult<Option<String>>;
+    fn get_hash(&self, arguments: &Arguments, complete: bool) -> MyResult<Option<String>>;
 }
 
 impl PathBufExtension for PathBuf {
     /// Hash the first few bytes or the entire file.
     ///
     /// <https://rust-lang-nursery.github.io/rust-cookbook/cryptography/hashing.html>
-    fn get_hash(&self, opt_arguments: Option<&Arguments>) -> MyResult<Option<String>> {
+    fn get_hash(&self, arguments: &Arguments, complete: bool) -> MyResult<Option<String>> {
         let mut file: File = open_file(self)?;
 
-        let hash: String = match opt_arguments {
-            Some(arguments) => {
-                // Hash the entire file with some chosen hashing algorithm.
-                arguments.algorithm.calculate_hash(file)?
-            }
-            None => {
-                // Get only the first few bytes to hash.
-                let mut buffer = [0_u8; FIRST_BYTES];
-                // read up to FIRST_BYTES bytes
-                let count = file.read(&mut buffer)?;
+        let hash: String = if complete {
+            // Apply the chosen hash algorithm to the entire file.
+            arguments.algorithm.calculate_hash(file)?
+        } else {
+            // Apply the hash algorithm to only the first bytes of the file.
+            let mut buffer = [0_u8; FIRST_BYTES];
+            // read up to FIRST_BYTES bytes
+            let count = file.read(&mut buffer)?;
 
-                let mut hasher = AHasher::default();
-                hasher.write(&buffer[..count]);
-                hasher.finish().to_string()
+            let mut hasher = AHasher::default();
+            hasher.write(&buffer[..count]);
+            hasher.finish().to_string()
 
-                //buffer[..count].to_hex_string()
-            }
+            //buffer[..count].to_hex_string()
         };
 
         Ok(Some(hash))

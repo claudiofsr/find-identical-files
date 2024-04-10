@@ -72,12 +72,12 @@ impl GroupInfo {
     }
 
     /// Update hash
-    pub fn update_hash(&self, opt_arguments: Option<&Arguments>) -> Vec<FileInfo> {
+    pub fn update_hash(&self, arguments: &Arguments, complete: bool) -> Vec<FileInfo> {
         self.paths
             .clone()
             .into_par_iter() // rayon parallel iterator
             .map(|path| {
-                let key = match path.get_hash(opt_arguments) {
+                let key = match path.get_hash(arguments, complete) {
                     Ok(hash) => Key {
                         size: self.key.size,
                         hash,
@@ -112,13 +112,13 @@ impl GroupInfo {
 
 pub trait GroupExtension {
     /**
-    Get duplicate files from hashing first few bytes or whole file.
+    Get duplicate files from the hash of the first bytes or the entire file.
 
-    If opt_arguments is None, get the hash of the first few bytes.
+    If complete is false, get the hash of the first bytes.
 
-    If opt_arguments are Some, get whole file hash.
+    If complete is true, get the hash of the entire file.
     */
-    fn get_duplicate_files(&self, opt_arguments: Option<&Arguments>) -> Vec<GroupInfo>;
+    fn get_duplicate_files(&self, arguments: &Arguments, complete: bool) -> Vec<GroupInfo>;
 
     /**
     Sort the list of duplicate files.
@@ -147,10 +147,14 @@ pub trait GroupExtension {
 }
 
 impl GroupExtension for [GroupInfo] {
-    fn get_duplicate_files(&self, opt_arguments: Option<&Arguments>) -> Vec<GroupInfo> {
+    fn get_duplicate_files(&self, arguments: &Arguments, complete: bool) -> Vec<GroupInfo> {
         let duplicate_hash: Vec<GroupInfo> = self
             .par_iter() // rayon parallel iterator
-            .flat_map(|group_info| group_info.update_hash(opt_arguments).get_grouped_files())
+            .flat_map(|group_info| {
+                group_info
+                    .update_hash(arguments, complete)
+                    .get_grouped_files(arguments)
+            })
             .collect();
 
         duplicate_hash
