@@ -59,7 +59,7 @@ fn main() -> MyResult<()> {
         );
     }
 
-    // 3. Group files by <hash> such that the key: (size, Some(hash(entire_file))).
+    // 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
     // Ignore filegroups containing only one file.
     let mut duplicate_hash: Vec<GroupInfo> = duplicate_bytes.get_duplicate_files(&arguments, true);
 
