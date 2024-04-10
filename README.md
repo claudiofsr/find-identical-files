@@ -95,10 +95,10 @@ find_duplicate_files -x ~/Downloads
 find_duplicate_files --xlsx_dir=/tmp
 ```
 
-#### 11. To find duplicate files in the `Downloads` directory and export the result to `/tmp/fdf.xlsx` with `ahash` algorithm:
+#### 11. To find duplicate files in the `Downloads` directory and export the result to `/tmp/fdf.xlsx` with the `ahash` algorithm:
 
 ```
-find_duplicate_files -ti ~/Downloads -x /tmp -a ahash
+find_duplicate_files -twi ~/Downloads -x /tmp -a ahash
 ```
 
 ## Help
