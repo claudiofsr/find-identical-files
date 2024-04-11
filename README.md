@@ -1,5 +1,5 @@
 # find_duplicate_files
-Find duplicate files according to their size and hashing algorithm.
+Find identical files according to their size and hashing algorithm.
 
 "A hash function is a mathematical algorithm that takes an input (in this case, a file)
 and produces a fixed-size string of characters, known as a hash value or checksum.
@@ -33,6 +33,10 @@ find_duplicate_files
 ```
 find_duplicate_files -n 5
 ```
+
+With the --min_number (or -n) argument option, set the 'minimum number of identical files'.
+
+With the --max_number (or -N) argument option, set the 'maximum number of identical files'.
 
 If n = 0 or n = 1, all files will be reported.
 
