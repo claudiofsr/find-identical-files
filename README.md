@@ -36,9 +36,9 @@ By default, files with at least two or more identical files will be searched.
 find-identical-files -n 5
 ```
 
-With the --min_number (or -n) argument option, set the 'minimum number of identical files'.
+With the `--min_number` (or -n) argument option, set the minimum number of identical files.
 
-With the --max_number (or -N) argument option, set the 'maximum number of identical files'.
+With the `--max_number` (or -N) argument option, set the maximum number of identical files.
 
 If n = 0 or n = 1, all files will be reported.
 
