@@ -1,3 +1,11 @@
+# Old project name
+
+This project has been renamed to: find-identical-files.
+
+old project name: find_duplicate_files
+
+new project name: find-identical-files
+
 # find_duplicate_files
 Find identical files according to their size and hashing algorithm.
 

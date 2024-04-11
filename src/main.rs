@@ -64,6 +64,7 @@ fn main() -> MyResult<()> {
     }
 
     /*
+    // For testing purposes only:
     // https://rust-lang.github.io/async-book/01_getting_started/04_async_await_primer.html
     let groups = block_on(all(&duplicate_bytes, &arguments));
     let mut duplicate_hash: Vec<GroupInfo> = [
