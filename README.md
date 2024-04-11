@@ -54,7 +54,7 @@ find-identical-files -twa fxhash -r yaml
 #### 4. To find identical files in the `Downloads` directory and redirect the output to a `json` file for further analysis:
 
 ```
-find-identical-files -vi ~/Downloads -r json > fdf.json
+find-identical-files -vi ~/Downloads -r json > fif.json
 ```
 
 #### 5. To find identical files in the current directory whose size is greater than or equal to 8 bytes:
@@ -81,7 +81,7 @@ find-identical-files -b 8 -B 1024
 find-identical-files -b 1024 -B 1024
 ```
 
-#### 9. Export identical file information from the current directory to an CSV file (fdf.csv).
+#### 9. Export identical file information from the current directory to an CSV file (fif.csv).
 
 8.1 The CSV file will be saved in the currenty directory:
 
@@ -98,7 +98,7 @@ or
 find-identical-files -c /tmp
 ```
 
-#### 10. Export identical file information from the current directory to an XLSX file (fdf.xlsx).
+#### 10. Export identical file information from the current directory to an XLSX file (fif.xlsx).
 
 9.1 The XLSX file will be saved in the `~/Downloads` directory:
 
@@ -114,7 +114,7 @@ or
 ```
 find-identical-files -x /tmp
 ```
-#### 11. To find identical files in the `Downloads` directory and export the result to `/tmp/fdf.xlsx` with the `ahash` algorithm:
+#### 11. To find identical files in the `Downloads` directory and export the result to `/tmp/fif.xlsx` with the `ahash` algorithm:
 
 ```
 find-identical-files -twi ~/Downloads -x /tmp -a ahash
@@ -136,7 +136,7 @@ Options:
   -B, --max_size <MAX_SIZE>
           Set a maximum file size (in bytes) to search for identical files
   -c, --csv_dir <CSV_DIR>
-          Set the output directory for the CSV file (fdf.csv)
+          Set the output directory for the CSV file (fif.csv)
   -d, --min_depth <MIN_DEPTH>
           Set the minimum depth to search for identical files
   -D, --max_depth <MAX_DEPTH>
@@ -164,7 +164,7 @@ Options:
   -w, --wipe_terminal
           Wipe (Clear) the terminal screen before listing the identical files
   -x, --xlsx_dir <XLSX_DIR>
-          Set the output directory for the XLSX file (fdf.xlsx)
+          Set the output directory for the XLSX file (fif.xlsx)
   -h, --help
           Print help (see more with '--help')
   -V, --version

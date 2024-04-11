@@ -70,7 +70,7 @@ pub struct Arguments {
     #[arg(short('B'), long("max_size"), required = false)]
     pub max_size: Option<u64>,
 
-    /// Set the output directory for the CSV file (fdf.csv).
+    /// Set the output directory for the CSV file (fif.csv).
     ///
     /// By default, use the current directory.
     ///
@@ -224,7 +224,7 @@ pub struct Arguments {
     // action = ArgAction::SetTrue
     pub wipe_terminal: bool,
 
-    /// Set the output directory for the XLSX file (fdf.xlsx).
+    /// Set the output directory for the XLSX file (fif.xlsx).
     ///
     /// By default, use the current directory.
     ///

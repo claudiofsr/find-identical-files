@@ -6,7 +6,7 @@ use std::time::Instant;
     cargo clippy --features walkdir
     clear && cargo test -- --nocapture
     clear && cargo run -- -h
-    clear && cargo run -- -tvi ~/Downloads -x /tmp -r json > /tmp/fdf.json
+    clear && cargo run -- -tvi ~/Downloads -x /tmp -r json > /tmp/fif.json
     cargo run --features walkdir -- -cvts
     cargo doc --open
     cargo b -r && cargo install --path=.

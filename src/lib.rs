@@ -38,8 +38,8 @@ pub type MyResult<T> = Result<T, MyError>;
 
 const STACK_SIZE: usize = 64 * 1024 * 1024;
 const SEPARATOR: char = '.'; // thousands sep
-pub const CSV_FILENAME: &str = "fdf.csv";
-pub const XLSX_FILENAME: &str = "fdf.xlsx";
+pub const CSV_FILENAME: &str = "fif.csv";
+pub const XLSX_FILENAME: &str = "fif.xlsx";
 
 /**
 If `thread '<unknown>' has overflowed its stack`, set the stack size to a new value.
