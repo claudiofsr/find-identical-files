@@ -40,11 +40,11 @@ With the `--min_number` (or -n) argument option, set the minimum number of ident
 
 With the `--max_number` (or -N) argument option, set the maximum number of identical files.
 
-2.1 If n = 0 or n = 1, all files will be reported.
+##### 2.1 If n = 0 or n = 1, all files will be reported.
 
 Useful for getting hash information for all files in the current directory.
 
-2.2 If n = 2 (default), look for duplicate files or more identical files.
+##### 2.2 If n = 2 (default), look for duplicate files or more identical files.
 
 #### 3. To find identical files with `fxhash` algorithm and `yaml` format:
 ```
@@ -83,12 +83,12 @@ find-identical-files -b 1024 -B 1024
 
 #### 9. Export identical file information from the current directory to an CSV file (fif.csv).
 
-8.1 The CSV file will be saved in the currenty directory:
+##### 9.1 The CSV file will be saved in the currenty directory:
 
 ```
 find-identical-files -c .
 ```
-8.2 The CSV file will be saved in the `/tmp` directory:
+##### 9.2 The CSV file will be saved in the `/tmp` directory:
 
 ```
 find-identical-files --csv_dir=/tmp
@@ -100,12 +100,12 @@ find-identical-files -c /tmp
 
 #### 10. Export identical file information from the current directory to an XLSX file (fif.xlsx).
 
-9.1 The XLSX file will be saved in the `~/Downloads` directory:
+##### 10.1 The XLSX file will be saved in the `~/Downloads` directory:
 
 ```
 find-identical-files -x ~/Downloads
 ```
-9.2 The XLSX file will be saved in the `/tmp` directory:
+##### 10.2 The XLSX file will be saved in the `/tmp` directory:
 
 ```
 find-identical-files --xlsx_dir=/tmp
