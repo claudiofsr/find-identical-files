@@ -91,6 +91,10 @@ find-identical-files -c .
 ```
 find-identical-files --csv_dir=/tmp
 ```
+or
+```
+find-identical-files -c /tmp
+```
 
 #### 10. Export identical file information from the current directory to an XLSX file (fdf.xlsx).
 
@@ -104,7 +108,10 @@ find-identical-files -x ~/Downloads
 ```
 find-identical-files --xlsx_dir=/tmp
 ```
-
+or
+```
+find-identical-files -x /tmp
+```
 #### 11. To find identical files in the `Downloads` directory and export the result to `/tmp/fdf.xlsx` with the `ahash` algorithm:
 
 ```
