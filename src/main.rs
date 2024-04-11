@@ -35,7 +35,7 @@ fn main() -> MyResult<()> {
 
     // To skip useless files, 3 procedures will be performed:
 
-    // 1. Group files by <size> such that the key: (size, None);
+    // Procedure 1. Group files by <size> such that the key: (size, None);
     // Ignore filegroups containing only one file.
     let duplicate_size: Vec<GroupInfo> = all_files.get_grouped_files(&arguments, 1);
 
@@ -47,7 +47,7 @@ fn main() -> MyResult<()> {
         );
     }
 
-    // 2. Group files by <hash(first_bytes)> such that the key: (size, Some(hash(first_bytes)));
+    // Procedure 2. Group files by <hash(first_bytes)> such that the key: (size, Some(hash(first_bytes)));
     // Ignore filegroups containing only one file.
     let duplicate_bytes: Vec<GroupInfo> = duplicate_size.get_identical_files(&arguments, 2);
 
@@ -59,7 +59,7 @@ fn main() -> MyResult<()> {
         );
     }
 
-    // 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
+    // Procedure 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
     // Ignore filegroups containing only one file.
     let mut duplicate_hash: Vec<GroupInfo> = duplicate_bytes.get_identical_files(&arguments, 3);
 
