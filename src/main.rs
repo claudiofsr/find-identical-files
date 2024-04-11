@@ -1,11 +1,12 @@
 use find_duplicate_files::*;
 use std::time::Instant;
+//use futures::executor::block_on;
 
 /**
     cargo clippy --features walkdir
     clear && cargo test -- --nocapture
     clear && cargo run -- -h
-    clear && cargo run -- -ti ~/Downloads -x /tmp
+    clear && cargo run -- -tvi ~/Downloads -x /tmp -r json > /tmp/fdf.json
     cargo run --features walkdir -- -cvts
     cargo doc --open
     cargo b -r && cargo install --path=.
@@ -27,7 +28,8 @@ fn main() -> MyResult<()> {
 
     if arguments.verbose {
         eprintln!(
-            "0. all_files.len(): {}, time_elapsed: {:?}",
+            "0. {:<43}: {:>10}, time_elapsed: {:?}",
+            "Total number of files",
             all_files.len(),
             time.elapsed()
         );
@@ -41,7 +43,8 @@ fn main() -> MyResult<()> {
 
     if arguments.verbose {
         eprintln!(
-            "1. duplicate_size.len(): {}, time_elapsed: {:?}",
+            "1. {:<43}: {:>10}, time_elapsed: {:?}",
+            "Number of files of identical size",
             duplicate_size.len(),
             time.elapsed()
         );
@@ -53,11 +56,23 @@ fn main() -> MyResult<()> {
 
     if arguments.verbose {
         eprintln!(
-            "2. duplicate_bytes.len(): {}, time_elapsed: {:?}",
+            "2. {:<43}: {:>10}, time_elapsed: {:?}",
+            "Number of files with identical first bytes",
             duplicate_bytes.len(),
             time.elapsed()
         );
     }
+
+    /*
+    // https://rust-lang.github.io/async-book/01_getting_started/04_async_await_primer.html
+    let groups = block_on(all(&duplicate_bytes, &arguments));
+    let mut duplicate_hash: Vec<GroupInfo> = [
+        groups.0,
+        groups.1,
+        groups.2,
+        groups.3,
+    ].concat();
+    */
 
     // Procedure 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
     // Ignore filegroups containing only one file.
@@ -65,7 +80,8 @@ fn main() -> MyResult<()> {
 
     if arguments.verbose {
         eprintln!(
-            "3. duplicate_hash.len(): {}, time_elapsed: {:?}",
+            "3. {:<43}: {:>10}, time_elapsed: {:?}",
+            "Number of files with identical hashes",
             duplicate_hash.len(),
             time.elapsed()
         );
@@ -101,3 +117,25 @@ fn main() -> MyResult<()> {
 
     Ok(())
 }
+
+/*
+async fn analise(d: &[GroupInfo], arguments: &Arguments) -> Vec<GroupInfo> {
+    // Procedure 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
+    // Ignore filegroups containing only one file.
+    let duplicate_hash: Vec<GroupInfo> = d.get_identical_files(arguments, 3);
+
+    duplicate_hash
+}
+
+async fn all(d: &[GroupInfo], arguments: &Arguments) -> (Vec<GroupInfo>, Vec<GroupInfo>, Vec<GroupInfo>, Vec<GroupInfo>) {
+    let group_number = d.len();
+    let g: Vec<&[GroupInfo]> = d.chunks(group_number / 4).collect();
+    futures::join!(
+        analise(g[0], arguments),
+        analise(g[1], arguments),
+        analise(g[2], arguments),
+        analise(g[3], arguments),
+    )
+    //(side_a, side_b)
+}
+*/

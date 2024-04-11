@@ -46,7 +46,7 @@ find_duplicate_files -twa fxhash -r yaml
 #### 4. To find duplicate files in the `Downloads` directory and redirect the output to a `json` file for further analysis:
 
 ```
-find_duplicate_files -i ~/Downloads -r json > fdf.json
+find_duplicate_files -vi ~/Downloads -r json > fdf.json
 ```
 
 #### 5. To find duplicate files in the current directory whose size is greater than or equal to 8 bytes:
