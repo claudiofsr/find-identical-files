@@ -1,6 +1,6 @@
 # New project name
 
-This project has been renamed to: find-identical-files.
+This project has been renamed to: `find-identical-files`.
 
 old project name: find_duplicate_files
 
