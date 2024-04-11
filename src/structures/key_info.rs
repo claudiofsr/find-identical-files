@@ -34,7 +34,6 @@ impl Key {
 #[cfg(test)]
 mod test_key {
     use super::*;
-    //use futures::executor::block_on;
 
     /// cargo test -- --show-output test_new_key
     #[test]
@@ -65,25 +64,4 @@ mod test_key {
         };
         assert_eq!(key, result);
     }
-
-    /*
-    /// cargo test -- --show-output test_async_fn
-    ///
-    /// Rust version 1.77.0
-    #[test]
-    fn test_async_fn() {
-        let n = 20;
-
-        async fn fib(n: u32) -> u32 {
-            match n {
-                0 | 1 => 1,
-                _ => Box::pin(fib(n - 1)).await + Box::pin(fib(n - 2)).await,
-            }
-        }
-
-        let result = block_on(fib(n));
-
-        assert_eq!(result, 10946);
-    }
-    */
 }
