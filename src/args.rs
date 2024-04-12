@@ -186,14 +186,16 @@ pub struct Arguments {
     /// Default value = 2
     #[arg(
         short('n'), long("min_number"), 
-        required = false, default_value = "2",
+        required = false, 
+        default_value = "2",
         value_parser = clap::value_parser!(u64).range(1..)
     )]
     pub min_number: Option<u64>,
 
     /// Maximum 'number of identical files' to be reported
     #[arg(
-        short('N'), long("max_number"), required = false,
+        short('N'), long("max_number"), 
+        required = false,
         value_parser = clap::value_parser!(u64).range(1..)
     )]
     pub max_number: Option<u64>,
