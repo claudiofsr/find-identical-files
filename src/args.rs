@@ -181,15 +181,22 @@ pub struct Arguments {
 
     /// Minimum 'number of identical files' to be reported
     ///
-    /// If n = 0 or n = 1, all files will be reported.
+    /// If n = 1, all files will be reported.
     ///
     /// Default value = 2
-    #[arg(short('n'), long("min_number"), required = false)]
-    pub min_number: Option<usize>,
+    #[arg(
+        short('n'), long("min_number"), 
+        required = false, default_value = "2",
+        value_parser = clap::value_parser!(u64).range(1..)
+    )]
+    pub min_number: Option<u64>,
 
     /// Maximum 'number of identical files' to be reported
-    #[arg(short('N'), long("max_number"), required = false)]
-    pub max_number: Option<usize>,
+    #[arg(
+        short('N'), long("max_number"), required = false,
+        value_parser = clap::value_parser!(u64).range(1..)
+    )]
+    pub max_number: Option<u64>,
 
     /// Omit hidden files (starts with '.'), otherwise search all files.
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
@@ -249,12 +256,6 @@ impl Arguments {
         }
 
         args.validate_dir_path()?;
-
-        if let Some(0) = args.min_number {
-            eprintln!("argument option: --min_number 0");
-            eprintln!("The number of identical files must be greater than Zero!");
-            process::exit(1);
-        }
 
         Ok(args)
     }

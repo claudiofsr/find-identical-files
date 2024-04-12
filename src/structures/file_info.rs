@@ -60,8 +60,8 @@ impl FileExtension for [FileInfo] {
         */
 
         // number of identical files
-        let min_number: usize = arguments.min_number.unwrap_or(2);
-        let max_number: usize = arguments.max_number.unwrap_or(std::usize::MAX);
+        let min_number: usize = arguments.min_number.unwrap_or(2) as usize;
+        let max_number: usize = arguments.max_number.unwrap_or(std::u64::MAX) as usize;
 
         // Converting group_by to vector
         let grouped_files: Vec<GroupInfo> = group_by
