@@ -2,7 +2,7 @@
 name = "find-identical-files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
 version = "0.30.2"
-rust-version = "1.77"
+rust-version = "1.77.2"
 repository = "https://github.com/claudiofsr/find-identical-files"
 homepage = "https://github.com/claudiofsr/find-identical-files"
 documentation = "https://docs.rs/find-identical-files"
