@@ -42,7 +42,7 @@ With the `--max_number` (or -N) argument option, set the maximum number of ident
 
 The number of identical files is the number of times the same file is found (number of repetitions).
 
-##### 2.1 If n = 0 or n = 1, all files will be reported.
+##### 2.1 If n = 1, all files will be reported.
 
 Useful for getting hash information for all files in the current directory.
 

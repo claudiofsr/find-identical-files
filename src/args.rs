@@ -250,6 +250,12 @@ impl Arguments {
 
         args.validate_dir_path()?;
 
+        if let Some(0) = args.min_number {
+            eprintln!("argument option: --min_number 0");
+            eprintln!("The number of identical files must be greater than Zero!");
+            process::exit(1);
+        }
+
         Ok(args)
     }
 
