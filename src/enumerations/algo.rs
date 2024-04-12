@@ -1,4 +1,3 @@
-use crate::{open_file, Arguments, MyResult};
 use ahash::AHasher;
 use blake3::Hasher as Blake3Hasher;
 use clap::ValueEnum;
@@ -13,7 +12,9 @@ use std::{
     path::PathBuf,
 };
 
-const FIRST_BYTES: usize = 80;
+use crate::{open_file, Arguments, MyResult};
+
+const FIRST_BYTES: usize = 1024;
 const BUFFER_SIZE: usize = 64 * 1024;
 const HEX: [char; 16] = [
     '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f',
@@ -50,9 +51,10 @@ impl PathBufExtension for PathBuf {
             // Apply the chosen hash algorithm to the entire file.
             arguments.algorithm.calculate_hash(file)?
         } else {
-            // Apply the hash algorithm to only the first bytes of the file.
+            // Apply the hash algorithm the first bytes of the file.
             let mut buffer = [0_u8; FIRST_BYTES];
-            // read up to FIRST_BYTES bytes
+
+            // Read up to FIRST_BYTES bytes.
             let count = file.read(&mut buffer)?;
 
             let mut hasher = AHasher::default();
