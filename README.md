@@ -1,6 +1,8 @@
 # find-identical-files
 Find identical files according to their size and hashing algorithm.
 
+Therefore, a file is identical to another if they both have the same size and hash.
+
 "A hash function is a mathematical algorithm that takes an input (in this case, a file)
 and produces a fixed-size string of characters, known as a hash value or checksum.
 The hash value acts as a summary representation of the original input.
@@ -29,18 +31,18 @@ See the function [fn open_file()](https://docs.rs/find-identical-files/latest/sr
 find-identical-files
 ```
 
-By default, files with at least two or more identical files will be searched.
+The number of identical files is the number of times the same file is found (number of repetitions).
+
+Identical files will be filtered and those whose repetition number is two (default) or more will be selected.
 
 #### 2. Search files in current directory with at least 5 identical files, run the command:
 ```
 find-identical-files -n 5
 ```
 
-With the `--min_number` (or -n) argument option, set the minimum number of identical files.
+With the `--min_number` (or `-n`) argument option, set the minimum number of identical files.
 
-With the `--max_number` (or -N) argument option, set the maximum number of identical files.
-
-The number of identical files is the number of times the same file is found (number of repetitions).
+With the `--max_number` (or `-N`) argument option, set the maximum number of identical files.
 
 ##### 2.1 If n = 1, all files will be reported.
 
