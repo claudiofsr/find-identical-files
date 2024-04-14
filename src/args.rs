@@ -196,9 +196,11 @@ pub struct Arguments {
     #[arg(
         short('N'), long("max_number"), 
         required = false,
+        default_value_t = u64::MAX,
+        hide_default_value = true,
         value_parser = clap::value_parser!(u64).range(1..)
     )]
-    pub max_number: Option<u64>,
+    pub max_number: u64,
 
     /// Omit hidden files (starts with '.'), otherwise search all files.
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
