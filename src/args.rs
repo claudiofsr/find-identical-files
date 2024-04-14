@@ -190,7 +190,7 @@ pub struct Arguments {
         default_value = "2",
         value_parser = clap::value_parser!(u64).range(1..)
     )]
-    pub min_number: Option<u64>,
+    pub min_number: u64,
 
     /// Maximum 'number of identical files' to be reported
     #[arg(
