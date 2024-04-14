@@ -59,7 +59,7 @@ impl FileExtension for [FileInfo] {
             });
         */
 
-        // number of identical files
+        // minimum and maximum number of identical files
         let min_number: usize = arguments.min_number as usize;
         let max_number: usize = arguments.max_number.unwrap_or(std::u64::MAX) as usize;
 
