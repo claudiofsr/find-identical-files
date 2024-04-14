@@ -179,7 +179,7 @@ pub struct Arguments {
     #[arg(short('i'), long("input_dir"), required = false)]
     pub input_dir: Option<PathBuf>,
 
-    /// Minimum 'number of identical files' to be reported
+    /// Minimum number of identical files to be filtered.
     ///
     /// If n = 1, all files will be reported.
     ///
@@ -192,7 +192,7 @@ pub struct Arguments {
     )]
     pub min_number: u64,
 
-    /// Maximum 'number of identical files' to be reported
+    /// Maximum number of identical files to be filtered.
     #[arg(
         short('N'), long("max_number"), 
         required = false,
