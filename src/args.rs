@@ -187,7 +187,7 @@ pub struct Arguments {
     #[arg(
         short('n'), long("min_number"), 
         required = false, 
-        default_value = "2",
+        default_value_t = 2,
         value_parser = clap::value_parser!(u64).range(1..)
     )]
     pub min_number: u64,
