@@ -152,9 +152,9 @@ Options:
   -i, --input_dir <INPUT_DIR>
           Set the input directory where to search for identical files [default: current directory]
   -n, --min_number <MIN_NUMBER>
-          Minimum 'number of identical files' to be reported [default: 2]
+          Minimum number of identical files to be filtered [default: 2]
   -N, --max_number <MAX_NUMBER>
-          Maximum 'number of identical files' to be reported
+          Maximum number of identical files to be filtered
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
   -r, --result_format <RESULT_FORMAT>
