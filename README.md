@@ -37,18 +37,18 @@ Identical files will be filtered and those whose frequency is two (default) or m
 
 #### 2. Search files in current directory with at least 5 identical files, run the command:
 ```
-find-identical-files -n 5
+find-identical-files -f 5
 ```
 
 With the `--min_frequency` (or `-f`) argument option, set the minimum frequency (number of identical files).
 
 With the `--max_frequency` (or `-F`) argument option, set the maximum frequency (number of identical files).
 
-##### 2.1 If n = 1, all files will be reported.
+##### 2.1 If f = 1, all files will be reported.
 
 Useful for getting hash information for all files in the current directory.
 
-##### 2.2 If n = 2 (default), look for duplicate or higher frequency files.
+##### 2.2 If f = 2 (default), look for duplicate or higher frequency files.
 
 #### 3. To find identical files with `fxhash` algorithm and `yaml` format:
 ```
