@@ -269,6 +269,8 @@ impl Arguments {
             clear_terminal_screen();
         }
 
+        args.validate_range_number()?;
+
         args.validate_dir_path()?;
 
         Ok(args)
@@ -286,6 +288,18 @@ impl Arguments {
         eprintln!("Generating completion file for {gen:?}...");
         generate(gen, &mut cmd, cmd_name, &mut stdout);
         process::exit(1);
+    }
+
+    pub fn validate_range_number(&self) -> MyResult<()> {
+        if self.min_number > self.max_number {
+            eprintln!("fn validate_range_number()");
+            eprintln!("max_number cannot be less than min_number");
+            eprintln!("min_number: {}", self.min_number);
+            eprintln!("max_number: {}", self.max_number);
+            process::exit(1);
+        }
+
+        Ok(())
     }
 
     /// Get the size range (inclusive)
@@ -309,12 +323,14 @@ impl Arguments {
         for dir_path in paths.into_iter().flatten() {
             if !std::path::Path::new(&dir_path).try_exists()? {
                 eprintln!("fn validate_dir_path()");
-                panic!("The path {dir_path:?} was not found!");
+                eprintln!("The path {dir_path:?} was not found!");
+                process::exit(1);
             };
 
             if !dir_path.is_dir() {
                 eprintln!("fn validate_dir_path()");
-                panic!("{dir_path:?} is not a directory!");
+                eprintln!("{dir_path:?} is not a directory!");
+                process::exit(1);
             }
 
             // Check if able to write inside directory
@@ -323,7 +339,8 @@ impl Arguments {
             if metadada.permissions().readonly() {
                 eprintln!("fn validate_dir_path()");
                 eprintln!("No write permission");
-                panic!("{dir_path:?} is readonly!");
+                eprintln!("{dir_path:?} is readonly!");
+                process::exit(1);
             }
         }
 
