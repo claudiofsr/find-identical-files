@@ -33,7 +33,7 @@ find-identical-files
 
 The number of identical files is the number of times the same file is found (number of repetitions or frequency).
 
-Identical files will be filtered and those whose repetition number is two (default) or more will be selected.
+Identical files will be filtered and those whose frequency is two (default) or more will be selected.
 
 #### 2. Search files in current directory with at least 5 identical files, run the command:
 ```
@@ -48,7 +48,7 @@ With the `--max_number` (or `-N`) argument option, set the maximum number of ide
 
 Useful for getting hash information for all files in the current directory.
 
-##### 2.2 If n = 2 (default), look for duplicate files or more identical files.
+##### 2.2 If n = 2 (default), look for duplicate or higher frequency files.
 
 #### 3. To find identical files with `fxhash` algorithm and `yaml` format:
 ```
