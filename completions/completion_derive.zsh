@@ -27,20 +27,20 @@ _find-identical-files() {
 '--min_depth=[Set the minimum depth to search for identical files]:MIN_DEPTH: ' \
 '-D+[Set the maximum depth to search for identical files]:MAX_DEPTH: ' \
 '--max_depth=[Set the maximum depth to search for identical files]:MAX_DEPTH: ' \
+'-f+[Minimum frequency (number of identical files) to be filtered]:MIN_FREQUENCY: ' \
+'--min_frequency=[Minimum frequency (number of identical files) to be filtered]:MIN_FREQUENCY: ' \
+'-F+[Maximum frequency (number of identical files) to be filtered]:MAX_FREQUENCY: ' \
+'--max_frequency=[Maximum frequency (number of identical files) to be filtered]:MAX_FREQUENCY: ' \
 '-g+[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '--generate=[If provided, outputs the completion file for given shell]:GENERATOR:(bash elvish fish powershell zsh)' \
 '-i+[Set the input directory where to search for identical files \[default\: current directory\]]:INPUT_DIR:_files' \
 '--input_dir=[Set the input directory where to search for identical files \[default\: current directory\]]:INPUT_DIR:_files' \
-'-n+[Minimum number of identical files to be filtered]:MIN_NUMBER: ' \
-'--min_number=[Minimum number of identical files to be filtered]:MIN_NUMBER: ' \
-'-N+[Maximum number of identical files to be filtered]:MAX_NUMBER: ' \
-'--max_number=[Maximum number of identical files to be filtered]:MAX_NUMBER: ' \
 '-r+[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '--result_format=[Print the result in the chosen format]:RESULT_FORMAT:(json yaml personal)' \
 '-x+[Set the output directory for the XLSX file (fif.xlsx)]:XLSX_DIR:_files' \
 '--xlsx_dir=[Set the output directory for the XLSX file (fif.xlsx)]:XLSX_DIR:_files' \
-'-f[Prints full path of identical files, otherwise relative path]' \
-'--full_path[Prints full path of identical files, otherwise relative path]' \
+'-e[Prints extended path of identical files, otherwise relative path]' \
+'--extended_path[Prints extended path of identical files, otherwise relative path]' \
 '-o[Omit hidden files (starts with '\''.'\''), otherwise search all files]' \
 '--omit_hidden[Omit hidden files (starts with '\''.'\''), otherwise search all files]' \
 '-s[Sort result by number of identical files, otherwise sort by file size]' \

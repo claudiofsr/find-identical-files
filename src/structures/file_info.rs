@@ -59,9 +59,9 @@ impl FileExtension for [FileInfo] {
             });
         */
 
-        // minimum and maximum number of identical files
-        let min_number: usize = arguments.min_number as usize;
-        let max_number: usize = arguments.max_number as usize;
+        // minimum and maximum frequency (number of identical files)
+        let min_frequency: usize = arguments.min_frequency as usize;
+        let max_frequency: usize = arguments.max_frequency as usize;
 
         // Converting group_by to vector
         let grouped_files: Vec<GroupInfo> = group_by
@@ -72,9 +72,9 @@ impl FileExtension for [FileInfo] {
                 // procedure 2: filter by size and by hash of the first bytes
                 // procedure 3: filter by size and by hash of the entire file
                 if procedure <= 2 {
-                    paths.len() >= min_number
+                    paths.len() >= min_frequency
                 } else {
-                    paths.len() >= min_number && paths.len() <= max_number
+                    paths.len() >= min_frequency && paths.len() <= max_frequency
                 }
             })
             .map(|(key, paths)| {

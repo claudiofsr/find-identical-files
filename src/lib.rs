@@ -88,7 +88,7 @@ pub fn get_path(arguments: &Arguments) -> MyResult<PathBuf> {
         None => PathBuf::from("."),
     };
 
-    if arguments.full_path {
+    if arguments.extended_path {
         Ok(fs::canonicalize(path)?) // full path
     } else {
         Ok(path) // relative path

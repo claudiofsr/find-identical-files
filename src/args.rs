@@ -104,9 +104,32 @@ pub struct Arguments {
     )]
     pub max_depth: usize,
 
-    /// Prints full path of identical files, otherwise relative path.
-    #[arg(short('f'), long("full_path"), default_value_t = false)]
-    pub full_path: bool,
+    /// Prints extended path of identical files, otherwise relative path.
+    #[arg(short('e'), long("extended_path"), default_value_t = false)]
+    pub extended_path: bool,
+
+    /// Minimum frequency (number of identical files) to be filtered.
+    ///
+    /// If n = 1, all files will be reported.
+    ///
+    /// Default value = 2
+    #[arg(
+        short('f'), long("min_frequency"), 
+        required = false,
+        default_value_t = 2,
+        value_parser = clap::value_parser!(u64).range(1..)
+    )]
+    pub min_frequency: u64,
+
+    /// Maximum frequency (number of identical files) to be filtered.
+    #[arg(
+        short('F'), long("max_frequency"), 
+        required = false,
+        default_value_t = u64::MAX,
+        hide_default_value = true,
+        value_parser = clap::value_parser!(u64).range(1..)
+    )]
+    pub max_frequency: u64,
 
     /**
     If provided, outputs the completion file for given shell.
@@ -189,29 +212,6 @@ pub struct Arguments {
     #[arg(short('i'), long("input_dir"), required = false)]
     pub input_dir: Option<PathBuf>,
 
-    /// Minimum number of identical files to be filtered.
-    ///
-    /// If n = 1, all files will be reported.
-    ///
-    /// Default value = 2
-    #[arg(
-        short('n'), long("min_number"), 
-        required = false,
-        default_value_t = 2,
-        value_parser = clap::value_parser!(u64).range(1..)
-    )]
-    pub min_number: u64,
-
-    /// Maximum number of identical files to be filtered.
-    #[arg(
-        short('N'), long("max_number"), 
-        required = false,
-        default_value_t = u64::MAX,
-        hide_default_value = true,
-        value_parser = clap::value_parser!(u64).range(1..)
-    )]
-    pub max_number: u64,
-
     /// Omit hidden files (starts with '.'), otherwise search all files.
     #[arg(short('o'), long("omit_hidden"), default_value_t = false)]
     pub omit_hidden: bool,
@@ -269,7 +269,7 @@ impl Arguments {
             clear_terminal_screen();
         }
 
-        args.validate_range_number()?;
+        args.validate_range_frequency()?;
 
         args.validate_dir_path()?;
 
@@ -290,12 +290,12 @@ impl Arguments {
         process::exit(1);
     }
 
-    pub fn validate_range_number(&self) -> MyResult<()> {
-        if self.min_number > self.max_number {
-            eprintln!("fn validate_range_number()");
-            eprintln!("max_number cannot be less than min_number");
-            eprintln!("min_number: {}", self.min_number);
-            eprintln!("max_number: {}", self.max_number);
+    pub fn validate_range_frequency(&self) -> MyResult<()> {
+        if self.min_frequency > self.max_frequency {
+            eprintln!("fn validate_range_frequency()");
+            eprintln!("max_frequency cannot be less than min_frequency");
+            eprintln!("min_frequency: {}", self.min_frequency);
+            eprintln!("max_frequency: {}", self.max_frequency);
             process::exit(1);
         }
 

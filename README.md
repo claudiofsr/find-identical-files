@@ -40,9 +40,9 @@ Identical files will be filtered and those whose frequency is two (default) or m
 find-identical-files -n 5
 ```
 
-With the `--min_number` (or `-n`) argument option, set the minimum number of identical files.
+With the `--min_frequency` (or `-f`) argument option, set the minimum frequency (number of identical files).
 
-With the `--max_number` (or `-N`) argument option, set the maximum number of identical files.
+With the `--max_frequency` (or `-F`) argument option, set the maximum frequency (number of identical files).
 
 ##### 2.1 If n = 1, all files will be reported.
 
@@ -145,16 +145,16 @@ Options:
           Set the minimum depth to search for identical files [default: 0]
   -D, --max_depth <MAX_DEPTH>
           Set the maximum depth to search for identical files
-  -f, --full_path
-          Prints full path of identical files, otherwise relative path
+  -e, --extended_path
+          Prints extended path of identical files, otherwise relative path
+  -f, --min_frequency <MIN_FREQUENCY>
+          Minimum frequency (number of identical files) to be filtered [default: 2]
+  -F, --max_frequency <MAX_FREQUENCY>
+          Maximum frequency (number of identical files) to be filtered
   -g, --generate <GENERATOR>
           If provided, outputs the completion file for given shell [possible values: bash, elvish, fish, powershell, zsh]
   -i, --input_dir <INPUT_DIR>
           Set the input directory where to search for identical files [default: current directory]
-  -n, --min_number <MIN_NUMBER>
-          Minimum number of identical files to be filtered [default: 2]
-  -N, --max_number <MAX_NUMBER>
-          Maximum number of identical files to be filtered
   -o, --omit_hidden
           Omit hidden files (starts with '.'), otherwise search all files
   -r, --result_format <RESULT_FORMAT>
