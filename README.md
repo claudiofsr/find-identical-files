@@ -22,7 +22,7 @@ Hash algorithm options are:
 5. [sha512](https://github.com/RustCrypto/hashes)
 
 find-identical-files just reads the files and never changes their contents.
-See the function [fn open_file()](https://docs.rs/find-identical-files/latest/src/find_identical_files/lib.rs.html#62-82) to verify.
+See the function [open_file](https://docs.rs/find-identical-files/latest/src/find_identical_files/lib.rs.html#62-82) to verify.
 
 ## Usage examples
 
