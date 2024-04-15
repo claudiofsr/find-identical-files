@@ -34,7 +34,7 @@ pub struct PathInfo {
     pub path: PathBuf,
 
     /// Number of identical files with the same size and blake3 hash
-    #[serde(rename = "Number of identical files")]
+    #[serde(rename = "Number of identical files (frequency)")]
     #[xlsx(value_format = get_xlsx_format("integer"))]
     pub num_file: usize,
 

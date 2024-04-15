@@ -31,7 +31,7 @@ See the function [open_file](https://docs.rs/find-identical-files/latest/src/fin
 find-identical-files
 ```
 
-The number of identical files is the number of times the same file is found (number of repetitions).
+The number of identical files is the number of times the same file is found (number of repetitions or frequency).
 
 Identical files will be filtered and those whose repetition number is two (default) or more will be selected.
 
