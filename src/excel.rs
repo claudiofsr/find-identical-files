@@ -94,7 +94,7 @@ where
 
     worksheet
         .set_name(sheet_name)?
-        .set_row_height(0, 32)?
+        .set_row_height(0, 34)?
         .set_row_format(0, fmt_header)?
         .set_freeze_panes(1, 0)?;
 
