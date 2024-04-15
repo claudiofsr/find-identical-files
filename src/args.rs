@@ -59,16 +59,21 @@ pub struct Arguments {
     /// keep files whose size is greater than or equal to a minimum value.
     ///
     /// size >= min_size
-    #[arg(short('b'), long("min_size"), required = false)]
-    pub min_size: Option<u64>,
+    #[arg(short('b'), long("min_size"), required = false, default_value_t = 0)]
+    pub min_size: u64,
 
     /// Set a maximum file size (in bytes) to search for identical files.
     ///
     /// keep files whose size is less than or equal to a maximum value.
     ///
     /// size <= max_size
-    #[arg(short('B'), long("max_size"), required = false)]
-    pub max_size: Option<u64>,
+    #[arg(
+        short('B'), long("max_size"),
+        required = false,
+        default_value_t = u64::MAX,
+        hide_default_value = true,
+    )]
+    pub max_size: u64,
 
     /// Set the output directory for the CSV file (fif.csv).
     ///
@@ -85,14 +90,19 @@ pub struct Arguments {
     /// Set the minimum depth to search for identical files.
     ///
     /// depth >= min_depth
-    #[arg(short('d'), long("min_depth"), required = false)]
-    pub min_depth: Option<usize>,
+    #[arg(short('d'), long("min_depth"), required = false, default_value_t = 0)]
+    pub min_depth: usize,
 
     /// Set the maximum depth to search for identical files.
     ///
     /// depth <= max_depth
-    #[arg(short('D'), long("max_depth"), required = false)]
-    pub max_depth: Option<usize>,
+    #[arg(
+        short('D'), long("max_depth"), 
+        required = false,
+        default_value_t = usize::MAX,
+        hide_default_value = true,
+    )]
+    pub max_depth: usize,
 
     /// Prints full path of identical files, otherwise relative path.
     #[arg(short('f'), long("full_path"), default_value_t = false)]
@@ -283,10 +293,10 @@ impl Arguments {
     /// min_size <= size <= max_size
     pub fn get_size_range(&self) -> RangeInclusive<u64> {
         // Set a minimum file size (in bytes) to search for identical files.
-        let min_size: u64 = self.min_size.unwrap_or(0);
+        let min_size: u64 = self.min_size;
 
         // Set a maximum file size (in bytes) to search for identical files.
-        let max_size: u64 = self.max_size.unwrap_or(std::u64::MAX);
+        let max_size: u64 = self.max_size;
 
         // min_size <= size <= max_size
         min_size..=max_size

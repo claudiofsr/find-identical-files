@@ -8,17 +8,11 @@ use std::{ops::RangeInclusive, path::PathBuf, process};
 pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
     let path: PathBuf = get_path(arguments)?;
 
-    // Set the minimum depth to search for identical files.
-    let min_depth: usize = arguments.min_depth.unwrap_or(0);
-
-    // Set the maximum depth to search for identical files.
-    let max_depth: usize = arguments.max_depth.unwrap_or(std::usize::MAX);
-
     let size_range: RangeInclusive<u64> = arguments.get_size_range();
 
     let jwalk = WalkDirGeneric::<((), Option<FileInfo>)>::new(path)
-        .min_depth(min_depth)
-        .max_depth(max_depth)
+        .min_depth(arguments.min_depth)
+        .max_depth(arguments.max_depth)
         .parallelism(Parallelism::RayonNewPool(rayon::current_num_threads()))
         .skip_hidden(arguments.omit_hidden)
         .process_read_dir(move |_depth, _path, _read_dir_state, dir_entry_results| {

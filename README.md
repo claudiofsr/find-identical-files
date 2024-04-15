@@ -136,13 +136,13 @@ Options:
   -a, --algorithm <ALGORITHM>
           Choose the hash algorithm [default: blake3] [possible values: ahash, blake3, fxhash, sha256, sha512]
   -b, --min_size <MIN_SIZE>
-          Set a minimum file size (in bytes) to search for identical files
+          Set a minimum file size (in bytes) to search for identical files [default: 0]
   -B, --max_size <MAX_SIZE>
           Set a maximum file size (in bytes) to search for identical files
   -c, --csv_dir <CSV_DIR>
           Set the output directory for the CSV file (fif.csv)
   -d, --min_depth <MIN_DEPTH>
-          Set the minimum depth to search for identical files
+          Set the minimum depth to search for identical files [default: 0]
   -D, --max_depth <MAX_DEPTH>
           Set the maximum depth to search for identical files
   -f, --full_path

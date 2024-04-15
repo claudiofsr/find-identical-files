@@ -39,15 +39,9 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 fn get_entries(arguments: &Arguments) -> MyResult<Vec<DirEntry>> {
     let path: PathBuf = get_path(arguments)?;
 
-    // Set the minimum depth to search for identical files.
-    let min_depth: usize = arguments.min_depth.unwrap_or(0);
-
-    // Set the maximum depth to search for identical files.
-    let max_depth: usize = arguments.max_depth.unwrap_or(std::usize::MAX);
-
     let entries: Vec<DirEntry> = WalkDir::new(path)
-        .min_depth(min_depth)
-        .max_depth(max_depth)
+        .min_depth(arguments.min_depth)
+        .max_depth(arguments.max_depth)
         .into_iter()
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
         .map_while(|result| match result {

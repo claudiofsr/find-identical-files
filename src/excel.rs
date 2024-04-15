@@ -21,7 +21,7 @@ const MAX_NUMBER_OF_ROWS: usize = 1_000_000;
 
 /// Write XLSX File according to some struct T
 ///
-/// The lines (or rows) are given by &[T]
+/// The lines (or rows) are given by `&[T]`
 ///
 /// <https://docs.rs/rust_xlsxwriter/latest/rust_xlsxwriter/serializer/index.html>
 pub fn write_xlsx<T>(lines: &[T], sheet_name: &str, path: PathBuf) -> MyResult<()>

@@ -137,6 +137,5 @@ async fn all(d: &[GroupInfo], arguments: &Arguments) -> (Vec<GroupInfo>, Vec<Gro
         analise(g[2], arguments),
         analise(g[3], arguments),
     )
-    //(side_a, side_b)
 }
 */
