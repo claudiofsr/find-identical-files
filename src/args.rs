@@ -186,7 +186,7 @@ pub struct Arguments {
     /// Default value = 2
     #[arg(
         short('n'), long("min_number"), 
-        required = false, 
+        required = false,
         default_value_t = 2,
         value_parser = clap::value_parser!(u64).range(1..)
     )]
