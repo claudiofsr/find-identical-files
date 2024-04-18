@@ -1,6 +1,5 @@
 use find_identical_files::*;
 use std::time::Instant;
-//use futures::executor::block_on;
 
 /**
     cargo clippy --features walkdir
@@ -63,18 +62,6 @@ fn main() -> MyResult<()> {
         );
     }
 
-    /*
-    // For testing purposes only:
-    // https://rust-lang.github.io/async-book/01_getting_started/04_async_await_primer.html
-    let groups = block_on(all(&identical_bytes, &arguments));
-    let mut identical_hash: Vec<GroupInfo> = [
-        groups.0,
-        groups.1,
-        groups.2,
-        groups.3,
-    ].concat();
-    */
-
     // Procedure 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
     // Ignore filegroups containing only one file.
     let mut identical_hash: Vec<GroupInfo> = identical_bytes.get_identical_files(&arguments, 3);
@@ -118,24 +105,3 @@ fn main() -> MyResult<()> {
 
     Ok(())
 }
-
-/*
-async fn analise(d: &[GroupInfo], arguments: &Arguments) -> Vec<GroupInfo> {
-    // Procedure 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
-    // Ignore filegroups containing only one file.
-    let identical_hash: Vec<GroupInfo> = d.get_identical_files(arguments, 3);
-
-    identical_hash
-}
-
-async fn all(d: &[GroupInfo], arguments: &Arguments) -> (Vec<GroupInfo>, Vec<GroupInfo>, Vec<GroupInfo>, Vec<GroupInfo>) {
-    let group_number = d.len();
-    let g: Vec<&[GroupInfo]> = d.chunks(group_number / 4).collect();
-    futures::join!(
-        analise(g[0], arguments),
-        analise(g[1], arguments),
-        analise(g[2], arguments),
-        analise(g[3], arguments),
-    )
-}
-*/
