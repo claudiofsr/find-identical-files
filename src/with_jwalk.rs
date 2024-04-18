@@ -1,5 +1,6 @@
 use crate::{get_path, Arguments, FileInfo, Key, MyResult};
 use jwalk::{DirEntry, Parallelism, WalkDirGeneric};
+//use rayon::prelude::*;
 use std::{path::PathBuf, process};
 
 /// Get all files into one vector.
@@ -59,8 +60,8 @@ fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults, min_size: u64
     dir_entry_results
         .iter_mut()
         //.par_iter_mut() // rayon parallel iterator
-        .map_while(|result| match result {
-            Ok(dir_entry) => Some(dir_entry),
+        .map(|result| match result {
+            Ok(dir_entry) => dir_entry,
             Err(why) => {
                 eprintln!("fn analyze_dir_entry_results()");
                 eprintln!("Error: {why}");

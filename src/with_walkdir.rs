@@ -42,8 +42,8 @@ fn get_entries(arguments: &Arguments) -> MyResult<Vec<DirEntry>> {
         .max_depth(arguments.max_depth)
         .into_iter()
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
-        .map_while(|result| match result {
-            Ok(dir_entry) => Some(dir_entry),
+        .map(|result| match result {
+            Ok(dir_entry) => dir_entry,
             Err(why) => {
                 eprintln!("fn get_entries()");
                 eprintln!("Error: {why}");
