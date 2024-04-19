@@ -71,7 +71,7 @@ fn main() -> MyResult<()> {
 
     // For testing purposes only:
     // https://rustlang.github.io/asyncbook/01_getting_started/04_async_await_primer.html
-    // let mut identical_hash: Vec<GroupInfo> = block_on(all(&identical_bytes, &arguments, 15));
+    // let mut identical_hash: Vec<GroupInfo> = block_on(get_groups(&identical_bytes, &arguments, 16));
 
     if arguments.verbose {
         eprintln!(
@@ -115,9 +115,9 @@ fn main() -> MyResult<()> {
 
 /*
 // https://docs.rs/futures/latest/futures/future/fn.join_all.html
-async fn all(d: &[GroupInfo], arguments: &Arguments, num: usize) -> Vec<GroupInfo> {
-    let group_number = d.len();
-    let groups: Vec<&[GroupInfo]> = d.par_chunks(group_number / num).collect();
+async fn get_groups(g: &[GroupInfo], arguments: &Arguments, num: usize) -> Vec<GroupInfo> {
+    let group_number = g.len();
+    let groups: Vec<&[GroupInfo]> = g.par_chunks(group_number / num).collect();
     let f: Vec<_> = groups
         .into_par_iter()
         .map(|group| async { group.get_identical_files(arguments, 3) })
