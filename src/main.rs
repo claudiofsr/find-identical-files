@@ -1,4 +1,5 @@
 use find_identical_files::*;
+//use futures::{executor::block_on, future::join_all};
 use std::time::Instant;
 
 /**
@@ -66,6 +67,10 @@ fn main() -> MyResult<()> {
     // Ignore filegroups containing only one file.
     let mut identical_hash: Vec<GroupInfo> = identical_bytes.get_identical_files(&arguments, 3);
 
+    // For testing purposes only:
+    // https://rustlang.github.io/asyncbook/01_getting_started/04_async_await_primer.html
+    // let mut identical_hash: Vec<GroupInfo> = block_on(all(&identical_bytes, &arguments, 15));
+
     if arguments.verbose {
         eprintln!(
             "3. {:<43}: {:>10}, time_elapsed: {:?}",
@@ -105,3 +110,18 @@ fn main() -> MyResult<()> {
 
     Ok(())
 }
+
+/*
+// https://docs.rs/futures/latest/futures/future/fn.join_all.html
+async fn all(d: &[GroupInfo], arguments: &Arguments, num: usize) -> Vec<GroupInfo> {
+    let group_number = d.len();
+    let groups: Vec<&[GroupInfo]> = d.chunks(group_number / num).collect();
+    let f: Vec<_> = groups
+        .iter()
+        .map(|group| async { group.get_identical_files(arguments, 3) })
+        .collect();
+    let r: Vec<Vec<GroupInfo>> = join_all(f).await;
+
+    r.into_iter().flatten().collect()
+}
+*/

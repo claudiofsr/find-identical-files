@@ -10,7 +10,6 @@ use std::{
     fs::{File, OpenOptions},
     io::Write,
     path::PathBuf,
-    //thread,
 };
 
 /// Grouped file information
@@ -21,7 +20,7 @@ pub struct GroupInfo {
     pub key: Key,
     /// File Paths
     #[serde(rename = "Paths")]
-    pub paths: Vec<PathBuf>, // Arc<[PathBuf]> for immutable data
+    pub paths: Vec<PathBuf>, // Vec<PathBuf> ; Arc<[PathBuf]> for immutable data
     /// Number of identical files with the same size and blake3 hash
     #[serde(rename = "Number of identical files")]
     pub num_file: usize,
@@ -77,9 +76,6 @@ impl GroupInfo {
             .clone()
             .into_par_iter() // rayon parallel iterator
             .map(|path| {
-                // https://docs.rs/tokio/latest/tokio/task/index.html
-                // https://users.rust-lang.org/t/hash-files-in-parallel-using-asynchronous-filesystem-operations/76387
-                // https://ryhl.io/blog/async-what-is-blocking/
                 let key = match path.get_hash(arguments, procedure) {
                     Ok(hash) => Key {
                         size: self.key.size,
