@@ -1,6 +1,8 @@
 use find_identical_files::*;
-//use futures::{executor::block_on, future::join_all};
 use std::time::Instant;
+
+//use futures::{executor::block_on, future::join_all};
+//use rayon::prelude::*;
 
 /**
     cargo clippy --features walkdir
@@ -115,9 +117,9 @@ fn main() -> MyResult<()> {
 // https://docs.rs/futures/latest/futures/future/fn.join_all.html
 async fn all(d: &[GroupInfo], arguments: &Arguments, num: usize) -> Vec<GroupInfo> {
     let group_number = d.len();
-    let groups: Vec<&[GroupInfo]> = d.chunks(group_number / num).collect();
+    let groups: Vec<&[GroupInfo]> = d.par_chunks(group_number / num).collect();
     let f: Vec<_> = groups
-        .iter()
+        .into_par_iter()
         .map(|group| async { group.get_identical_files(arguments, 3) })
         .collect();
     let r: Vec<Vec<GroupInfo>> = join_all(f).await;
