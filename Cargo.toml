@@ -28,6 +28,7 @@ unsafe_code = "forbid"
 ahash = "0.8"
 anstyle = "1.0" # used by clap color
 blake3 = { version = "1.5", features = ["rayon"] }
+cc = { version = "1.0", features = ["parallel"] }
 clap = { version = "4.5", features = ["derive", "color", "unstable-styles"] }
 clap_complete = "4.5"
 cfg-if = "1.0"
