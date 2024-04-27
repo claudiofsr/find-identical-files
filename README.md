@@ -156,17 +156,17 @@ find-identical-files -r json | jq -sr '.[:-1].[].["File information"].hash'
 
 2. Get information from the first identical file:
 ```
-find-identical-files -r json | jq -sr '.[0]'
+find-identical-files -r json | jq -s '.[0]'
 ```
 
 3. Get information from the 15th identical file (if it exists):
 ```
-find-identical-files -r json | jq -sr '.[14]'
+find-identical-files -r json | jq -s '.[14]'
 ```
 
 4. Get summary information:
 ```
-find-identical-files -r json | jq -sr '.[-1]'
+find-identical-files -r json | jq -s '.[-1]'
 ```
 
 ## Help
