@@ -147,9 +147,26 @@ find-identical-files --xlsx_dir=/tmp
 find-identical-files -tvi ~/Downloads -a ahash -r json > /tmp/fif.json -x /tmp
 ```
 
-### 8. Print all hashes using [jq](https://jqlang.github.io/jq/):
+### 8. Get information using [jq](https://jqlang.github.io/jq/):
+
+1. Print all hashes:
 ```
 find-identical-files -r json | jq -s | jq -r '.[:-1].[].["File information"].hash'
+```
+
+2. Get information from the first identical file:
+```
+find-identical-files -r json | jq -s | jq -r '.[0]'
+```
+
+3. Get information from the 15th identical file (if it exists):
+```
+find-identical-files -r json | jq -s | jq -r '.[14]'
+```
+
+4. Get summary information:
+```
+find-identical-files -r json | jq -s | jq -r '.[-1]'
 ```
 
 ## Help

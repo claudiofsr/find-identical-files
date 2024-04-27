@@ -60,7 +60,7 @@ impl TotalInfo {
     }
 
     /// Print the identicald files information.
-    pub fn print_sumary(&self, arguments: &Arguments) -> MyResult<()> {
+    pub fn print_summary(&self, arguments: &Arguments) -> MyResult<()> {
         match &arguments.result_format {
             Json => {
                 // Serialize TotalInfo to a JSON string.

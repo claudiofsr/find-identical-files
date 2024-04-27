@@ -87,7 +87,7 @@ fn main() -> MyResult<()> {
 
     // Print the identical files and the summary information.
     TotalInfo::get_summary(&identical_hash, &arguments, all_files.len())
-        .print_sumary(&arguments)?;
+        .print_summary(&arguments)?;
 
     // Export identical file information simultaneously to CSV and/or XLSX format.
     std::thread::scope(|s| {
