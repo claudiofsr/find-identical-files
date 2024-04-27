@@ -151,22 +151,22 @@ find-identical-files -tvi ~/Downloads -a ahash -r json > /tmp/fif.json -x /tmp
 
 1. Print all hashes:
 ```
-find-identical-files -r json | jq -s | jq -r '.[:-1].[].["File information"].hash'
+find-identical-files -r json | jq -sr '.[:-1].[].["File information"].hash'
 ```
 
 2. Get information from the first identical file:
 ```
-find-identical-files -r json | jq -s | jq -r '.[0]'
+find-identical-files -r json | jq -sr '.[0]'
 ```
 
 3. Get information from the 15th identical file (if it exists):
 ```
-find-identical-files -r json | jq -s | jq -r '.[14]'
+find-identical-files -r json | jq -sr '.[14]'
 ```
 
 4. Get summary information:
 ```
-find-identical-files -r json | jq -s | jq -r '.[-1]'
+find-identical-files -r json | jq -sr '.[-1]'
 ```
 
 ## Help
