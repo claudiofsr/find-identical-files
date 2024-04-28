@@ -49,9 +49,9 @@ find-identical-files -f N
 ```
 such that N is an integer greater than or equal to 1 (N >= 1).
 
-With the `--min_frequency` (or `-f`) argument option, set the minimum frequency (number of identical files).
+With the `-f` (or `--min_frequency`) argument option, set the minimum frequency (number of identical files).
 
-With the `--max_frequency` (or `-F`) argument option, set the maximum frequency (number of identical files).
+With the `-F` (or `--max_frequency`) argument option, set the maximum frequency (number of identical files).
 
 1. To report all files:
 
@@ -80,9 +80,9 @@ find-identical-files -b N
 ```
 such that N is an integer (N >= 0).
 
-With the `--min_size` (or `-b`) argument option, set the minimum size (in bytes).
+With the `-b` (or `--min_size`) argument option, set the minimum size (in bytes).
 
-With the `--max_size` (or `-B`) argument option, set the maximum size (in bytes).
+With the `-B` (or `--max_size`) argument option, set the maximum size (in bytes).
 
 1. To find identical files whose size is greater than or equal to 8 bytes:
 ```
