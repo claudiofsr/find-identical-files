@@ -1,8 +1,8 @@
 [package]
 name = "find-identical-files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
-version = "0.31.6"
-rust-version = "1.77.2"
+version = "0.31.7"
+rust-version = "1.78"
 repository = "https://github.com/claudiofsr/find-identical-files"
 homepage = "https://github.com/claudiofsr/find-identical-files"
 documentation = "https://docs.rs/find-identical-files"
@@ -57,6 +57,7 @@ features = [
 
 [features]
 default = ["jwalk"]
+# default = ["walkdir"]
 walkdir = ["dep:walkdir"]
 jwalk = ["dep:jwalk"]
 

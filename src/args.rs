@@ -323,7 +323,7 @@ impl Arguments {
         size >= self.min_size && size <= self.max_size
     }
 
-    pub fn validate_range_size(&self) -> MyResult<()> {
+    fn validate_range_size(&self) -> MyResult<()> {
         if self.min_size > self.max_size {
             eprintln!("fn validate_range_size()");
             eprintln!("max_size cannot be less than min_size");
@@ -335,7 +335,7 @@ impl Arguments {
         Ok(())
     }
 
-    pub fn validate_range_depth(&self) -> MyResult<()> {
+    fn validate_range_depth(&self) -> MyResult<()> {
         if self.min_depth > self.max_depth {
             eprintln!("fn validate_range_depth()");
             eprintln!("max_depth cannot be less than min_depth");
@@ -347,7 +347,7 @@ impl Arguments {
         Ok(())
     }
 
-    pub fn validate_range_frequency(&self) -> MyResult<()> {
+    fn validate_range_frequency(&self) -> MyResult<()> {
         if self.min_frequency > self.max_frequency {
             eprintln!("fn validate_range_frequency()");
             eprintln!("max_frequency cannot be less than min_frequency");
@@ -360,7 +360,7 @@ impl Arguments {
     }
 
     /// Validate directory paths
-    pub fn validate_dir_path(&self) -> MyResult<()> {
+    fn validate_dir_path(&self) -> MyResult<()> {
         let paths = [&self.input_dir, &self.csv_dir, &self.xlsx_dir];
 
         for dir_path in paths.into_iter().flatten() {

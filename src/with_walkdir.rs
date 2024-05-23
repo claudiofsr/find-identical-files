@@ -1,6 +1,6 @@
 use crate::{get_path, Arguments, FileInfo, Key, MyResult};
 use rayon::prelude::*;
-use std::{path::PathBuf, process};
+use std::path::PathBuf;
 use walkdir::{DirEntry, WalkDir};
 
 /// Get all files into one vector.
@@ -35,21 +35,14 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 
 /// Get result: Vec<DirEntry>.
 fn get_entries(arguments: &Arguments) -> MyResult<Vec<DirEntry>> {
-    let path: PathBuf = get_path(arguments)?;
+    let dir_path: PathBuf = get_path(arguments)?;
 
-    let entries: Vec<DirEntry> = WalkDir::new(path)
+    let entries: Vec<DirEntry> = WalkDir::new(dir_path)
         .min_depth(arguments.min_depth)
         .max_depth(arguments.max_depth)
         .into_iter()
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
-        .map(|result| match result {
-            Ok(dir_entry) => dir_entry,
-            Err(why) => {
-                eprintln!("fn get_entries()");
-                eprintln!("Error: {why}");
-                process::exit(1)
-            }
-        })
+        .flatten() // Result<DirEntry, Error> to DirEntry
         .filter(|entry| entry.file_type().is_file())
         .collect();
 
@@ -63,6 +56,5 @@ fn is_hidden(entry: &DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .map(|s| entry.depth() != 0 && s.starts_with('.'))
-        .unwrap_or(false)
+        .is_some_and(|s| entry.depth() != 0 && s.starts_with('.'))
 }

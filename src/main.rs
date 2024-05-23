@@ -5,8 +5,9 @@ use std::time::Instant;
 //use rayon::prelude::*;
 
 /**
+    cargo fmt
     cargo clippy --features walkdir
-    clear && cargo test -- --nocapture
+    clear && cargo test -- --show-output
     clear && cargo run -- -h
     clear && cargo run -- -tvi ~/Downloads -x /tmp -r json > /tmp/fif.json
     cargo run --features walkdir -- -cvts
