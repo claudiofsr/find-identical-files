@@ -110,33 +110,19 @@ pub fn my_print(buffer: &[u8]) -> MyResult<()> {
     Ok(())
 }
 
-// https://stackoverflow.com/questions/34837011/how-to-clear-the-terminal-screen-in-rust-after-a-new-line-is-printed
-// https://stackoverflow.com/questions/65497187/cant-run-a-system-command-in-windows
-// https://askubuntu.com/questions/25077/how-to-really-clear-the-terminal
-// https://www.redswitches.com/blog/how-to-clear-terminal-screen-in-linux
-// Remove unwanted characters
-// clear | cat -v ; echo
-// ^[[H^[[2J^[[3J
 /// Clear (wipe) the terminal screen
 pub fn clear_terminal_screen() {
-    if cfg!(target_os = "windows") {
-        Command::new("cmd")
-            .args(["/c", "cls"])
-            .spawn()
-            .expect("cls command failed to start")
-            .wait()
-            .expect("failed to wait");
+    let result = if cfg!(target_os = "windows") {
+        Command::new("cmd").args(["/c", "cls"]).spawn()
     } else {
-        Command::new("tput") // "clear" or "tput reset"
-            .arg("reset")
-            .spawn()
-            .expect("tput command failed to start")
-            .wait()
-            .expect("failed to wait");
+        // "clear" or "tput reset"
+        Command::new("tput").arg("reset").spawn()
     };
 
     // Alternative solution:
-    //print!("{esc}c", esc = 27 as char);
+    if result.is_err() {
+        print!("{esc}c", esc = 27 as char);
+    }
 }
 
 /// Split integer and insert thousands separator
