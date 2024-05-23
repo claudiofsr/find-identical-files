@@ -164,7 +164,12 @@ find-identical-files -r json | jq -s '.[0]'
 find-identical-files -r json | jq -s '.[14]'
 ```
 
-4. Get summary information:
+4. Get information from the range [2,5) with Start (2) inclusive and End (5) exclusive:
+```
+find-identical-files -r json | jq -s '.[2:5]'
+```
+
+5. Get summary information:
 ```
 find-identical-files -r json | jq -s '.[-1]'
 ```
