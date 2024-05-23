@@ -134,6 +134,9 @@ pub fn clear_terminal_screen() {
             .wait()
             .expect("failed to wait");
     };
+
+    // Alternative solution:
+    //print!("{esc}c", esc = 27 as char);
 }
 
 /// Split integer and insert thousands separator
