@@ -1,7 +1,7 @@
 use crate::{get_path, Arguments, FileInfo, Key, MyResult};
 use jwalk::{DirEntry, Parallelism, WalkDirGeneric};
-//use rayon::prelude::*;
-use std::{path::PathBuf, process};
+use rayon::prelude::*;
+use std::path::PathBuf;
 
 /// Get all files into one vector.
 ///
@@ -23,14 +23,7 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 
     let all_files: MyResult<Vec<FileInfo>> = jwalk
         .into_iter()
-        .map_while(|result| match result {
-            Ok(dir_entry) => Some(dir_entry),
-            Err(why) => {
-                eprintln!("fn get_all_files()");
-                eprintln!("Error: {why}");
-                process::exit(1)
-            }
-        })
+        .flatten() // Result<DirEntry, Error> to DirEntry
         .filter_map(|dir_entry| dir_entry.client_state.map(Ok))
         .collect();
 
@@ -58,16 +51,9 @@ fn analyze_dir_entry_results(dir_entry_results: &mut JwalkResults, min_size: u64
 
     // 3. Custom skip
     dir_entry_results
-        .iter_mut()
-        //.par_iter_mut() // rayon parallel iterator
-        .map(|result| match result {
-            Ok(dir_entry) => dir_entry,
-            Err(why) => {
-                eprintln!("fn analyze_dir_entry_results()");
-                eprintln!("Error: {why}");
-                process::exit(1)
-            }
-        })
+        //.iter_mut()
+        .par_iter_mut() // rayon parallel iterator
+        .flatten() // Result<DirEntry, Error> to DirEntry
         .filter(|dir_entry| dir_entry.file_type().is_file())
         .for_each(|dir_entry| {
             if let Ok(metadata) = dir_entry.metadata() {

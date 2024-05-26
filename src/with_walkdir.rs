@@ -11,19 +11,14 @@ pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
 
     let all_files: Vec<FileInfo> = entries
         .into_par_iter() // rayon parallel iterator
-        //.iter()
         .filter_map(|entry| {
-            if let Ok(metadata) = entry.metadata() {
-                let file_size: u64 = metadata.len();
-                //let inode_number: u64 = metadata.ino();
+            let metadata = entry.metadata().ok()?;
+            let file_size = metadata.len();
 
-                if arguments.size_is_included(file_size) {
-                    let key = Key::new(file_size, None);
-                    let path = entry.into_path();
-                    Some(FileInfo { key, path })
-                } else {
-                    None
-                }
+            if arguments.size_is_included(file_size) {
+                let key = Key::new(file_size, None);
+                let path = entry.into_path();
+                Some(FileInfo { key, path })
             } else {
                 None
             }
