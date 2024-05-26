@@ -132,9 +132,7 @@ fn get_ahash(mut reader: impl Read) -> MyResult<String> {
         hasher.write(&buffer[..count]);
     }
 
-    let hash: String = hasher.finish().to_string();
-
-    Ok(hash)
+    Ok(hasher.finish().to_string())
 }
 
 /// Calculates the Blake3 hash from Path.
@@ -155,9 +153,7 @@ where
         hasher.update(&buffer[..count]);
     }
 
-    let hash: String = hasher.finalize().to_string();
-
-    Ok(hash)
+    Ok(hasher.finalize().to_string())
 }
 
 /// Calculates the FxHash from Path.
@@ -184,9 +180,7 @@ where
         hasher.write(&buffer[..count]);
     }
 
-    let hash: String = hasher.finish().to_string();
-
-    Ok(hash)
+    Ok(hasher.finish().to_string())
 }
 
 /// Calculates the SHA2 256 from Path.
@@ -213,9 +207,7 @@ where
     }
 
     // Note that calling `finalize()` consumes hasher
-    let hash: String = hasher.finalize().to_hex_string();
-
-    Ok(hash)
+    Ok(hasher.finalize().to_hex_string())
 }
 
 /// Calculates the SHA2 512 from Path.
@@ -242,7 +234,5 @@ where
     }
 
     // Note that calling `finalize()` consumes hasher
-    let hash: String = hasher.finalize().to_hex_string();
-
-    Ok(hash)
+    Ok(hasher.finalize().to_hex_string())
 }

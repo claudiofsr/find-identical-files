@@ -19,6 +19,10 @@ pub trait FileExtension {
 
 impl FileExtension for [FileInfo] {
     fn get_grouped_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo> {
+        // minimum and maximum frequency (number of identical files)
+        let min_frequency: usize = arguments.min_frequency as usize;
+        let max_frequency: usize = arguments.max_frequency as usize;
+
         let mut group_by: HashMap<Key, Vec<PathBuf>> = HashMap::new();
 
         self.iter().for_each(|file_info| {
@@ -35,18 +39,19 @@ impl FileExtension for [FileInfo] {
         // Group By Parallel Mode with 'MapReduce'
         let group_by: HashMap<Key, Vec<PathBuf>> = self
             .par_iter() // rayon: parallel iterator
+            .map(|file_info| (file_info.key.clone(), file_info.path.clone()))
             .fold(
                 HashMap::new,
-                |mut hashmap_accumulator: HashMap<Key, Vec<PathBuf>>, file_info| {
-                    hashmap_accumulator
+                |mut accumulator: HashMap<Key, Vec<PathBuf>>, (key, path)| {
+                    accumulator
                         // key: (size, Option<hash>), value: paths
-                        .entry(file_info.key.clone())
+                        .entry(key)
                         // If there's no entry for the key, create a new Vec and return a mutable ref to it
                         .or_default()
                         // and insert the item onto the Vec
-                        .push(file_info.path.clone());
+                        .push(path);
 
-                    hashmap_accumulator
+                    accumulator
                 },
             )
             .reduce(HashMap::new, |mut hashmap_a, hashmap_b| {
@@ -58,10 +63,6 @@ impl FileExtension for [FileInfo] {
                 hashmap_a
             });
         */
-
-        // minimum and maximum frequency (number of identical files)
-        let min_frequency: usize = arguments.min_frequency as usize;
-        let max_frequency: usize = arguments.max_frequency as usize;
 
         // Converting group_by to vector
         let grouped_files: Vec<GroupInfo> = group_by
