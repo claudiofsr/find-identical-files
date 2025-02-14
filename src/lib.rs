@@ -28,6 +28,7 @@ pub use excel::write_xlsx;
 use serde::Serializer;
 use std::{
     fs::{self, File},
+    io,
     path::{Path, PathBuf},
     process::Command,
     str,
@@ -58,25 +59,29 @@ pub fn set_env_variables() {
     std::env::set_var("RUST_MIN_STACK", STACK_SIZE.to_string());
 }
 
-/// File is an object providing access to an open file on the filesystem.
+/// Opens a file in read-only mode.
+///
+/// Provides more informative error messages in case of failure.
 pub fn open_file<P>(path: &P) -> MyResult<File>
 where
     P: AsRef<Path> + std::fmt::Debug,
 {
-    let file: File = fs::OpenOptions::new()
+    fs::OpenOptions::new()
         .read(true)
         .write(false) // This option, when false, will indicate that the file should not be writable if opened.
         .create(false) // No files will be created
-        .open(path)
-        .inspect_err(|error| {
-            // Add a custom error message
-            eprintln!("Failed to open file {path:?}");
-            eprintln!("Perhaps some temporary files no longer exist!");
-            eprintln!("Or lack of permission to read this file!");
-            eprintln!("Error: {error}");
-        })?;
-
-    Ok(file)
+        .open(path.as_ref())
+        .map_err(|error| match error.kind() {
+            io::ErrorKind::NotFound => format!(
+                "File not found: {:?}\nPerhaps some temporary files no longer exist!",
+                path
+            )
+            .into(),
+            io::ErrorKind::PermissionDenied => {
+                format!("Permission denied when opening file: {:?}", path).into()
+            }
+            _ => format!("Failed to open file {:?}: {}", path, error).into(),
+        })
 }
 
 /// Get path from arguments or from default (current directory).

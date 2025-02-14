@@ -614,7 +614,7 @@ dependencies = [
 
 [[package]]
 name = "find-identical-files"
-version = "0.34.0"
+version = "0.34.1"
 dependencies = [
  "ahash",
  "anstyle",
