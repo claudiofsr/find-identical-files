@@ -94,7 +94,7 @@ opt-level = 1           # Use slightly better optimizations.
 # pacman -S gnuplot
 # see the result:
 # chromium ~/Documents/Rust/projects/find_identical_files/target/criterion/report/index.html&
-criterion = { version = "0.5", features = ["html_reports"] }
+criterion = { version = "0.6", features = ["html_reports"] }
 plotters = "0.3"
 
 [[bench]]
