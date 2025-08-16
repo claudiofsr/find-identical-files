@@ -35,16 +35,17 @@ pub fn process_dir_entries_v2(dir_entry_results: &mut JwalkResults, min_size: u6
     dir_entry_results.iter_mut().for_each(|dir_entry_result| {
         if let Ok(dir_entry) = dir_entry_result
             && dir_entry.file_type.is_file()
-                && let Ok(metadata) = dir_entry.metadata() {
-                    let file_size: u64 = metadata.len();
-                    //let inode_number: u64 = metadata.ino();
+            && let Ok(metadata) = dir_entry.metadata()
+        {
+            let file_size: u64 = metadata.len();
+            //let inode_number: u64 = metadata.ino();
 
-                    if file_size >= min_size && file_size <= max_size {
-                        let key = Key::new(file_size, None);
-                        let path = dir_entry.path();
-                        dir_entry.client_state = Some(FileInfo { key, path });
-                    }
-                }
+            if file_size >= min_size && file_size <= max_size {
+                let key = Key::new(file_size, None);
+                let path = dir_entry.path();
+                dir_entry.client_state = Some(FileInfo { key, path });
+            }
+        }
     });
 }
 
