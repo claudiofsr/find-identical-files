@@ -33,9 +33,9 @@ pub fn process_dir_entries_v1(dir_entry_results: &mut JwalkResults, min_size: u6
 pub fn process_dir_entries_v2(dir_entry_results: &mut JwalkResults, min_size: u64, max_size: u64) {
     // 3. Custom skip
     dir_entry_results.iter_mut().for_each(|dir_entry_result| {
-        if let Ok(dir_entry) = dir_entry_result {
-            if dir_entry.file_type.is_file() {
-                if let Ok(metadata) = dir_entry.metadata() {
+        if let Ok(dir_entry) = dir_entry_result
+            && dir_entry.file_type.is_file()
+                && let Ok(metadata) = dir_entry.metadata() {
                     let file_size: u64 = metadata.len();
                     //let inode_number: u64 = metadata.ino();
 
@@ -45,8 +45,6 @@ pub fn process_dir_entries_v2(dir_entry_results: &mut JwalkResults, min_size: u6
                         dir_entry.client_state = Some(FileInfo { key, path });
                     }
                 }
-            }
-        }
     });
 }
 
