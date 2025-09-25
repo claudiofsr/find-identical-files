@@ -17,7 +17,7 @@ cfg_if::cfg_if! {
 
 pub use self::{
     args::Arguments,
-    enumerations::algo::{Algorithm, PathBufExtension},
+    enumerations::algo::{Algorithm, PathBufExtension, SliceExtension},
     structures::file_info::{FileExtension, FileInfo},
     structures::group_info::{GroupExtension, GroupInfo},
     structures::key_info::Key,
@@ -143,7 +143,7 @@ pub fn split_and_insert(integer: usize, insert: char) -> String {
         .chars()
         .enumerate()
         .flat_map(|(i, c)| {
-            if (integer_str.len() - i) % group_size == 0 && i > 0 {
+            if (integer_str.len() - i).is_multiple_of(group_size) && i > 0 {
                 Some(insert)
             } else {
                 None
@@ -165,13 +165,12 @@ where
 }
 
 #[cfg(test)]
-mod test_lib {
+mod tests_lib {
     use super::*;
 
     #[test]
+    /// cargo test -- --show-output split_integer_into_groups
     fn split_integer_into_groups() {
-        // cargo test -- --show-output split_integer_into_groups
-
         let mut result: Vec<String> = Vec::new();
 
         for integer in [

@@ -32,7 +32,7 @@ impl Key {
 }
 
 #[cfg(test)]
-mod test_key {
+mod tests_key {
     use super::*;
 
     /// cargo test -- --show-output test_new_key
