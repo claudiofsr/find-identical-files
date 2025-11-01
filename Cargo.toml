@@ -1,0 +1,102 @@
+[package]
+name = "find-identical-files"
+authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
+version = "0.36.0"
+rust-version = "1.88"
+repository = "https://github.com/claudiofsr/find-identical-files"
+homepage = "https://github.com/claudiofsr/find-identical-files"
+documentation = "https://docs.rs/find-identical-files"
+edition = "2024"
+description = "find identical files according to their size and hashing algorithm"
+license = "BSD-3-Clause"
+readme = "README.md"
+categories = ["command-line-utilities"]
+keywords = [
+    "find",
+    "duplicate",
+    "identical",
+    "hash",
+    "blake3",
+]
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+ahash = "0.8"
+anstyle = "1.0" # used by clap color
+blake3 = { version = "1.8", features = ["rayon"] }
+cc = { version = "1.2", features = ["parallel"] }
+clap = { version = "4.5", features = ["derive", "color", "unstable-styles"] }
+clap_complete = "4.5"
+cfg-if = "1.0"
+csv = "1.4"
+foldhash = "0.2"
+# futures = "0.3"
+hashbrown = { version = "0.16", features = ["rayon", "inline-more", "default-hasher"] }
+rayon = "1.11"
+rustc-hash = "2.1"
+sha2 = "0.10"
+serde = { version = "1.0", features = ["derive", "rc"] }
+serde_json = "1.0"
+serde_yaml = "0.9"
+# tokio = { version = "1.37", features = ["full"] }
+thiserror = "2.0"
+
+# Optional:
+jwalk = { version = "0.8", optional = true}
+walkdir = { version = "2.5", optional = true}
+
+[dependencies.rust_xlsxwriter]
+# git = "https://github.com/jmcnamara/rust_xlsxwriter.git"
+version = "0.91"
+features = [
+    "serde",
+    "zlib",
+]
+
+[features]
+default = ["jwalk"]
+# default = ["walkdir"]
+walkdir = ["dep:walkdir"]
+jwalk = ["dep:jwalk"]
+
+# Mutually exclusive features: jwalk (default) or walkdir.
+# To use walkdir features:
+# cargo clippy --features walkdir
+# cargo run --features walkdir
+# cargo b -r && cargo install --path=. --features walkdir
+
+# Package release:
+# On Manjaro Linux, install with: pacman -S mingw-w64-gcc
+# rustup target list
+# After downloading the target with `rustup target add x86_64-pc-windows-gnu`
+# cargo b -r --target x86_64-unknown-linux-gnu --target x86_64-pc-windows-gnu
+
+[profile.release]
+# https://doc.rust-lang.org/cargo/reference/profiles.html
+debug = true            # Debug info at all.
+strip = "symbols"       # Strip symbols from a binary.
+opt-level = 3           # All optimizations.
+overflow-checks = true  # Panic will occur on overflow.
+lto = true              # Enable link time optimization.
+codegen-units = 1       # Use a single codegen for size optimization.
+panic = "abort"         # Remove traceback information.
+incremental = true      # Save information to disk, improving re-compile times.
+
+[profile.dev]
+opt-level = 1           # Use slightly better optimizations.
+
+[dev-dependencies]
+# Dependencies ONLY needed for testing
+# cargo bench
+# Uses gnuplot to generate detailed graphs of benchmark results
+# pacman -S gnuplot
+# see the result:
+# chromium ~/Documents/Rust/projects/find_identical_files/target/criterion/report/index.html&
+criterion = { version = "0.7", features = ["html_reports"] }
+plotters = "0.3"
+tempfile = "3.23"
+
+[[bench]]
+name = "jwalk_entries"
+harness = false
