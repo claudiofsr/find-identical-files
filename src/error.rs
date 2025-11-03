@@ -1,6 +1,6 @@
 use crate::traits::Colors;
 use rust_xlsxwriter::XlsxError;
-use std::{io, num::ParseIntError, path::PathBuf};
+use std::{io, path::PathBuf};
 use thiserror::Error;
 
 /**
@@ -54,10 +54,6 @@ pub enum FIFError {
     /// XlsxError wrapper.
     #[error("{msg}: '{0}'", msg = "XLSX Error".red().bold())]
     XlsxError(#[from] XlsxError),
-
-    /// ParseIntError wrapper.
-    #[error("{msg}: '{0}' - {1}", msg = "Invalid Parse Error".red().bold())]
-    InvalidParse(String, #[source] ParseIntError),
 }
 
 #[cfg(test)]
