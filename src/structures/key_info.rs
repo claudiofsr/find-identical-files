@@ -8,11 +8,16 @@ use serde::{Deserialize, Serialize};
 /// For the GroupInfo struct, the hash will be Some(blake3).
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 pub struct Key {
-    /// Individual file size (in bytes)
-    #[serde(serialize_with = "add_thousands_separator")]
-    pub size: usize,
     /// Blake3 hash
+    #[serde(rename = "Hash")]
     pub hash: Option<String>,
+
+    /// Individual file size (in bytes)
+    #[serde(
+        rename = "Size of individual file",
+        serialize_with = "add_thousands_separator"
+    )]
+    pub size: usize,
 }
 
 impl Key {

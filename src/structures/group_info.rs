@@ -1,6 +1,6 @@
 use crate::{
-    CSV_FILENAME, FIFResult, FileExtension, FileInfo, Key, PathBufExtension, PathInfo, SEPARATOR,
-    TotalInfo, XLSX_FILENAME, add_thousands_separator,
+    CSV_FILENAME, FIFResult, FileExtension, FileInfo, Key, PathBufExtension, PathInfo,
+    THOUSANDS_SEPARATOR, TotalInfo, XLSX_FILENAME, add_thousands_separator,
     args::{Arguments, ResultFormat::*},
     my_print, split_and_insert, write_xlsx,
 };
@@ -15,15 +15,18 @@ use std::{
 /// Grouped file information
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct GroupInfo {
-    /// Key Information
-    #[serde(rename = "File information")]
-    pub key: Key,
     /// File Paths
     #[serde(rename = "Paths")]
     pub paths: Vec<PathBuf>, // Vec<PathBuf> ; Arc<[PathBuf]> for immutable data
+
+    /// Key Information
+    #[serde(rename = "File information")]
+    pub key: Key,
+
     /// Number of identical files with the same size and blake3 hash
     #[serde(rename = "Number of identical files")]
     pub num_file: usize,
+
     /// Sum of individual file sizes declared in paths
     #[serde(
         rename = "Sum of file sizes",
@@ -51,18 +54,18 @@ impl GroupInfo {
                 writeln!(*write, "{serialized}")?;
             }
             Personal => {
-                writeln!(
-                    write,
-                    "size: {} bytes",
-                    split_and_insert(self.key.size, SEPARATOR)
-                )?;
-                writeln!(write, "hash: {}", self.key.hash.clone().unwrap_or_default())?;
                 writeln!(write, "Paths: {:#?}", self.paths)?;
+                writeln!(write, "Hash: {}", self.key.hash.clone().unwrap_or_default())?;
                 writeln!(write, "Number of identical files: {}", self.num_file)?;
                 writeln!(
                     write,
+                    "Size of individual file: {} bytes",
+                    split_and_insert(self.key.size, THOUSANDS_SEPARATOR)
+                )?;
+                writeln!(
+                    write,
                     "Sum of file sizes: {} bytes\n",
-                    split_and_insert(self.sum_size, SEPARATOR)
+                    split_and_insert(self.sum_size, THOUSANDS_SEPARATOR)
                 )?;
             }
         }

@@ -1,5 +1,5 @@
 use crate::{
-    Algorithm, FIFResult, GroupInfo, SEPARATOR, add_thousands_separator,
+    Algorithm, FIFResult, GroupInfo, THOUSANDS_SEPARATOR, add_thousands_separator,
     args::{Arguments, ResultFormat::*},
     split_and_insert,
     structures::group_info::GroupExtension,
@@ -84,7 +84,7 @@ impl TotalInfo {
                 );
                 println!(
                     "Total size of identical files: {} bytes\n",
-                    split_and_insert(self.total_size, SEPARATOR)
+                    split_and_insert(self.total_size, THOUSANDS_SEPARATOR)
                 );
             }
         }

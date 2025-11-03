@@ -13,6 +13,8 @@ use std::time::Instant;
     cargo run --features walkdir -- -cvts
     cargo doc --open
     cargo b -r && cargo install --path=.
+    cargo b -r && cargo install --path=. --features thousands-sep-dot
+    cargo b -r && cargo install --path=. --features thousands-sep-space
     cargo b -r && cargo install --path=. --features walkdir
 */
 

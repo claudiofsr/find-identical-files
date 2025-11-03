@@ -8,6 +8,7 @@ use std::path::PathBuf;
 pub struct FileInfo {
     /// Key Information
     pub key: Key,
+
     /// File Path
     pub path: PathBuf,
 }
