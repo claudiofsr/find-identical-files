@@ -2,6 +2,7 @@ mod args;
 mod enumerations;
 mod error;
 mod excel;
+mod separator;
 mod structures;
 mod traits;
 
@@ -21,6 +22,7 @@ pub use self::{
     args::Arguments,
     enumerations::algo::{Algorithm, PathBufExtension, SliceExtension},
     error::*,
+    separator::get_thousands_separator,
     structures::file_info::{FileExtension, FileInfo},
     structures::group_info::{GroupExtension, GroupInfo},
     structures::key_info::Key,
@@ -40,22 +42,6 @@ use std::{
 const STACK_SIZE: usize = 64 * 1024 * 1024;
 pub const CSV_FILENAME: &str = "fif.csv";
 pub const XLSX_FILENAME: &str = "fif.xlsx";
-
-#[cfg(not(any(
-    feature = "thousands-sep-comma",
-    feature = "thousands-sep-dot",
-    feature = "thousands-sep-space"
-)))]
-const THOUSANDS_SEPARATOR: char = ','; // Default para vírgula se nada for especificado
-
-#[cfg(feature = "thousands-sep-comma")]
-const THOUSANDS_SEPARATOR: char = ',';
-
-#[cfg(feature = "thousands-sep-dot")]
-const THOUSANDS_SEPARATOR: char = '.';
-
-#[cfg(feature = "thousands-sep-space")]
-const THOUSANDS_SEPARATOR: char = ' ';
 
 /**
 If `thread '<unknown>' has overflowed its stack`, set the stack size to a new value.
@@ -177,9 +163,11 @@ pub fn add_thousands_separator<S>(size: &usize, serializer: S) -> Result<S::Ok, 
 where
     S: Serializer,
 {
+    let thousands_separator: char = get_thousands_separator();
+
     serializer.collect_str(&format!(
         "{} bytes",
-        &split_and_insert(*size, THOUSANDS_SEPARATOR)
+        &split_and_insert(*size, thousands_separator)
     ))
 }
 

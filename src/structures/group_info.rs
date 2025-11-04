@@ -1,8 +1,8 @@
 use crate::{
-    CSV_FILENAME, FIFResult, FileExtension, FileInfo, Key, PathBufExtension, PathInfo,
-    THOUSANDS_SEPARATOR, TotalInfo, XLSX_FILENAME, add_thousands_separator,
+    CSV_FILENAME, FIFResult, FileExtension, FileInfo, Key, PathBufExtension, PathInfo, TotalInfo,
+    XLSX_FILENAME, add_thousands_separator,
     args::{Arguments, ResultFormat::*},
-    my_print, split_and_insert, write_xlsx,
+    get_thousands_separator, my_print, split_and_insert, write_xlsx,
 };
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -42,6 +42,8 @@ impl GroupInfo {
         arguments: &Arguments,
         write: &mut Box<&mut dyn Write>,
     ) -> FIFResult<()> {
+        let thousands_separator: char = get_thousands_separator();
+
         match &arguments.result_format {
             Json => {
                 // Serialize GroupInfo to a JSON string.
@@ -60,12 +62,12 @@ impl GroupInfo {
                 writeln!(
                     write,
                     "Size of individual file: {} bytes",
-                    split_and_insert(self.key.size, THOUSANDS_SEPARATOR)
+                    split_and_insert(self.key.size, thousands_separator)
                 )?;
                 writeln!(
                     write,
                     "Sum of file sizes: {} bytes\n",
-                    split_and_insert(self.sum_size, THOUSANDS_SEPARATOR)
+                    split_and_insert(self.sum_size, thousands_separator)
                 )?;
             }
         }

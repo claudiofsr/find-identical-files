@@ -1,7 +1,7 @@
 use crate::{
-    Algorithm, FIFResult, GroupInfo, THOUSANDS_SEPARATOR, add_thousands_separator,
+    Algorithm, FIFResult, GroupInfo, add_thousands_separator,
     args::{Arguments, ResultFormat::*},
-    split_and_insert,
+    get_thousands_separator, split_and_insert,
     structures::group_info::GroupExtension,
 };
 use serde::Serialize;
@@ -60,6 +60,8 @@ impl TotalInfo {
 
     /// Print the identicald files information.
     pub fn print_summary(&self, arguments: &Arguments) -> FIFResult<()> {
+        let thousands_separator: char = get_thousands_separator();
+
         match &arguments.result_format {
             Json => {
                 // Serialize TotalInfo to a JSON string.
@@ -84,7 +86,7 @@ impl TotalInfo {
                 );
                 println!(
                     "Total size of identical files: {} bytes\n",
-                    split_and_insert(self.total_size, THOUSANDS_SEPARATOR)
+                    split_and_insert(self.total_size, thousands_separator)
                 );
             }
         }
