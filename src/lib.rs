@@ -42,19 +42,6 @@ use std::{
 pub const CSV_FILENAME: &str = "fif.csv";
 pub const XLSX_FILENAME: &str = "fif.xlsx";
 
-/*
-If `thread '<unknown>' has overflowed its stack`, set the stack size to a new value.
-
-The default rustc stack size for main thread is currently `8 * 1024 * 1024`.
-ulimit -s
-
-Stack size can be changed during compile time.
-
-Set on .cargo/config.toml:
-[env]
-RUST_MIN_STACK = "134217728"
-*/
-
 /// Opens a file in read-only mode.
 ///
 /// Provides more informative error messages in case of failure.
