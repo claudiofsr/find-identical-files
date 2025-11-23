@@ -48,7 +48,7 @@ walkdir = { version = "2.5", optional = true}
 
 [dependencies.rust_xlsxwriter]
 # git = "https://github.com/jmcnamara/rust_xlsxwriter.git"
-version = "0.91"
+version = "0.92"
 features = [
     "serde",
     "zlib",

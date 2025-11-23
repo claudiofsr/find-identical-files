@@ -24,7 +24,6 @@ use std::time::Instant;
 // https://pkolaczk.github.io/disk-access-ordering/
 
 fn main() -> FIFResult<()> {
-    set_env_variables();
     let time = Instant::now();
     let arguments = Arguments::build()?;
 

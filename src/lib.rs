@@ -39,27 +39,21 @@ use std::{
     str,
 };
 
-const STACK_SIZE: usize = 64 * 1024 * 1024;
 pub const CSV_FILENAME: &str = "fif.csv";
 pub const XLSX_FILENAME: &str = "fif.xlsx";
 
-/**
+/*
 If `thread '<unknown>' has overflowed its stack`, set the stack size to a new value.
 
 The default rustc stack size for main thread is currently `8 * 1024 * 1024`.
+ulimit -s
 
 Stack size can be changed during compile time.
 
-<https://github.com/rust-lang/rust/blob/master/compiler/rustc_interface/src/util.rs#L132>
-
-<https://github.com/rust-lang/rust/issues/111897>
-
-<https://doc.rust-lang.org/stable/std/thread/index.html#stack-size>
+Set on .cargo/config.toml:
+[env]
+RUST_MIN_STACK = "134217728"
 */
-pub fn set_env_variables() {
-    // TODO: Audit that the environment access only happens in single-threaded code.
-    unsafe { std::env::set_var("RUST_MIN_STACK", STACK_SIZE.to_string()) };
-}
 
 /// Opens a file in read-only mode.
 ///
