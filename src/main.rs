@@ -120,17 +120,17 @@ fn main() -> FIFResult<()> {
     // rayon::join runs two closures concurrently.
     // We destructure the returning tuple to handle errors individually.
     let (csv_result, xlsx_result) = rayon::join(
-        || {
+        || -> FIFResult<()> {
             if let Some(dir_path) = arguments.csv_dir {
                 identical_hash.export_to_csv(dir_path)?;
             }
-            Ok::<(), FIFError>(())
+            Ok(())
         },
-        || {
+        || -> FIFResult<()> {
             if let Some(dir_path) = arguments.xlsx_dir {
                 identical_hash.export_to_xlsx(dir_path)?;
             }
-            Ok::<(), FIFError>(())
+            Ok(())
         },
     );
 

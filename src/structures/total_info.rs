@@ -5,7 +5,6 @@ use crate::{
     structures::group_info::GroupExtension,
 };
 use serde::Serialize;
-use std::thread;
 
 /// Summarize information for all files found in the directory
 #[derive(Debug, Default, Clone, Serialize)]
@@ -37,23 +36,13 @@ impl TotalInfo {
         arguments: &Arguments,
         total_num_files: usize,
     ) -> Self {
-        let (result_display, result_total_info) = thread::scope(|s| {
-            let thread_a =
-                s.spawn(|| -> FIFResult<()> { identical_hash.print_identical_files(arguments) });
-            let thread_b = s.spawn(|| -> TotalInfo {
-                identical_hash.get_total_info(arguments, total_num_files)
-            });
-
-            // Wait for background thread to complete.
-            // Call join() on each handle to make sure all the threads finish.
-            // join() returns immediately when the associated thread completes.
-            (thread_a.join(), thread_b.join())
-        });
-
-        let (_display, total_info) = match (result_display, result_total_info) {
-            (Ok(display), Ok(total_info)) => (display, total_info),
-            _ => panic!("thread::scope failed!"),
-        };
+        let (_result_display, total_info) = rayon::join(
+            || -> FIFResult<()> {
+                identical_hash.print_identical_files(arguments)?;
+                Ok(())
+            },
+            || -> TotalInfo { identical_hash.get_total_info(arguments, total_num_files) },
+        );
 
         total_info
     }
