@@ -1,8 +1,8 @@
 [package]
 name = "find-identical-files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
-version = "0.37.3"
-rust-version = "1.88"
+version = "0.38.0"
+rust-version = "1.90"
 repository = "https://github.com/claudiofsr/find-identical-files"
 homepage = "https://github.com/claudiofsr/find-identical-files"
 documentation = "https://docs.rs/find-identical-files"

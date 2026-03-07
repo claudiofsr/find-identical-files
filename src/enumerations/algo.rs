@@ -16,7 +16,7 @@ use std::{
 use crate::{Arguments, FIFResult, open_file};
 
 /// The default buffer size used for reading files in chunks to calculate hashes.
-const BUFFER_SIZE: usize = 64 * 1024; // 64 KB
+const BUFFER_SIZE: usize = 1024 * 1024; // 1024 KB
 
 /// The number of initial bytes to hash when a partial hash is requested.
 const FIRST_BYTES: usize = 1024; // 1 KB
@@ -127,163 +127,69 @@ impl fmt::Display for Algorithm {
 }
 
 impl Algorithm {
-    /// Calculate file hash using some algorithm
+    /// Calculate hash from a File (uses a BufReader and Heap buffer).
     pub fn calculate_hash(&self, file: File) -> FIFResult<String> {
-        let reader: BufReader<File> = BufReader::with_capacity(BUFFER_SIZE, file);
+        let reader = BufReader::with_capacity(BUFFER_SIZE, file);
+        self.hash_reader(reader)
+    }
+
+    /// Generic hashing logic for any type implementing Read.
+    /// This is used by both the main application and the test suite.
+    pub fn hash_reader<R: Read>(&self, mut reader: R) -> FIFResult<String> {
+        // Allocate the buffer on the HEAP (Vec) to prevent Stack Overflow.
+        let mut buffer = vec![0_u8; BUFFER_SIZE];
 
         match self {
-            Algorithm::Ahash => get_ahash(reader),
-            Algorithm::Blake3 => get_blake3(reader),
-            Algorithm::Fxhash => get_fxhash(reader),
-            Algorithm::Foldhash => get_foldhash(reader),
-            Algorithm::SHA256 => get_sha256(reader),
-            Algorithm::SHA512 => get_sha512(reader),
+            Algorithm::Ahash => {
+                let mut hasher = AHasher::default();
+                Self::read_and_update(&mut reader, &mut buffer, |chunk| hasher.write(chunk))?;
+                Ok(hasher.finish().to_string())
+            }
+            Algorithm::Blake3 => {
+                let mut hasher = Blake3Hasher::new();
+                Self::read_and_update(&mut reader, &mut buffer, |chunk| {
+                    hasher.update(chunk);
+                })?;
+                Ok(hasher.finalize().to_string())
+            }
+            Algorithm::Foldhash => {
+                let mut hasher = FixedState::default().build_hasher();
+                Self::read_and_update(&mut reader, &mut buffer, |chunk| hasher.write(chunk))?;
+                Ok(hasher.finish().to_string())
+            }
+            Algorithm::Fxhash => {
+                let mut hasher = FxHasher::default();
+                Self::read_and_update(&mut reader, &mut buffer, |chunk| hasher.write(chunk))?;
+                Ok(hasher.finish().to_string())
+            }
+            Algorithm::SHA256 => {
+                let mut hasher = Sha256::new();
+                Self::read_and_update(&mut reader, &mut buffer, |chunk| hasher.update(chunk))?;
+                Ok(hasher.finalize().to_hex_string())
+            }
+            Algorithm::SHA512 => {
+                let mut hasher = Sha512::new();
+                Self::read_and_update(&mut reader, &mut buffer, |chunk| hasher.update(chunk))?;
+                Ok(hasher.finalize().to_hex_string())
+            }
         }
     }
-}
 
-/// Calculates the aHash from Path.
-///
-/// <https://crates.io/crates/ahash>
-fn get_ahash(mut reader: impl Read) -> FIFResult<String> {
-    let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = AHasher::default();
-
-    loop {
-        // read up to BUFFER_SIZE bytes to buffer
-        let count = reader.read(&mut buffer)?;
-        if count == 0 {
-            break;
+    /// DRY Helper: Standardizes the reading loop across all algorithms.
+    fn read_and_update<R, F>(reader: &mut R, buffer: &mut [u8], mut update: F) -> FIFResult<()>
+    where
+        R: Read,
+        F: FnMut(&[u8]),
+    {
+        loop {
+            let count = reader.read(buffer)?;
+            if count == 0 {
+                break;
+            }
+            update(&buffer[..count]);
         }
-        hasher.write(&buffer[..count]);
+        Ok(())
     }
-
-    Ok(hasher.finish().to_string())
-}
-
-/// Calculates the Blake3 hash from Path.
-///
-/// <https://docs.rs/blake3/latest/blake3>
-fn get_blake3<R>(mut reader: R) -> FIFResult<String>
-where
-    R: Read,
-{
-    let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = Blake3Hasher::new();
-
-    loop {
-        let count = reader.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        hasher.update(&buffer[..count]);
-    }
-
-    Ok(hasher.finalize().to_string())
-}
-
-/// Calculates the FoldHash from Path.
-///
-/// A fast, non-cryptographic, minimally DoS-resistant hashing algorithm for Rust.
-///
-/// <https://crates.io/crates/foldhash>
-fn get_foldhash<R>(mut reader: R) -> FIFResult<String>
-where
-    R: Read,
-{
-    let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = FixedState::default().build_hasher();
-
-    loop {
-        let count = reader.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        hasher.write(&buffer[..count]);
-    }
-
-    Ok(hasher.finish().to_string())
-}
-
-/// Calculates the FxHash from Path.
-///
-/// Fast, non-cryptographic hash function used by rustc and Firefox.
-///
-/// (Indeed, the Fx is short for “Firefox”.)
-///
-/// <https://crates.io/crates/rustc-hash>
-///
-/// <https://nnethercote.github.io/2021/12/08/a-brutally-effective-hash-function-in-rust.html>
-fn get_fxhash<R>(mut reader: R) -> FIFResult<String>
-where
-    R: Read,
-{
-    let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = FxHasher::default();
-
-    loop {
-        let count = reader.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        hasher.write(&buffer[..count]);
-    }
-
-    Ok(hasher.finish().to_string())
-}
-
-/// Calculates the SHA2 256 from Path.
-///
-/// Verify with
-///
-/// openssl dgst -sha256 Some_File
-///
-/// <https://github.com/RustCrypto/hashes/tree/master/sha2>
-fn get_sha256<R>(mut reader: R) -> FIFResult<String>
-where
-    R: Read,
-{
-    let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = Sha256::new();
-
-    loop {
-        let count = reader.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        // `update` can be called repeatedly and is generic over `AsRef<[u8]>`
-        hasher.update(&buffer[..count]);
-    }
-
-    // Note that calling `finalize()` consumes hasher
-    Ok(hasher.finalize().to_hex_string())
-}
-
-/// Calculates the SHA2 512 from Path.
-///
-/// Verify with
-///
-/// openssl dgst -sha512 Some_File
-///
-/// <https://github.com/RustCrypto/hashes/tree/master/sha2>
-fn get_sha512<R>(mut reader: R) -> FIFResult<String>
-where
-    R: Read,
-{
-    let mut buffer = [0_u8; BUFFER_SIZE];
-    let mut hasher = Sha512::new();
-
-    loop {
-        let count = reader.read(&mut buffer)?;
-        if count == 0 {
-            break;
-        }
-        // `update` can be called repeatedly and is generic over `AsRef<[u8]>`
-        hasher.update(&buffer[..count]);
-    }
-
-    // Note that calling `finalize()` consumes hasher
-    Ok(hasher.finalize().to_hex_string())
 }
 
 #[cfg(test)]
@@ -291,7 +197,7 @@ mod tests_algo {
     use super::*;
     use std::{
         cmp,
-        io::{BufReader, Cursor, Write},
+        io::{Cursor, Write},
     };
     use tempfile::NamedTempFile; // Temporary file creation for tests
 
@@ -328,18 +234,10 @@ mod tests_algo {
     // --- Hashing Tests ---
 
     /// A helper function to hash a byte slice using a given algorithm.
-    /// This avoids creating temp files for small strings.
+    /// Now uses the unified Algorithm::hash_reader method.
     fn hash_bytes_with_algorithm(content: &[u8], algorithm: Algorithm) -> FIFResult<String> {
-        let cursor = Cursor::new(content.to_vec());
-        let reader = BufReader::new(cursor); // Use BufReader for consistency with file hashing
-        match algorithm {
-            Algorithm::Ahash => get_ahash(reader),
-            Algorithm::Blake3 => get_blake3(reader),
-            Algorithm::Fxhash => get_fxhash(reader),
-            Algorithm::Foldhash => get_foldhash(reader),
-            Algorithm::SHA256 => get_sha256(reader),
-            Algorithm::SHA512 => get_sha512(reader),
-        }
+        let reader = Cursor::new(content);
+        algorithm.hash_reader(reader)
     }
 
     #[test]
