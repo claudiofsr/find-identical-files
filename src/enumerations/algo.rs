@@ -314,7 +314,7 @@ mod tests_algo {
         // Command: `echo -n "hello world" | sha512sum`
         // Command: `echo -n "hello world" | shasum -a 512`
         // Command: `echo -n "hello world" | openssl dgst -sha512`
-        // Result: 960a483cea18c1049a0b878ad1032de3a40993500652a43fbdb7450c40b46993
+        // Result: 309ecc489c12d6eb4cc40f50c902f2b4d0ed77ee511a7c7a9bcd3ca86d4cd86f989dd35bc5ff499670da34255b45b0cfd830e81f605dcf7dc5542e93ae9cd76f
         Ok(())
     }
 
