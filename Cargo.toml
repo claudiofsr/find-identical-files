@@ -1,7 +1,7 @@
 [package]
 name = "find-identical-files"
 authors = ["Claudio F S Rodrigues <claudiofsrodrigues@gmail.com>"]
-version = "0.37.2"
+version = "0.37.3"
 rust-version = "1.88"
 repository = "https://github.com/claudiofsr/find-identical-files"
 homepage = "https://github.com/claudiofsr/find-identical-files"
@@ -48,7 +48,7 @@ walkdir = { version = "2.5", optional = true}
 
 [dependencies.rust_xlsxwriter]
 # git = "https://github.com/jmcnamara/rust_xlsxwriter.git"
-version = "0.92"
+version = "0.94"
 features = [
     "serde",
     "zlib",
@@ -98,7 +98,7 @@ opt-level = 1           # Use slightly better optimizations.
 # pacman -S gnuplot
 # see the result:
 # chromium ~/Documents/Rust/projects/find_identical_files/target/criterion/report/index.html&
-criterion = { version = "0.7", features = ["html_reports"] }
+criterion = { version = "0.8", features = ["html_reports"] }
 plotters = "0.3"
 tempfile = "3.23"
 
