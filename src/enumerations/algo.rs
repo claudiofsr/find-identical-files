@@ -16,7 +16,7 @@ use std::{
 use crate::{Arguments, FIFResult, open_file};
 
 /// The default buffer size used for reading files in chunks to calculate hashes.
-const BUFFER_SIZE: usize = 1024 * 1024; // 1024 KB
+const BUFFER_SIZE: usize = 64 * 1024; // 64 KB
 
 /// The number of initial bytes to hash when a partial hash is requested.
 const FIRST_BYTES: usize = 1024; // 1 KB
