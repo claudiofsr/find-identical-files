@@ -27,6 +27,7 @@ fn main() -> FIFResult<()> {
     let time = Instant::now();
     let arguments = Arguments::build()?;
 
+    // 1. Initial file collection
     // Get useful (identical) and useless (non-identical) files.
     let all_files: Vec<FileInfo> = get_all_files(&arguments)?;
 
@@ -38,6 +39,8 @@ fn main() -> FIFResult<()> {
             time.elapsed()
         );
     }
+
+    // 2. Processing Pipeline (Successive Filtering)
 
     // To skip useless files, 3 procedures will be performed:
 
@@ -84,6 +87,7 @@ fn main() -> FIFResult<()> {
         );
     }
 
+    // 3. Post-processing and Summary
     // Sort the list of identical files.
     identical_hash.sort_identical_files(&arguments);
 
@@ -92,6 +96,8 @@ fn main() -> FIFResult<()> {
         .print_summary(&arguments)?;
 
     // Export identical file information simultaneously to CSV and/or XLSX format.
+
+    /*
     std::thread::scope(|s| {
         s.spawn(|| -> FIFResult<()> {
             if let Some(dir_path) = arguments.csv_dir {
@@ -107,6 +113,29 @@ fn main() -> FIFResult<()> {
             Ok(())
         });
     });
+    */
+
+    // 4. Parallel Export using Rayon
+    // rayon::join runs two closures concurrently.
+    // We destructure the returning tuple to handle errors individually.
+    let (csv_result, xlsx_result) = rayon::join(
+        || {
+            if let Some(dir_path) = arguments.csv_dir {
+                identical_hash.export_to_csv(dir_path)?;
+            }
+            Ok::<(), FIFError>(())
+        },
+        || {
+            if let Some(dir_path) = arguments.xlsx_dir {
+                identical_hash.export_to_xlsx(dir_path)?;
+            }
+            Ok::<(), FIFError>(())
+        },
+    );
+
+    // Propagate errors if any of the export tasks failed
+    csv_result?;
+    xlsx_result?;
 
     if arguments.time {
         println!("Total Execution Time: {:?}", time.elapsed());
