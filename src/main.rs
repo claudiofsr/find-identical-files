@@ -47,12 +47,12 @@ fn main() -> FIFResult<()> {
 
     // Procedure 1. Group files by <size> such that the key: (size, None);
     // Ignore filegroups containing only one file.
-    let identical_size: Vec<GroupInfo> = all_files.get_grouped_files(&arguments, 1);
+    let identical_size: Vec<GroupInfo> = all_files.get_grouped_files(&arguments, Procedure::Size);
 
     if arguments.verbose {
         eprintln!(
             "1. {:<43}: {:>10}, time_elapsed: {:?}",
-            "Number of files of identical size",
+            Procedure::Size.description(),
             identical_size.len(),
             time.elapsed()
         );
@@ -60,12 +60,13 @@ fn main() -> FIFResult<()> {
 
     // Procedure 2. Group files by <hash(first_bytes)> such that the key: (size, Some(hash(first_bytes)));
     // Ignore filegroups containing only one file.
-    let identical_bytes: Vec<GroupInfo> = identical_size.get_identical_files(&arguments, 2);
+    let identical_bytes: Vec<GroupInfo> =
+        identical_size.get_identical_files(&arguments, Procedure::FirstBytes)?;
 
     if arguments.verbose {
         eprintln!(
             "2. {:<43}: {:>10}, time_elapsed: {:?}",
-            "Number of files with identical first bytes",
+            Procedure::FirstBytes.description(),
             identical_bytes.len(),
             time.elapsed()
         );
@@ -73,7 +74,8 @@ fn main() -> FIFResult<()> {
 
     // Procedure 3. Group files by <hash(entire_file)> such that the key: (size, Some(hash(entire_file))).
     // Ignore filegroups containing only one file.
-    let mut identical_hash: Vec<GroupInfo> = identical_bytes.get_identical_files(&arguments, 3);
+    let mut identical_hash: Vec<GroupInfo> =
+        identical_bytes.get_identical_files(&arguments, Procedure::EntireFile)?;
 
     // For testing purposes only:
     // https://rustlang.github.io/asyncbook/01_getting_started/04_async_await_primer.html
@@ -82,7 +84,7 @@ fn main() -> FIFResult<()> {
     if arguments.verbose {
         eprintln!(
             "3. {:<43}: {:>10}, time_elapsed: {:?}",
-            "Number of files with identical hashes",
+            Procedure::EntireFile.description(),
             identical_hash.len(),
             time.elapsed()
         );

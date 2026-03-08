@@ -19,6 +19,13 @@ pub type FIFResult<T> = Result<T, FIFError>;
 /// <https://doc.rust-lang.org/rust-by-example/error/multiple_error_types/define_error_type.html>
 #[derive(Error, Debug)]
 pub enum FIFError {
+    /// Error encountered when converting between integer types (e.g., u64 to usize).
+    #[error("{msg}: Failed to convert {from} to {to}", msg = "Type Conversion Error".red().bold())]
+    ConversionError {
+        from: &'static str,
+        to: &'static str,
+    },
+
     // Errors encountered while parsing CSV data (e.g., inconsistent columns, invalid data).
     #[error("{msg}: '{0}'", msg = "CSV Parsing Error".red().bold())]
     CSVError(#[from] csv::Error),
@@ -35,6 +42,14 @@ pub enum FIFError {
         io_error: io::Error,
     },
 
+    /// Error when an invalid integer is provided for a Procedure level.
+    #[error("{msg}: '{0}'", msg = "Invalid Procedure Level".red().bold())]
+    InvalidProcedure(u8),
+
+    /// Error when a requested Excel format is not defined in the template.
+    #[error("{msg}: '{0}'", msg = "XLSX Format Error".red().bold())]
+    InvalidXlsxFormat(String),
+
     /// Standard I/O error wrapper.
     #[error("{msg}: '{0}'", msg = "IO Error".red().bold())]
     Io(#[from] io::Error),
@@ -50,6 +65,10 @@ pub enum FIFError {
     /// Specific error when file permission is denied.
     #[error("{msg}: '{path:?}'", msg = "Permission Denied Error".red().bold())]
     PermissionDenied { path: PathBuf },
+
+    /// Error encountered when the output buffer contains invalid UTF-8.
+    #[error("{msg}: '{0}'", msg = "UTF-8 Conversion Error".red().bold())]
+    Utf8Error(#[from] std::str::Utf8Error),
 
     /// XlsxError wrapper.
     #[error("{msg}: '{0}'", msg = "XLSX Error".red().bold())]

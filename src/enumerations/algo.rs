@@ -13,13 +13,13 @@ use std::{
     path::PathBuf,
 };
 
-use crate::{Arguments, FIFResult, open_file};
+use crate::{Arguments, FIFResult, Procedure, open_file};
 
-/// The default buffer size used for reading files in chunks to calculate hashes.
-const BUFFER_SIZE: usize = 64 * 1024; // 64 KB
+/// The default buffer size used for reading files in chunks to calculate hashes (64 KB).
+const BUFFER_SIZE: usize = 64 * 1024;
 
-/// The number of initial bytes to hash when a partial hash is requested.
-const FIRST_BYTES: usize = 1024; // 1 KB
+/// The number of initial bytes to hash when a partial (first bytes) hash is requested (1 KB).
+const FIRST_BYTES: usize = 1024;
 
 /// Hexadecimal characters for converting bytes to hex strings.
 const HEX_CHARS: [char; 16] = [
@@ -55,26 +55,26 @@ impl SliceExtension for [u8] {
     }
 }
 
-/// Extension trait for PathBuf to facilitate hashing operations.
+/// Extension trait for PathBuf to facilitate hashing operations based on the current Procedure.
 pub trait PathBufExtension {
     /// Hashes the content of the file specified by the PathBuf.
     ///
-    /// `procedure`:
-    /// - `3`: Hash the entire file using the specified algorithm.
-    /// - `_`: Hash only the `FIRST_BYTES` of the file using Ahash.
-    fn get_hash(&self, arguments: &Arguments, procedure: u8) -> FIFResult<Option<String>>;
+    /// Depending on the `Procedure`:
+    /// - `Procedure::EntireFile`: Hashes the entire file using the user-selected algorithm.
+    /// - `Procedure::FirstBytes`: Hashes only the first `FIRST_BYTES` for quick filtering.
+    /// - `Procedure::Size`: Typically doesn't require a hash, but defaults to first bytes if called.
+    fn get_hash(&self, arguments: &Arguments, procedure: Procedure) -> FIFResult<Option<String>>;
 }
 
 impl PathBufExtension for PathBuf {
-    fn get_hash(&self, arguments: &Arguments, procedure: u8) -> FIFResult<Option<String>> {
+    fn get_hash(&self, arguments: &Arguments, procedure: Procedure) -> FIFResult<Option<String>> {
         let mut file: File = open_file(self)?;
 
-        let hash_string: String = if procedure == 3 {
-            // Hash the entire file
-            arguments.algorithm.calculate_hash(file)?
-        } else {
-            // Hash only the first `FIRST_BYTES` of the file
-            calculate_first_bytes_hash(&mut file)?
+        let hash_string: String = match procedure {
+            // Full hash is only performed in the final stage
+            Procedure::EntireFile => arguments.algorithm.calculate_hash(file)?,
+            // All other stages use a fast partial hash of the file header
+            _ => calculate_first_bytes_hash(&mut file)?,
         };
 
         Ok(Some(hash_string))
@@ -327,8 +327,8 @@ mod tests_algo {
         let mut args = Arguments::build()?;
         args.algorithm = Algorithm::Ahash;
 
-        // Assuming procedure 0-2 trigger first_bytes_hash
-        let hash = path.get_hash(&args, 0)?;
+        // Procedure::FirstBytes should trigger calculate_first_bytes_hash
+        let hash = path.get_hash(&args, Procedure::FirstBytes)?;
 
         // Re-calculate the expected hash manually using only the first FIRST_BYTES.
         let mut expected_hasher = AHasher::default();
@@ -350,8 +350,8 @@ mod tests_algo {
         let mut args = Arguments::build()?;
         args.algorithm = Algorithm::Blake3;
 
-        // Procedure 3 triggers full file hash
-        let hash = path.get_hash(&args, 3)?.unwrap();
+        // Procedure::EntireFile triggers full file hash
+        let hash = path.get_hash(&args, Procedure::EntireFile)?.unwrap();
 
         // Blake3 has official reference values
         let expected_hash = "960a483cea18c1049a0b878ad1032de3a40993500652a43fbdb7450c40b46993";
@@ -369,7 +369,9 @@ mod tests_algo {
         let mut args = Arguments::build()?;
         args.algorithm = Algorithm::SHA256;
 
-        let hash = path.get_hash(&args, 3)?.unwrap();
+        // Procedure::EntireFile triggers full file hash
+        let hash = path.get_hash(&args, Procedure::EntireFile)?.unwrap();
+
         // SHA256 of empty string
         assert_eq!(
             hash,

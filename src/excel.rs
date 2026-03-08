@@ -4,7 +4,7 @@ use rust_xlsxwriter::{DocProperties, Format, FormatAlign, Workbook, Worksheet, X
 use serde::Serialize;
 use std::{path::PathBuf, sync::LazyLock};
 
-use crate::FIFResult;
+use crate::{FIFError, FIFResult};
 
 // Install fonts:
 // "DejaVu Sans Mono": pacman -S ttf-dejavu
@@ -14,15 +14,16 @@ use crate::FIFResult;
 const HEADER_SIZE: f64 = 11.0;
 const FONT_SIZE: f64 = 12.0;
 const FONT_NAME: &str = "Liberation Mono";
+
+/// Excel has a limit of 1,048,576 rows. We use 1M to stay safe.
 const MAX_NUMBER_OF_ROWS: usize = 1_000_000;
 
 // See the application in structures::path_info::PathInfo
 
-/// Write XLSX File according to some struct T
+/// Writes a collection of serializable data to an XLSX file.
 ///
-/// The lines (or rows) are given by `&[T]`
-///
-/// <https://docs.rs/rust_xlsxwriter/latest/rust_xlsxwriter/serializer/index.html>
+/// If the data exceeds `MAX_NUMBER_OF_ROWS`, it automatically splits
+/// the content into multiple worksheets.
 pub fn write_xlsx<T>(lines: &[T], sheet_name: &str, path: PathBuf) -> FIFResult<()>
 where
     T: Serialize + XlsxSerialize + Sync,
@@ -55,9 +56,10 @@ where
     let properties = get_properties()?;
     workbook.set_properties(&properties);
 
-    worksheets?.into_iter().for_each(|worksheet| {
+    // Add all generated worksheets to the workbook.
+    for worksheet in worksheets? {
         workbook.push_worksheet(worksheet);
-    });
+    }
 
     // Save the workbook to disk.
     workbook.save(&path).inspect_err(|xlsx_error| {
@@ -89,7 +91,7 @@ where
     T: Serialize + XlsxSerialize,
 {
     let mut worksheet = Worksheet::new();
-    let fmt_header = get_xlsx_format("header");
+    let fmt_header = get_xlsx_format("header")?;
 
     worksheet
         .set_name(sheet_name)?
@@ -108,7 +110,7 @@ where
     Ok(worksheet)
 }
 
-/// XLSX Formats
+/// Pre-defined Excel formats stored in a thread-safe LazyLock.
 static XLSX_FORMATS: LazyLock<HashMap<&'static str, Format>> = LazyLock::new(|| {
     let fmt_header: Format = Format::new()
         .set_align(FormatAlign::Center) // horizontally
@@ -143,12 +145,33 @@ static XLSX_FORMATS: LazyLock<HashMap<&'static str, Format>> = LazyLock::new(|| 
     HashMap::from(formats)
 });
 
-/// Get XLSX format
+/// Safely retrieves a format by its name.
 ///
-/// Add some formats to use with the serialization data.
-pub fn get_xlsx_format(name: &str) -> &Format {
-    match XLSX_FORMATS.get(name) {
-        Some(format) => format,
-        None => panic!("Format {name} not defined!"),
-    }
+/// # Errors
+/// Returns `FIFError::InvalidXlsxFormat` if the format name is not recognized.
+pub fn get_xlsx_format(name: &str) -> FIFResult<&Format> {
+    XLSX_FORMATS
+        .get(name)
+        .ok_or_else(|| FIFError::InvalidXlsxFormat(name.to_string()))
+}
+
+/// Bridge function for XlsxSerialize macro to get the integer format.
+pub fn fmt_integer() -> Format {
+    get_xlsx_format("integer").cloned().unwrap_or_default()
+}
+
+/// Bridge function for XlsxSerialize macro to get the center format.
+pub fn fmt_center() -> Format {
+    get_xlsx_format("center").cloned().unwrap_or_default()
+}
+
+/// Bridge function for XlsxSerialize macro to get the default format.
+pub fn fmt_default() -> Format {
+    get_xlsx_format("default").cloned().unwrap_or_default()
+}
+
+#[allow(dead_code)]
+/// Bridge function for XlsxSerialize macro to get the header format.
+pub fn fmt_header() -> Format {
+    get_xlsx_format("header").cloned().unwrap_or_default()
 }

@@ -1,56 +1,71 @@
-use crate::{Arguments, FileInfo, Key, MyResult, get_path};
+use crate::{Arguments, FIFError, FIFResult, FileInfo, Key, get_path};
 use rayon::prelude::*;
 use std::path::PathBuf;
 use walkdir::{DirEntry, WalkDir};
 
-/// Get all files into one vector.
+/// Collects all files into a single Vector using the `walkdir` crate.
 ///
-/// Use walkdir.
-pub fn get_all_files(arguments: &Arguments) -> MyResult<Vec<FileInfo>> {
+/// This function first collects all valid file entries sequentially and then
+/// processes them in parallel using Rayon to determine which ones match
+/// the size constraints and to initialize the `FileInfo` structures.
+pub fn get_all_files(arguments: &Arguments) -> FIFResult<Vec<FileInfo>> {
     let entries: Vec<DirEntry> = get_entries(arguments)?;
 
+    // Process collected entries in parallel.
+    // We map to FIFResult<Option<FileInfo>> to capture potential conversion errors.
     let all_files: Vec<FileInfo> = entries
-        .into_par_iter() // rayon parallel iterator
-        .filter_map(|entry| {
-            let metadata = entry.metadata().ok()?;
+        .into_par_iter()
+        .map(|entry| -> FIFResult<Option<FileInfo>> {
+            // metadata() might fail if the file was deleted or permissions changed
+            let metadata = entry.metadata().map_err(|e| FIFError::Io(e.into()))?;
             let file_size: u64 = metadata.len();
-            //let inode_number: u64 = metadata.ino();
 
             if arguments.size_is_included(file_size) {
-                let key = Key::new(file_size, None);
+                // Key::new returns a FIFResult. If it fails, we propagate the error.
+                let key = Key::new(file_size, None)?;
                 let path = entry.into_path();
-                Some(FileInfo { key, path })
+
+                Ok(Some(FileInfo { key, path }))
             } else {
-                None
+                Ok(None)
             }
         })
+        // If any thread returns an Err, collect will propagate the first error found.
+        .collect::<FIFResult<Vec<Option<FileInfo>>>>()?
+        .into_iter()
+        .flatten() // Remove the None values
         .collect();
 
     Ok(all_files)
 }
 
-/// Get result: Vec<DirEntry>.
-fn get_entries(arguments: &Arguments) -> MyResult<Vec<DirEntry>> {
+/// Traverses the directory and collects file entries into a Vector.
+///
+/// Filters are applied for hidden files and file types (keeping only regular files).
+fn get_entries(arguments: &Arguments) -> FIFResult<Vec<DirEntry>> {
     let dir_path: PathBuf = get_path(arguments)?;
 
     let entries: Vec<DirEntry> = WalkDir::new(dir_path)
         .min_depth(arguments.min_depth)
         .max_depth(arguments.max_depth)
         .into_iter()
+        // filter_entry stops recursion into hidden directories
         .filter_entry(|e| !arguments.omit_hidden || !is_hidden(e))
-        .flatten() // Result<DirEntry, Error> to DirEntry
+        .filter_map(|result| result.ok()) // Ignore walking errors (e.g., permission denied)
         .filter(|entry| entry.file_type().is_file())
         .collect();
 
     Ok(entries)
 }
 
-// https://github.com/BurntSushi/walkdir
-// https://rust-lang-nursery.github.io/rust-cookbook/file/dir.html
-/// Identify hidden files efficiently on unix.
+/// Efficiently identifies hidden files or directories on Unix-like systems.
+///
+/// A hidden entry is defined as one that starts with a dot ('.') and is not
+/// the root directory itself.
 fn is_hidden(entry: &DirEntry) -> bool {
     entry
         .file_name()
         .to_str()
-        .is_some_and(|s| entry.depth() != 0 && s.starts_with('.'))
+        .map(|s| entry.depth() != 0 && s.starts_with('.'))
+        .unwrap_or(false)
 }

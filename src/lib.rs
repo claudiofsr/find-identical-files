@@ -21,6 +21,7 @@ cfg_if::cfg_if! {
 pub use self::{
     args::Arguments,
     enumerations::algo::{Algorithm, PathBufExtension, SliceExtension},
+    enumerations::procedures::*,
     error::*,
     separator::get_thousands_separator,
     structures::file_info::{FileExtension, FileInfo},
@@ -33,7 +34,7 @@ pub use excel::write_xlsx;
 use serde::Serializer;
 use std::{
     fs::{self, File},
-    io,
+    io::{self, Write},
     path::{Path, PathBuf},
     process::Command,
     str,
@@ -81,20 +82,22 @@ pub fn get_path(arguments: &Arguments) -> FIFResult<PathBuf> {
     }
 }
 
-/// Print buffer to stdout
+/// Prints the provided byte buffer to standard output as a UTF-8 string.
+///
+/// # Errors
+/// Returns `FIFError::Utf8Error` if the buffer contains invalid UTF-8 sequences.
+/// Returns `FIFError::Io` if writing to stdout fails.
 pub fn my_print(buffer: &[u8]) -> FIFResult<()> {
-    // Converts a slice of bytes to a string slice
-    let print_msg = match str::from_utf8(buffer) {
-        Ok(valid_uft8) => valid_uft8,
-        Err(error) => {
-            eprintln!("fn my_print()");
-            eprintln!("Invalid UTF-8 sequence!");
-            panic!("{error}");
-        }
-    };
+    // Attempt to convert the raw byte slice into a valid UTF-8 string slice.
+    // The '?' operator will catch any Utf8Error and wrap it into FIFError.
+    let print_msg = str::from_utf8(buffer)?;
 
-    // Print to stdout
+    // Print to standard output.
     print!("{print_msg}");
+
+    // Optional but recommended: flush stdout to ensure the output is displayed immediately.
+    io::stdout().flush()?;
+
     Ok(())
 }
 

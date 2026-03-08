@@ -1,16 +1,12 @@
 use crate::{
-    CSV_FILENAME, FIFResult, FileExtension, FileInfo, Key, PathBufExtension, PathInfo, TotalInfo,
-    XLSX_FILENAME, add_thousands_separator,
+    CSV_FILENAME, FIFResult, FileExtension, FileInfo, Key, PathBufExtension, PathInfo, Procedure,
+    TotalInfo, XLSX_FILENAME, add_thousands_separator,
     args::{Arguments, ResultFormat::*},
     get_thousands_separator, my_print, split_and_insert, write_xlsx,
 };
 use rayon::prelude::*;
 use serde::{Deserialize, Serialize};
-use std::{
-    fs::{File, OpenOptions},
-    io::Write,
-    path::PathBuf,
-};
+use std::{fs::OpenOptions, io::Write, path::PathBuf};
 
 /// Grouped file information
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -19,15 +15,15 @@ pub struct GroupInfo {
     #[serde(rename = "Paths")]
     pub paths: Vec<PathBuf>, // Vec<PathBuf> ; Arc<[PathBuf]> for immutable data
 
-    /// Key Information
+    /// Key Information (Size and Hash)
     #[serde(rename = "File information")]
     pub key: Key,
 
-    /// Number of identical files with the same size and blake3 hash
+    /// Number of identical files in this group
     #[serde(rename = "Number of identical files")]
     pub num_file: usize,
 
-    /// Sum of individual file sizes declared in paths
+    /// Sum of individual file sizes in this group
     #[serde(
         rename = "Sum of file sizes",
         serialize_with = "add_thousands_separator"
@@ -36,7 +32,7 @@ pub struct GroupInfo {
 }
 
 impl GroupInfo {
-    /// Print GroupInfo fields in chosen format
+    /// Print GroupInfo fields in the chosen format (JSON, YAML, or Personal)
     pub fn print_formatted(
         &self,
         arguments: &Arguments,
@@ -75,34 +71,36 @@ impl GroupInfo {
         Ok(())
     }
 
-    /// Update hash
-    pub fn update_hash(&self, arguments: &Arguments, procedure: u8) -> Vec<FileInfo> {
+    /// Updates the hash for all files in the group based on the current Procedure.
+    ///
+    /// This runs in parallel using Rayon. If any file fails to be hashed (e.g.,
+    /// due to a sudden I/O error), the function returns a `FIFError` instead of panicking.
+    pub fn update_hash(
+        &self,
+        arguments: &Arguments,
+        procedure: Procedure,
+    ) -> FIFResult<Vec<FileInfo>> {
         self.paths
-            .clone()
-            .into_par_iter() // rayon parallel iterator
+            .par_iter() // Parallel iterator over PathBuf references
             .map(|path| {
-                let key = match path.get_hash(arguments, procedure) {
-                    Ok(hash) => Key {
+                // get_hash already returns FIFResult<Option<String>>
+                let hash = path.get_hash(arguments, procedure)?;
+
+                Ok(FileInfo {
+                    key: Key {
                         size: self.key.size,
                         hash,
                     },
-                    Err(why) => {
-                        eprintln!("fn update_hash()");
-                        eprintln!("path: {:#?}", path.display());
-                        panic!("Error getting path hash: {why}")
-                    }
-                };
-
-                FileInfo { key, path }
+                    path: path.clone(),
+                })
             })
-            .collect()
+            .collect() // Magic of Rayon/Std: Collects Vec<Result> into Result<Vec>
     }
 
-    /// Convert [`GroupInfo`] to Vec<[`PathInfo`]>
+    /// Convert [`GroupInfo`] to a flat vector of [`PathInfo`]
     pub fn flatten(&self) -> Vec<PathInfo> {
         self.paths
-            .clone()
-            .into_par_iter() // rayon parallel iterator
+            .par_iter()
             .map(|path| PathInfo {
                 size: self.key.size,
                 hash: self.key.hash.clone(),
@@ -115,53 +113,69 @@ impl GroupInfo {
 }
 
 pub trait GroupExtension {
-    /**
-    Get identical files from the hash of the first bytes or the entire file.
+    /// Filter and group files based on the hash (partial or entire) defined by the Procedure.
+    fn get_identical_files(
+        &self,
+        arguments: &Arguments,
+        procedure: Procedure,
+    ) -> FIFResult<Vec<GroupInfo>>;
 
-    If procedure = 2, get the hash of the first bytes.
-
-    If procedure = 3, get the hash of the entire file.
-    */
-    fn get_identical_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo>;
-
-    /**
-    Sort the list of identical files.
-
-    Two options:
-
-    1. Sort by number of identical files and then by (file size, hash);
-    2. Sort by (file size, hash). `default`
-    */
+    /// Sort the list of identical files based on user arguments.
     fn sort_identical_files(&mut self, arguments: &Arguments);
 
-    /// Print identical files
+    /// Print identical files to the standard output/buffer.
     fn print_identical_files(&self, arguments: &Arguments) -> FIFResult<()>;
 
-    /// Get Total Info
+    /// Calculate total statistics (count, size, etc.)
     fn get_total_info(&self, arguments: &Arguments, total_num_files: usize) -> TotalInfo;
 
-    /// Convert Vec<[`GroupInfo`]> to Vec<[`PathInfo`]>
+    /// Convert Vec<[`GroupInfo`]> to Vec<[`PathInfo`]> for exporting
     fn get_path_info(&self) -> Vec<PathInfo>;
 
-    /// Export to CSV format
+    /// Export identical file information to CSV format
     fn export_to_csv(&self, dir_path: PathBuf) -> FIFResult<()>;
 
-    /// Export to XLSX format
+    /// Export identical file information to XLSX format
     fn export_to_xlsx(&self, dir_path: PathBuf) -> FIFResult<()>;
 }
 
 impl GroupExtension for [GroupInfo] {
-    fn get_identical_files(&self, arguments: &Arguments, procedure: u8) -> Vec<GroupInfo> {
-        let identical_hash: Vec<GroupInfo> = self
-            .par_iter() // rayon parallel iterator
-            .flat_map(|group_info| {
-                group_info
-                    .update_hash(arguments, procedure)
-                    .get_grouped_files(arguments, procedure)
-            })
-            .collect();
+    /// Progressively filters groups by updating hashes and re-grouping.
+    ///
+    /// This implementation uses a Map-Reduce pattern with `try_fold` to minimize
+    /// intermediate allocations and support early exit on I/O errors.
+    fn get_identical_files(
+        &self,
+        arguments: &Arguments,
+        procedure: Procedure,
+    ) -> FIFResult<Vec<GroupInfo>> {
+        self.par_iter()
+            .try_fold(
+                // 1. Creation: Each thread worker initializes its own local vector
+                Vec::new,
+                // 2. Folding: Process each group and accumulate results locally
+                |mut local_accumulator, group_info| {
+                    // Update hashes for the current group (short-circuits on Err)
+                    let updated_files = group_info.update_hash(arguments, procedure)?;
 
-        identical_hash
+                    // Group files based on the new hashes
+                    let new_subgroups = updated_files.get_grouped_files(arguments, procedure);
+
+                    // Append subgroups to the local thread vector
+                    local_accumulator.extend(new_subgroups);
+
+                    Ok(local_accumulator)
+                },
+            )
+            .try_reduce(
+                // 3. Identity: The base for merging results
+                Vec::new,
+                // 4. Reduction: Merge the vectors from different threads
+                |mut vec_a, vec_b| {
+                    vec_a.extend(vec_b);
+                    Ok(vec_a)
+                },
+            )
     }
 
     fn sort_identical_files(&mut self, arguments: &Arguments) {
@@ -246,20 +260,15 @@ impl GroupExtension for [GroupInfo] {
         eprintln!("Write CSV File: {dir_path:?}");
 
         // Open a file in write-only mode
-        let file: File = match OpenOptions::new()
-            .read(true)
+        let file = OpenOptions::new()
             .write(true)
             .create(true)
-            .truncate(true) // replace the file
+            .truncate(true)
             .open(&dir_path)
-        {
-            Ok(f) => f,
-            Err(error) => {
-                eprintln!("fn export_to_csv()");
-                eprintln!("Couldn't create {dir_path:?}");
-                panic!("Error: {error}");
-            }
-        };
+            .map_err(|e| {
+                eprintln!("Failed to create CSV file at {dir_path:?}: {e}");
+                e
+            })?;
 
         let mut writer = csv::WriterBuilder::new()
             .delimiter(b';')
@@ -267,6 +276,7 @@ impl GroupExtension for [GroupInfo] {
             .quote_style(csv::QuoteStyle::Necessary) // NonNumeric
             .from_writer(file);
 
+        // Serialize path info into CSV
         for path_info in self.get_path_info() {
             writer.serialize(path_info)?;
         }

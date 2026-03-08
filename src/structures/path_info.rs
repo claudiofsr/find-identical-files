@@ -1,64 +1,37 @@
+use crate::excel::{fmt_center, fmt_default, fmt_integer};
 use rust_xlsxwriter::XlsxSerialize;
-use serde::{
-    Serialize,
-    //Serializer,
-};
+use serde::Serialize;
 use std::path::PathBuf;
 
-use crate::excel::get_xlsx_format;
-
-/// File Information including path
+/// Detailed information about a specific file path within an identical group.
 ///
-/// rust_xlsxwriter: Working with Serde
-///
-/// <https://docs.rs/rust_xlsxwriter/latest/rust_xlsxwriter/serializer/index.html>
-#[derive(XlsxSerialize, Serialize)]
-#[xlsx(
-    //header_format = get_xlsx_format("header"),
-    table_default
-)]
+/// This struct is optimized for serialization into CSV and XLSX formats.
+/// It uses `rust_xlsxwriter` attributes to define the visual style of the Excel report.
+#[derive(XlsxSerialize, Serialize, Debug, Clone)]
+#[xlsx(table_default)]
 pub struct PathInfo {
-    /// File size (in bytes)
+    /// Individual file size in bytes.
     #[serde(rename = "File size (bytes)")]
-    #[xlsx(value_format = get_xlsx_format("integer"))]
+    #[xlsx(value_format = fmt_integer())]
     pub size: usize,
 
-    /// Hash
-    #[serde(rename = "Hash")] // serialize_with = "add_quotes"
-    #[xlsx(value_format = get_xlsx_format("center"))]
+    /// Calculated hash (Blake3 or other) used to verify identity.
+    #[serde(rename = "Hash")]
+    #[xlsx(value_format = fmt_center())]
     pub hash: Option<String>,
 
-    /// File Paths
+    /// The absolute or relative path to the file.
     #[serde(rename = "Path")]
-    #[xlsx(value_format = get_xlsx_format("default"))]
+    #[xlsx(value_format = fmt_default())]
     pub path: PathBuf,
 
-    /// Frequency (number of identical files) with the same size and hash
+    /// How many files were found with this exact size and hash.
     #[serde(rename = "Frequency")]
-    #[xlsx(value_format = get_xlsx_format("integer"))]
+    #[xlsx(value_format = fmt_integer())]
     pub num_file: usize,
 
-    /// Sum of individual file sizes declared in paths
+    /// The total storage wasted by all files in this specific identical group.
     #[serde(rename = "Sum of file sizes (bytes)")]
-    #[xlsx(value_format = get_xlsx_format("integer"))]
+    #[xlsx(value_format = fmt_integer())]
     pub sum_size: usize,
 }
-
-/*
-/// Add quotes
-fn add_quotes<S>(hash: &Option<String>, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    match hash {
-        Some(string) => match string.parse::<u128>() {
-            Ok(integer) if integer > 1_000_000_000_000 => {
-                serializer.collect_str(&format!("'{:?}'", integer))
-            }
-            Ok(_) => serializer.collect_str(&string.to_string()),
-            Err(_) => serializer.collect_str(&string.to_string()),
-        },
-        None => serializer.serialize_none(),
-    }
-}
-*/
