@@ -1,38 +1,37 @@
 #![allow(unused_assignments)]
 use std::env;
+use std::sync::OnceLock;
 
-/// Returns the preferred thousands separator character.
-/// Precedence: LC_NUMERIC env var > compile-time feature > default (comma).
+/// Cache for the separator to avoid expensive System Calls (env::var)
+/// and String allocations during repetitive serialization tasks.
+static THOUSANDS_SEP: OnceLock<char> = OnceLock::new();
+
+/// Returns the preferred thousands separator character with lazy initialization.
 pub fn get_thousands_separator() -> char {
-    let mut chosen_separator: char = ','; // Default to comma
-
-    // 1. Check LC_NUMERIC environment variable.
-    if let Ok(lc_numeric) = env::var("LC_NUMERIC") {
-        if lc_numeric.starts_with("en_") {
-            // Anglo-Saxon countries (e.g., UK, USA) typically use ','.
-            chosen_separator = ',';
-        } else {
-            // Assume other locales, especially many European ones, use '.' as thousands separator.
-            // This is a simplification and not universally true for all non-en_ locales.
-            chosen_separator = '.';
+    *THOUSANDS_SEP.get_or_init(|| {
+        // 1. High priority: Compile-time features (fixed at build time)
+        #[cfg(feature = "thousands-sep-comma")]
+        {
+            return ',';
         }
-    }
+        #[cfg(feature = "thousands-sep-dot")]
+        {
+            return '.';
+        }
+        #[cfg(feature = "thousands-sep-space")]
+        {
+            return ' ';
+        }
 
-    // 2. Check compile-time features.
-    #[cfg(feature = "thousands-sep-comma")]
-    {
-        chosen_separator = ','; // Override with comma if feature enabled.
-    }
+        // 2. Low priority: Runtime environment check
+        if let Ok(lc_numeric) = env::var("LC_NUMERIC") {
+            // Locales like pt_BR or de_DE usually use '.'
+            if !lc_numeric.starts_with("en_") {
+                return '.';
+            }
+        }
 
-    #[cfg(feature = "thousands-sep-dot")]
-    {
-        chosen_separator = '.'; // Override with dot if feature enabled.
-    }
-
-    #[cfg(feature = "thousands-sep-space")]
-    {
-        chosen_separator = ' '; // Override with space if feature enabled.
-    }
-
-    chosen_separator
+        // Default to US standard
+        ','
+    })
 }

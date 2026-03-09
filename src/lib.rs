@@ -33,8 +33,9 @@ pub use self::{
 pub use excel::write_xlsx;
 use serde::Serializer;
 use std::{
+    fmt::{self, Write as FmtWrite}, // Rename to avoid conflict
     fs::{self, File},
-    io::{self, Write},
+    io::{self, Write as IoWrite}, // Rename to avoid conflict
     path::{Path, PathBuf},
     process::Command,
     str,
@@ -115,44 +116,83 @@ pub fn clear_terminal_screen() {
         print!("{esc}c", esc = 27 as char);
     }
 }
-
 /// Split integer and insert thousands separator
-pub fn split_and_insert(integer: usize, insert: char) -> String {
-    let group_size = 3;
-    let integer_str = integer.to_string();
+///
+/// This internal function is generic over any 'Writer' (String, Formatter, etc.).
+/// It avoids code duplication while maintaining maximum performance.
+fn write_integer_with_separator<W: FmtWrite>(
+    integer: usize,
+    separator: char,
+    writer: &mut W,
+) -> fmt::Result {
+    let s = integer.to_string();
+    let bytes = s.as_bytes();
+    let len = bytes.len();
 
-    if integer <= 999 {
-        return integer_str;
+    for (i, &byte) in bytes.iter().enumerate() {
+        // Apply thousands separator every 3 digits from the right.
+        if i > 0 && (len - i).is_multiple_of(3) {
+            writer.write_char(separator)?;
+        }
+        writer.write_char(byte as char)?;
     }
-
-    let string_splitted: String = integer_str
-        .chars()
-        .enumerate()
-        .flat_map(|(i, c)| {
-            if (integer_str.len() - i).is_multiple_of(group_size) && i > 0 {
-                Some(insert)
-            } else {
-                None
-            }
-            .into_iter()
-            .chain(std::iter::once(c))
-        })
-        .collect::<String>();
-
-    string_splitted
+    Ok(())
 }
 
-/// Serialize usize with fn split_and_insert().
+/// High-performance string formatter returning a custom Result.
+///
+/// Performance wins:
+/// 1. Exact capacity allocation (Single Heap Allocation).
+/// 2. Automatic error propagation via `?` (Requires `From<fmt::Error>` in FIFError).
+pub fn split_and_insert(integer: usize, separator: char) -> FIFResult<String> {
+    let s_val = integer.to_string();
+    let len = s_val.len();
+
+    // Small optimization: skip processing if no separators are needed.
+    if len <= 3 {
+        return Ok(s_val);
+    }
+
+    // Step 1: Exact Capacity Calculation.
+    // Length of digits + (Number of separators * bytes per separator).
+    let num_seps = (len - 1) / 3;
+    let final_capacity = len + (num_seps * separator.len_utf8());
+
+    // Step 2: Allocate memory once.
+    let mut result = String::with_capacity(final_capacity);
+
+    // Step 3: Write digits directly into the allocated buffer.
+    // The '?' operator works here because FIFError implements From<std::fmt::Error>.
+    write_integer_with_separator(integer, separator, &mut result)?;
+
+    Ok(result)
+}
+
+/// Internal helper to format values directly into a stream.
+/// This avoids allocating a `String` inside the Serializer.
+struct BytesFormatter(usize);
+
+impl fmt::Display for BytesFormatter {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let sep = get_thousands_separator();
+
+        // Write digits directly to the output stream (f).
+        write_integer_with_separator(self.0, sep, f)?;
+
+        // Append suffix directly to the output stream.
+        f.write_str(" bytes")
+    }
+}
+
+/// Serde Serializer: Formats usize as a string with separators (e.g., "1.234 bytes").
+/// Highly efficient: Writes directly to the serializer's buffer without
+/// temporary String allocations on the heap.
 pub fn add_thousands_separator<S>(size: &usize, serializer: S) -> Result<S::Ok, S::Error>
 where
     S: Serializer,
 {
-    let thousands_separator: char = get_thousands_separator();
-
-    serializer.collect_str(&format!(
-        "{} bytes",
-        &split_and_insert(*size, thousands_separator)
-    ))
+    // Use collect_str to pipe our Display implementation into the Serializer.
+    serializer.collect_str(&BytesFormatter(*size))
 }
 
 #[cfg(test)]
@@ -161,13 +201,13 @@ mod tests_lib {
 
     #[test]
     /// cargo test -- --show-output split_integer_into_groups
-    fn split_integer_into_groups() {
+    fn split_integer_into_groups() -> FIFResult<()> {
         let mut result: Vec<String> = Vec::new();
 
         for integer in [
             0, 1, 12, 999, 1000, 1001, 1234, 12345, 123456, 1234567, 12345678,
         ] {
-            let integer_splitted: String = split_and_insert(integer, '_');
+            let integer_splitted: String = split_and_insert(integer, '_')?;
             println!("integer: {integer:<8} ; with thousands sep: {integer_splitted}");
             result.push(integer_splitted);
         }
@@ -187,5 +227,6 @@ mod tests_lib {
         ];
 
         assert_eq!(valid, result);
+        Ok(())
     }
 }

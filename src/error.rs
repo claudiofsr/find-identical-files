@@ -42,6 +42,10 @@ pub enum FIFError {
         io_error: io::Error,
     },
 
+    /// Error when writing to a string buffer or formatting fails.
+    #[error("{msg}: '{0}'", msg = "Formatting Error".red().bold())]
+    Fmt(#[from] std::fmt::Error),
+
     /// Error when an invalid integer is provided for a Procedure level.
     #[error("{msg}: '{0}'", msg = "Invalid Procedure Level".red().bold())]
     InvalidProcedure(u8),

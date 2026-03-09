@@ -75,7 +75,7 @@ impl TotalInfo {
                 );
                 println!(
                     "Total size of identical files: {} bytes\n",
-                    split_and_insert(self.total_size, thousands_separator)
+                    split_and_insert(self.total_size, thousands_separator)?
                 );
             }
         }

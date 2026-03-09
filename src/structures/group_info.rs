@@ -58,12 +58,12 @@ impl GroupInfo {
                 writeln!(
                     write,
                     "Size of individual file: {} bytes",
-                    split_and_insert(self.key.size, thousands_separator)
+                    split_and_insert(self.key.size, thousands_separator)?
                 )?;
                 writeln!(
                     write,
                     "Sum of file sizes: {} bytes\n",
-                    split_and_insert(self.sum_size, thousands_separator)
+                    split_and_insert(self.sum_size, thousands_separator)?
                 )?;
             }
         }
