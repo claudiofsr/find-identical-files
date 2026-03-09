@@ -1,5 +1,5 @@
 use find_identical_files::*;
-use std::time::Instant;
+use std::{process, time::Instant};
 
 //use futures::{executor::block_on, future::join_all};
 //use rayon::prelude::*;
@@ -25,6 +25,14 @@ use std::time::Instant;
 // https://pkolaczk.github.io/disk-access-ordering/
 
 fn main() -> FIFResult<()> {
+    if let Err(error) = run() {
+        eprintln!("Operation failed!\n{}", error);
+        process::exit(1); // Explicitly exit with failure code        
+    }
+    Ok(())
+}
+
+fn run() -> FIFResult<()> {
     let time = Instant::now();
     let arguments = Arguments::build()?;
 
