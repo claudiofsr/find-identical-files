@@ -35,8 +35,8 @@ pub trait SliceExtension {
     /// # Examples
     /// ```
     /// use find_identical_files::SliceExtension;
-    ///
-    /// assert_eq!([0x00, 0x0A, 0xFF].as_ref().to_hex_string(), "000aff");
+    /// let data = [0x00, 0x0A, 0xFF];
+    /// assert_eq!(data.as_ref().to_hex_string(), "000aff");
     /// ```
     fn to_hex_string(&self) -> String;
 }
