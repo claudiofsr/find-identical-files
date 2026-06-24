@@ -1,0 +1,35 @@
+# See:
+# https://doc.rust-lang.org/cargo/reference/config.html
+
+# =========================================================
+# 1. Configuração do AMBIENTE (Para o Compilador rustc)
+# =========================================================
+[env]
+RUST_BACKTRACE = "1"
+# Define 256MB de stack para o COMPILADOR não travar (Cross-platform)
+RUST_MIN_STACK = "268435456"
+
+# =========================================================
+# 2. Configuração do BINÁRIO (Para o seu executável final)
+# =========================================================
+
+# --- Linux e sistemas Unix-like (ELF) ---
+[target.'cfg(target_os = "linux")']
+# 128MB = 134217728 bytes
+rustflags = ["-C", "link-args=-zstack-size=134217728"]
+
+# --- Windows (MSVC toolchain) ---
+[target.'cfg(target_os = "windows")']
+# No Windows MSVC usa-se /STACK:bytes
+rustflags = ["-C", "link-arg=/STACK:134217728"]
+
+# --- macOS (Mach-O) ---
+[target.'cfg(target_os = "macos")']
+# No macOS, o linker pede o tamanho em Hexadecimal.
+# 128MB = 0x8000000
+rustflags = ["-C", "link-args=-Wl,-stack_size,0x8000000"]
+
+# --- Outros Unix (FreeBSD, OpenBSD, etc) ---
+# Geralmente usam o mesmo padrão do Linux
+[target.'cfg(target_os = "freebsd")']
+rustflags = ["-C", "link-args=-zstack-size=134217728"]
